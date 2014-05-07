@@ -26,8 +26,16 @@ def run_test_query():
     query = query3.create_sparql_query(query3.sparql_template_array, 1)
     json_query_results = query3.perform_sparql_query(query)
     parsed_results = parse_query3_results(json_query_results)
+
+    result_count = get_query_3_result_count()
     return render_template("parsed_query3.html", title='Query 3 results',
-                           results=parsed_results)
+                            count=result_count, results=parsed_results)
+
+
+def get_query_3_result_count():
+    json_count_result = \
+        query3.perform_sparql_query(query3.create_count_query())
+    return json_count_result['results']['bindings'][0]['n']['value']
 
 
 def parse_query3_results(json_query_results):

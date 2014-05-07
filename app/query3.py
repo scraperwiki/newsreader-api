@@ -27,6 +27,18 @@ sparql_template_array[1] = """
         """
 
 
+def create_count_query():
+    query = """
+       SELECT (COUNT (distinct ?type) as ?n)
+       WHERE {
+       ?a rdf:type sem:Actor .
+       ?a rdf:type ?type .
+       FILTER (?type != sem:Actor && STRSTARTS(STR(?type),
+       "http://dbpedia.org/ontology/"))}
+       """
+    return query
+
+
 def create_sparql_query(sparql_template, query_index, offset=0, limit=100):
     """ Create a SPARQL query from template, using given offset and limit. """
     return sparql_template[query_index] % (offset, limit)
