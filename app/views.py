@@ -9,7 +9,7 @@ def index():
     return "Hello World!"
 
 
-@app.route('/simple/query1')
+@app.route('/simple/query3')
 def handle_offset_and_limit():
     """ Simple query string function. """
     offset = request.args.get('offset')
