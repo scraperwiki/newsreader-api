@@ -17,8 +17,8 @@ def handle_offset_and_limit():
     """ Simple query string function. """
     offset = request.args.get('offset')
     limit = request.args.get('limit')
-    return render_template("query3.html", title='Query 3', offset=offset,
-                           limit=limit)
+    return render_template("query3.html", title='Query 3 test query string',
+                           offset=offset, limit=limit)
 
 
 @app.route('/test/query3')
