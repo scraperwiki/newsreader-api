@@ -6,7 +6,7 @@
       <h1>Results</h1>
       <ol>
       {% for result in results %}
-        <li> {{ result }}</li>
+      <li> {{ result.entity_type }},{{result.count}}</li>
       {% endfor %}
       </ol>
   </body>
