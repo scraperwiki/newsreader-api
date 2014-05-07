@@ -15,4 +15,5 @@ def handle_offset_and_limit():
     """ Simple query string function. """
     offset = request.args.get('offset')
     limit = request.args.get('limit')
-    return "offset {0}, limit {1}".format(offset, limit)
+    return render_template("query3.html", title='Query 3', offset=offset,
+                           limit=limit)
