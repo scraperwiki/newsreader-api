@@ -8,7 +8,7 @@ class SparqlQuery(object):
         self.json_result = None
         self.offset = offset
         self.limit = limit
-        self.query = self._make_query()
+        self.query = None
 
     def _make_query(self):
         """ Builds a query using template. """
