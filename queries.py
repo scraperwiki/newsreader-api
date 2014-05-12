@@ -3,7 +3,7 @@
 
 
 class SparqlQuery(object):
-    def __init__(self, offset=0, limit=1000):
+    def __init__(self, offset=0, limit=100):
         self.query_template = None
         self.json_result = None
         self.offset = offset
