@@ -11,7 +11,7 @@ class SparqlQuery(object):
         self.query = self._make_query()
 
     def _make_query(self):
-        """ Builds a query using template,"""
+        """ Builds a query using template. """
         raise NotImplementedError
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
