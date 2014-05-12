@@ -24,3 +24,22 @@ class SparqlQuery(object):
         payload = {'query': self.query}
         response = request_url(endpoint_url, params=payload)
         return json.loads(response.content)
+
+
+class EntitiesThatAreActorsQuery(SparqlQuery):
+    def __init__(self, *args, **kwargs):
+        super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
+        self.query_template = ("SELECT ?type (COUNT (*) as ?n) "
+                               "WHERE "
+                               "{{?a rdf:type sem:Actor . "
+                               "?a rdf:type ?type . "
+                               "FILTER (?type != sem:Actor)}} "
+                               "GROUP BY ?type "
+                               "ORDER BY DESC(?n) "
+                               "OFFSET {offset} "
+                               "LIMIT {limit}")
+        self.query = self._make_query()
+
+    def _make_query(self):
+        """ Builds a query using template. """
+        return self.query_template.format(offset=self.offset, limit=self.limit)
