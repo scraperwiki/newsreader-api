@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import json
+
+from dshelpers import request_url
 
 
 class SparqlQuery(object):
@@ -17,3 +20,6 @@ class SparqlQuery(object):
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
                                         '/nwrdemo/sparql'):
         """ Submit query to endpoint; return result. """
+        payload = {'query': self.query}
+        response = request_url(endpoint_url, params=payload)
+        return json.loads(response.content)
