@@ -15,6 +15,7 @@ class SparqlQuery(object):
 
     def _make_query(self):
         """ Builds a query using template. """
+        # TODO: consider making default here needs to insert offset and limit
         raise NotImplementedError
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
