@@ -56,7 +56,8 @@ def run_test_query():
 def show_query3_results(page):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     count = get_query_3_result_count()
-    results = get_results_for_page(page, PER_PAGE)
+    offset = PER_PAGE * (page - 1)
+    results = get_results_for_page(page, PER_PAGE, offset)
 
     if not results and page != 1:
         abort(404)
@@ -64,11 +65,10 @@ def show_query3_results(page):
     pagination = Pagination(page, PER_PAGE, int(count))
     return render_template('paginate.html', title='Query 3 results',
                            pagination=pagination, count=count,
-                           results=results)
+                           results=results, offset=offset+1)
 
 
-def get_results_for_page(page, results_per_page):
-    offset = results_per_page * (page - 1)
+def get_results_for_page(page, results_per_page, offset):
     # TODO: use limit of 100 by default for now; consider allowing variation
     query = query3.create_sparql_query(query3.sparql_template_array, 1,
                                        offset, limit=results_per_page)
