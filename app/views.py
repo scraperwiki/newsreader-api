@@ -14,7 +14,17 @@ def index():
 
 def get_offset_and_limit_from_query():
     """ Return offset and limit from query. """
-    return request.args.get('offset'), request.args.get('limit')
+    try:
+        offset = int(request.args.get('offset'))
+    except TypeError:
+        offset = 0
+
+    try:
+        limit = int(request.args.get('limit'))
+    except TypeError:
+        limit = 100
+
+    return offset, limit
 
 
 @app.route('/simple/query3')
