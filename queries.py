@@ -17,9 +17,13 @@ class SparqlQuery(object):
 
     def _build_query(self):
         """ Implement in child classes. """
+        # TODO: Consider making return self.query_template
+        # so we could then have self.query = self._build_query()
         raise NotImplementedError
 
     def _build_count_query(self):
+        # TODO: Consider making return self.count_template
+        # and making self.count_template = None
         """ Implement in child classes. """
         raise NotImplementedError
 
