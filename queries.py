@@ -24,10 +24,10 @@ class SparqlQuery(object):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         response = request_url(endpoint_url, params=payload)
-        return json.loads(response.content)
+        self.json_result = json.loads(response.content)
 
     def get_total_result_count(self):
-        """ Gets result count for query. """
+        """ Implement in child classes. """
         raise NotImplementedError
 
 
