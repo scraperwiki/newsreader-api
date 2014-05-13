@@ -45,6 +45,7 @@ class CountQuery(SparqlQuery):
 
     Uses the count_template in a SPARQL query to create appropriate CountQuery.
     """
+    # TODO: is *args, **kwargs really needed here?
     def __init__(self, count_query, *args, **kwargs):
         super(CountQuery, self).__init__(*args, **kwargs)
         self.query_template = count_query
