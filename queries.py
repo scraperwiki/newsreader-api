@@ -45,7 +45,7 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "OFFSET {offset} "
                                "LIMIT {limit}")
         self.query = self._build_query()
-        self.json_result = self.submit_query()
+        self.json_result = None
 
     def _build_query(self):
         """ Returns a query string. """
