@@ -70,7 +70,6 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "OFFSET {offset} "
                                "LIMIT {limit}")
         self.query = self._build_query()
-        self.json_result = None
 
         self.count_template = ('SELECT (COUNT (distinct ?type) as ?n) '
                                'WHERE { '
