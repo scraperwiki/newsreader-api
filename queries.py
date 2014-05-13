@@ -14,7 +14,7 @@ class SparqlQuery(object):
         self.limit = limit
         self.query = None
 
-    def _make_query(self):
+    def _build_query(self):
         """ Builds a query using template. """
         # TODO: consider making default here needs to insert offset and limit
         raise NotImplementedError
@@ -43,8 +43,8 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "ORDER BY DESC(?n) "
                                "OFFSET {offset} "
                                "LIMIT {limit}")
-        self.query = self._make_query()
+        self.query = self._build_query()
 
-    def _make_query(self):
+    def _build_query(self):
         """ Builds a query using template. """
         return self.query_template.format(offset=self.offset, limit=self.limit)
