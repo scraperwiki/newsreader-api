@@ -10,6 +10,7 @@ class SparqlQuery(object):
     def __init__(self, offset=0, limit=100):
         self.offset = offset
         self.limit = limit
+
         self.query_template = None
         self.query = None
         self.total_result_count = None
