@@ -13,7 +13,6 @@ class SparqlQuery(object):
 
         self.query_template = None
         self.query = None
-        self.total_result_count = None
         self.json_result = None
 
     def _build_query(self):
@@ -46,7 +45,6 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "OFFSET {offset} "
                                "LIMIT {limit}")
         self.query = self._build_query()
-        self.total_result_count = self.get_total_result_count()
         self.json_result = self.submit_query()
 
     def _build_query(self):
