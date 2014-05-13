@@ -19,6 +19,10 @@ class SparqlQuery(object):
         """ Implement in child classes. """
         raise NotImplementedError
 
+    def _build_count_query(self):
+        """ Implement in child classes. """
+        raise NotImplementedError
+
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
                                         '/nwrdemo/sparql'):
         """ Submit query to endpoint; return result. """
