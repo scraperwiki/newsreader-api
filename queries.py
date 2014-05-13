@@ -12,6 +12,7 @@ class SparqlQuery(object):
         self.limit = limit
         self.query_template = None
         self.query = None
+        self.total_result_count = None
         self.json_result = None
 
     def _build_query(self):
@@ -27,7 +28,8 @@ class SparqlQuery(object):
         return json.loads(response.content)
 
     def get_total_result_count(self):
-        pass
+        """ Gets result count for query. """
+        raise NotImplementedError
 
 
 class EntitiesThatAreActorsQuery(SparqlQuery):
@@ -44,8 +46,13 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "OFFSET {offset} "
                                "LIMIT {limit}")
         self.query = self._build_query()
+        self.total_result_count = self.get_total_result_count()
         self.json_result = self.submit_query()
 
     def _build_query(self):
         """ Builds a query using template. """
         return self.query_template.format(offset=self.offset, limit=self.limit)
+
+    def get_total_result_count(self):
+        # TODO: implement
+        pass
