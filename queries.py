@@ -31,6 +31,27 @@ class SparqlQuery(object):
         raise NotImplementedError
 
 
+class CountQuery(SparqlQuery):
+    """
+    Represents a general count SPARQL query for the KnowledgeStore.
+
+    Uses the count_template in a SPARQL query to create appropriate CountQuery.
+    """
+    def __init__(self, count_query, *args, **kwargs):
+        super(CountQuery, self).__init__(*args, **kwargs)
+        self.query_template = count_query
+        self.query = self._build_query()
+
+    def _build_query(self):
+        """ Returns a query string. """
+        return self.query_template
+
+    def get_count(self):
+        """ Parses and returns result from a count query. """
+        self.submit_query()
+        return int(self.json_result['results']['bindings'][0]['n']['value'])
+
+
 class EntitiesThatAreActorsQuery(SparqlQuery):
     """ Represents Query 3 in the Google Docs list of SPARQL queries. """
     def __init__(self, *args, **kwargs):
