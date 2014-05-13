@@ -6,6 +6,7 @@ from dshelpers import request_url
 
 
 class SparqlQuery(object):
+    """ Represents a general SPARQL query for the KnowledgeStore. """
     def __init__(self, offset=0, limit=100):
         self.query_template = None
         self.json_result = None
@@ -25,8 +26,12 @@ class SparqlQuery(object):
         response = request_url(endpoint_url, params=payload)
         return json.loads(response.content)
 
+    def get_total_result_count(self):
+        pass
+
 
 class EntitiesThatAreActorsQuery(SparqlQuery):
+    """ Represents Query 3 in the Google Docs list of SPARQL queries. """
     def __init__(self, *args, **kwargs):
         super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
         self.query_template = ("SELECT ?type (COUNT (*) as ?n) "
