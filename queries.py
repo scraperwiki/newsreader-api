@@ -48,7 +48,7 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
         self.json_result = self.submit_query()
 
     def _build_query(self):
-        """ Builds a query using template. """
+        """ Returns a query string. """
         return self.query_template.format(offset=self.offset, limit=self.limit)
 
     def get_total_result_count(self):
