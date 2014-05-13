@@ -17,8 +17,7 @@ class SparqlQuery(object):
         self.json_result = None
 
     def _build_query(self):
-        """ Builds a query using template. """
-        # TODO: consider making default here needs to insert offset and limit
+        """ Implement in child classes. """
         raise NotImplementedError
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
