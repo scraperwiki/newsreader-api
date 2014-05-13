@@ -72,10 +72,23 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
         self.query = self._build_query()
         self.json_result = None
 
+        self.count_template = ('SELECT (COUNT (distinct ?type) as ?n) '
+                               'WHERE { '
+                               '?a rdf:type sem:Actor . '
+                               '?a rdf:type ?type . '
+                               'FILTER (?type != sem:Actor && '
+                               'STRSTARTS(STR(?type), '
+                               '"http://dbpedia.org/ontology/"))}')
+
     def _build_query(self):
         """ Returns a query string. """
         return self.query_template.format(offset=self.offset, limit=self.limit)
 
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template
+
     def get_total_result_count(self):
-        # TODO: implement
-        pass
+        """ Returns result count for query. """
+        count_query = CountQuery(self._build_count_query())
+        return count_query.get_count()
