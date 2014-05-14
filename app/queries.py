@@ -69,7 +69,9 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "WHERE "
                                "{{?a rdf:type sem:Actor . "
                                "?a rdf:type ?type . "
-                               "FILTER (?type != sem:Actor)}} "
+                               'FILTER (?type != sem:Actor && '
+                               'STRSTARTS(STR(?type), '
+                               '"http://dbpedia.org/ontology/"))}} '
                                "GROUP BY ?type "
                                "ORDER BY DESC(?n) "
                                "OFFSET {offset} "
