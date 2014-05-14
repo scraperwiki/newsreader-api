@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import json
-import requests_cache
 
 from dshelpers import request_url
-requests_cache.install_cache()
 
 
 class SparqlQuery(object):
