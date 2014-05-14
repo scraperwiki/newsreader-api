@@ -15,29 +15,32 @@ def index():
     return "Hello World!"
 
 
-@app.route('/testpaging', defaults={'page': 1})
-@app.route('/testpaging/page/<int:page>')
-def show_query3_results(page):
+@app.route('/<query_to_use>', defaults={'page': 1})
+@app.route('/<query_to_use>/page/<int:page>')
+def show_query_results(page, query_to_use):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
-    query_3 = queries.EntitiesThatAreActorsQuery()
-    count = query_3.get_total_result_count()
+    query_name = getattr(queries, query_to_use)
+    query = query_name()
+    count = query.get_total_result_count()
     offset = PER_PAGE * (page - 1)
-    results = get_results_for_page(PER_PAGE, offset)
+    results = get_results_for_page(query_name, PER_PAGE, offset)
 
     if not results and page != 1:
         abort(404)
 
     pagination = Pagination(page, PER_PAGE, int(count))
+    # TODO: May need to handle template differently for different queries.
     return render_template('paginate.html', title='Query 3 results',
                            pagination=pagination, count=count,
                            results=results, offset=offset+1)
 
 
-def get_results_for_page(results_per_page, offset):
-    query_3 = queries.EntitiesThatAreActorsQuery(offset=offset,
-                                                 limit=results_per_page)
-    query_3.submit_query()
-    return parse_query3_results(query_3.json_result)
+def get_results_for_page(query_name, results_per_page, offset):
+    # TODO: Need to handle other arguments.
+    query = query_name(offset=offset, limit=results_per_page)
+    query.submit_query()
+    # TODO: This result is hardcoded; need to move into class.
+    return parse_query3_results(query.json_result)
 
 
 def url_for_other_page(page):
