@@ -4,7 +4,7 @@ from flask import abort, render_template, request, url_for
 from app import app
 from collections import namedtuple
 from pagination import Pagination
-import query3
+import queries
 
 PER_PAGE = 10
 
@@ -19,9 +19,10 @@ def index():
 @app.route('/testpaging/page/<int:page>')
 def show_query3_results(page):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
-    count = get_query_3_result_count()
+    query_3 = queries.EntitiesThatAreActorsQuery()
+    count = query_3.get_total_result_count()
     offset = PER_PAGE * (page - 1)
-    results = get_results_for_page(page, PER_PAGE, offset)
+    results = get_results_for_page(PER_PAGE, offset)
 
     if not results and page != 1:
         abort(404)
@@ -32,12 +33,11 @@ def show_query3_results(page):
                            results=results, offset=offset+1)
 
 
-def get_results_for_page(page, results_per_page, offset):
-    # TODO: use limit of 100 by default for now; consider allowing variation
-    query = query3.create_sparql_query(query3.sparql_template_array, 1,
-                                       offset, limit=results_per_page)
-    json_query_results = query3.perform_sparql_query(query)
-    return parse_query3_results(json_query_results)
+def get_results_for_page(results_per_page, offset):
+    query_3 = queries.EntitiesThatAreActorsQuery(offset=offset,
+                                                 limit=results_per_page)
+    query_3.submit_query()
+    return parse_query3_results(query_3.json_result)
 
 
 def url_for_other_page(page):
@@ -46,12 +46,6 @@ def url_for_other_page(page):
     return url_for(request.endpoint, **args)
 
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
-
-
-def get_query_3_result_count():
-    json_count_result = \
-        query3.perform_sparql_query(query3.create_count_query())
-    return json_count_result['results']['bindings'][0]['n']['value']
 
 
 def parse_query3_results(json_query_results):
