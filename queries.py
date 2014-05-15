@@ -19,13 +19,13 @@ class SparqlQuery(object):
         """ Implement in child classes. """
         # TODO: Consider making return self.query_template
         # so we could then have self.query = self._build_query()
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
     def _build_count_query(self):
         # TODO: Consider making return self.count_template
         # and making self.count_template = None
         """ Implement in child classes. """
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
                                         '/nwrdemo/sparql'):
@@ -36,7 +36,7 @@ class SparqlQuery(object):
 
     def get_total_result_count(self):
         """ Implement in child classes. """
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
 
 class CountQuery(SparqlQuery):
