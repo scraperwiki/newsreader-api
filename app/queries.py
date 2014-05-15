@@ -2,6 +2,8 @@
 # encoding: utf-8
 import json
 
+from collections import namedtuple
+
 from dshelpers import request_url
 
 
@@ -19,13 +21,13 @@ class SparqlQuery(object):
         """ Implement in child classes. """
         # TODO: Consider making return self.query_template
         # so we could then have self.query = self._build_query()
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
     def _build_count_query(self):
         # TODO: Consider making return self.count_template
         # and making self.count_template = None
         """ Implement in child classes. """
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
                                         '/nwrdemo/sparql'):
@@ -34,9 +36,13 @@ class SparqlQuery(object):
         response = request_url(endpoint_url, params=payload)
         self.json_result = json.loads(response.content)
 
+    def parse_query_results(self):
+        """ Implement in child classes. """
+        raise NotImplementedError("Should be implemented in child class.")
+
     def get_total_result_count(self):
         """ Implement in child classes. """
-        raise NotImplementedError
+        raise NotImplementedError("Should be implemented in child class.")
 
 
 class CountQuery(SparqlQuery):
@@ -55,6 +61,7 @@ class CountQuery(SparqlQuery):
         """ Returns a query string. """
         return self.query_template
 
+    # TODO: Should get_count() be the more general parse_query_results()?
     def get_count(self):
         """ Parses and returns result from a count query. """
         self.submit_query()
@@ -69,7 +76,9 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                "WHERE "
                                "{{?a rdf:type sem:Actor . "
                                "?a rdf:type ?type . "
-                               "FILTER (?type != sem:Actor)}} "
+                               'FILTER (?type != sem:Actor && '
+                               'STRSTARTS(STR(?type), '
+                               '"http://dbpedia.org/ontology/"))}} '
                                "GROUP BY ?type "
                                "ORDER BY DESC(?n) "
                                "OFFSET {offset} "
@@ -96,3 +105,10 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        QueryResult = namedtuple('QueryResult', 'entity_type count')
+        return [QueryResult(result['type']['value'], result['n']['value'])
+                for result in self.json_result['results']['bindings']]
