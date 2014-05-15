@@ -30,6 +30,7 @@ def show_query_results(page, query_to_use):
 
     pagination = Pagination(page, PER_PAGE, int(count))
     # TODO: May need to handle template differently for different queries.
+    # Could consider making title, template.html argument part of the class
     return render_template('paginate.html', title='Query 3 results',
                            pagination=pagination, count=count,
                            results=results, offset=offset+1)
