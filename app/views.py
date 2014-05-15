@@ -40,8 +40,7 @@ def get_results_for_page(query_name, results_per_page, offset):
     # TODO: Need to handle other arguments.
     query = query_name(offset=offset, limit=results_per_page)
     query.submit_query()
-    # TODO: This result is hardcoded; need to move into class.
-    return parse_query3_results(query.json_result)
+    return query.parse_query_results()
 
 
 def url_for_other_page(page):
@@ -50,13 +49,3 @@ def url_for_other_page(page):
     return url_for(request.endpoint, **args)
 
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
-
-
-def parse_query3_results(json_query_results):
-    Query3Result = namedtuple('Query3Result', 'entity_type count')
-    results = []
-    for result in json_query_results['results']['bindings']:
-        entity_type = result['type']['value']
-        count = result['n']['value']
-        results.append(Query3Result(entity_type, count))
-    return results
