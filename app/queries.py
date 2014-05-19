@@ -20,6 +20,7 @@ class SparqlQuery(object):
         else:
             self.uris = uris
 
+        self.query_title = None
         self.query_template = None
         self.query = None
         self.json_result = None
@@ -61,6 +62,7 @@ class CountQuery(SparqlQuery):
     # TODO: is *args, **kwargs really needed here?
     def __init__(self, count_query, *args, **kwargs):
         super(CountQuery, self).__init__(*args, **kwargs)
+        self.query_title = 'Count query'
         self.query_template = count_query
         self.query = self._build_query()
 
@@ -79,6 +81,7 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
     """ Represents Query 3 in the Google Docs list of SPARQL queries. """
     def __init__(self, *args, **kwargs):
         super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
+        self.query_title = 'Query 3; entities that are actors'
         self.query_template = ("SELECT ?type (COUNT (*) as ?n) "
                                "WHERE "
                                "{{?a rdf:type sem:Actor . "
@@ -125,6 +128,7 @@ class SynerscopeQuery(SparqlQuery):
     """ Represents the Synerscope query (query 13) in the list. """
     def __init__(self, *args, **kwargs):
         super(SynerscopeQuery, self).__init__(*args, **kwargs)
+        self.query_title = 'Query 13; Synerscope query'
         self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
                                'SELECT ?event ?predicate ?object '
