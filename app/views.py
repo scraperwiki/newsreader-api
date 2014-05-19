@@ -2,7 +2,6 @@
 # encoding: utf-8
 from flask import abort, render_template, request, url_for
 from app import app
-from collections import namedtuple
 from pagination import Pagination
 import queries
 
