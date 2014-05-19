@@ -2,4 +2,7 @@
 /include
 /lib
 /local
+/man
+/src
 *.pyc
+*.sqlite
