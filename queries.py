@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import json
 
 from collections import namedtuple
@@ -9,9 +11,14 @@ from dshelpers import request_url
 
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
-    def __init__(self, offset=0, limit=100):
+    def __init__(self, offset=0, limit=100, uris=None):
         self.offset = offset
         self.limit = limit
+
+        if uris is None:
+            self.uris = []
+        else:
+            self.uris = uris
 
         self.query_template = None
         self.query = None
@@ -112,3 +119,65 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
         QueryResult = namedtuple('QueryResult', 'entity_type count')
         return [QueryResult(result['type']['value'], result['n']['value'])
                 for result in self.json_result['results']['bindings']]
+
+
+class SynerscopeQuery(SparqlQuery):
+    """ Represents the Synerscope query (query 13) in the list. """
+    def __init__(self, *args, **kwargs):
+        super(SynerscopeQuery, self).__init__(*args, **kwargs)
+        self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
+                               '2009/11/sem/> '
+                               'SELECT ?event ?predicate ?object '
+                               '?object_type '
+                               'WHERE {{ '
+                               '?event ?predicate ?object . '
+                               'OPTIONAL '
+                               '{{ '
+                               '?object a ?object_type . '
+                               'FILTER(STRSTARTS(STR(?object_type), '
+                               '"http://semanticweb.cs.vu.nl/2009/11/sem/"))'
+                               '}} {{ '
+                               'SELECT ?event '
+                               'WHERE {{ '
+                               '?event a sem:Event .'
+                               '?event sem:hasActor {uri_0} .'
+                               '}} '
+                               'LIMIT 100 '
+                               'OFFSET 0 '
+                               '}} }} '
+                               'ORDER BY DESC(?event) '
+                               'LIMIT {limit} '
+                               'OFFSET {offset} ')
+
+        self.query = self._build_query()
+
+        self.count_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
+                               '2009/11/sem/> '
+                               'SELECT (count(*) as ?n) '
+                               '?object_type '
+                               'WHERE {{ '
+                               '?event ?predicate ?object . '
+                               'OPTIONAL '
+                               '{{ '
+                               '?object a ?object_type . '
+                               'FILTER(STRSTARTS(STR(?object_type), '
+                               '"http://semanticweb.cs.vu.nl/2009/11/sem/"))'
+                               '}} {{ '
+                               'SELECT ?event '
+                               'WHERE {{ '
+                               '?event a sem:Event .'
+                               '?event sem:hasActor {uri_0} .'
+                               '}} '
+                               'LIMIT 100 '
+                               'OFFSET 0 '
+                               '}} }}')
+
+    def _build_query(self):
+        """ Returns a query string. """
+        return self.query_template.format(offset=self.offset,
+                                          limit=self.limit,
+                                          uri_0=self.uris[0])
+
+    def parse_query_results(self):
+        """ Returns nicely parsed result of query. """
+        pass
