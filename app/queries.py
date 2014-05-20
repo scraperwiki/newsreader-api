@@ -191,3 +191,12 @@ class SynerscopeQuery(SparqlQuery):
                               result['object']['value'],
                               result['object_type']['value'])
                 for result in self.json_result['results']['bindings'][0]]
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template.format(uri_0=self.uris[0])
+
+    def get_total_result_count(self):
+        """ Returns result count for query. """
+        count_query = CountQuery(self._build_count_query())
+        return count_query.get_count()
