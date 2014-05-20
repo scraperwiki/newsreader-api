@@ -119,8 +119,9 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
     def parse_query_results(self):
         # TODO: nicely parsed needs defining; may depend on query
         """ Returns nicely parsed result of query. """
-        QueryResult = namedtuple('QueryResult', 'entity_type count')
-        return [QueryResult(result['type']['value'], result['n']['value'])
+        Query3Result = namedtuple('Query3Result', 'entity_type count')
+        # TODO: consider yielding results instead
+        return [Query3Result(result['type']['value'], result['n']['value'])
                 for result in self.json_result['results']['bindings']]
 
 
