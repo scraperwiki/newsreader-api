@@ -186,11 +186,12 @@ class SynerscopeQuery(SparqlQuery):
         """ Returns nicely parsed result of query. """
         Query13Result = namedtuple('Query13Result',
                                    'event predicate object object_type')
-        return [Query13Result(result['event']['value'],
-                              result['predicate']['value'],
-                              result['object']['value'],
-                              result['object_type']['value'])
-                for result in self.json_result['results']['bindings'][0]]
+        # Not all results contain all entries
+        return [Query13Result(result.get('event', {}).get('value'),
+                              result.get('predicate', {}).get('value'),
+                              result.get('object', {}).get('value'),
+                              result.get('object_type', {}).get('value'))
+                for result in self.json_result['results']['bindings']]
 
     def _build_count_query(self):
         """ Returns a count query string. """
