@@ -184,4 +184,10 @@ class SynerscopeQuery(SparqlQuery):
 
     def parse_query_results(self):
         """ Returns nicely parsed result of query. """
-        pass
+        Query13Result = namedtuple('Query13Result',
+                                   'event predicate object object_type')
+        return [Query13Result(result['event']['value'],
+                              result['predicate']['value'],
+                              result['object']['value'],
+                              result['object_type']['value'])
+                for result in self.json_result['results']['bindings'][0]]
