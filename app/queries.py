@@ -159,7 +159,6 @@ class SynerscopeQuery(SparqlQuery):
         self.count_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
                                'SELECT (count(*) as ?n) '
-                               '?object_type '
                                'WHERE {{ '
                                '?event ?predicate ?object . '
                                'OPTIONAL '
