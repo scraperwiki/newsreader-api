@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import json
+
 from flask import abort, render_template, request, url_for
 from app import app
 from pagination import Pagination
@@ -19,10 +21,11 @@ def index():
 def show_query_results(page, query_to_use):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     query_name = getattr(queries, query_to_use)
-    query = query_name()
+    query_args = parse_query_string(**request.args)
+    query = query_name(**query_args)
     count = query.get_total_result_count()
     offset = PER_PAGE * (page - 1)
-    results = get_results_for_page(query_name, PER_PAGE, offset)
+    results = get_results_for_page(query_name, PER_PAGE, offset, **query_args)
 
     if not results and page != 1:
         abort(404)
@@ -35,9 +38,13 @@ def show_query_results(page, query_to_use):
                            results=results, offset=offset+1)
 
 
-def get_results_for_page(query_name, results_per_page, offset):
-    # TODO: Need to handle other arguments.
-    query = query_name(offset=offset, limit=results_per_page)
+def parse_query_string(**kwargs):
+    """ Take request.args and return a dict for passing in as **kwargs """
+    return {key: json.loads(request.args.get(key)) for key in kwargs}
+
+
+def get_results_for_page(query_name, results_per_page, offset, **query_args):
+    query = query_name(offset=offset, limit=results_per_page, **query_args)
     query.submit_query()
     return query.parse_query_results()
 
