@@ -11,7 +11,7 @@ from dshelpers import request_url
 
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
-    def __init__(self, offset=0, limit=100, uris=None):
+    def __init__(self, offset=0, limit=100, uris=None, output='html'):
         self.offset = offset
         self.limit = limit
 
@@ -24,6 +24,8 @@ class SparqlQuery(object):
         self.query_template = None
         self.query = None
         self.json_result = None
+
+        self.output = output
         self.jinja_template = None
 
     def _build_query(self):
