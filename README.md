@@ -22,6 +22,7 @@ App accessible via http://127.0.0.1:5000
 ## Query that outputs JSON instead of HTML:
 Use `output="json"` (the requirement for quotes around strings is a known
 issue; again should be fixable with `jsonurl`)
+
 `https://newsreader.scraperwiki.com/SynerscopeQuery?output="json"&uris=["<http://dbpedia.org/resource/David_Beckham>"]`
 
 # Adding a new query:
