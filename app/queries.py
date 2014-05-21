@@ -11,7 +11,7 @@ from dshelpers import request_url
 
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
-    def __init__(self, offset=0, limit=100, uris=None):
+    def __init__(self, offset=0, limit=100, uris=None, output='html'):
         self.offset = offset
         self.limit = limit
 
@@ -24,6 +24,9 @@ class SparqlQuery(object):
         self.query_template = None
         self.query = None
         self.json_result = None
+
+        self.output = output
+        self.jinja_template = None
 
     def _build_query(self):
         """ Implement in child classes. """
@@ -103,6 +106,8 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                'STRSTARTS(STR(?type), '
                                '"http://dbpedia.org/ontology/"))}')
 
+        self.jinja_template = 'actors_query3.html'
+
     def _build_query(self):
         """ Returns a query string. """
         return self.query_template.format(offset=self.offset, limit=self.limit)
@@ -175,6 +180,8 @@ class SynerscopeQuery(SparqlQuery):
                                'LIMIT 100 '
                                'OFFSET 0 '
                                '}} }}')
+
+        self.jinja_template = 'synerscope_query13.html'
 
     def _build_query(self):
         """ Returns a query string. """
