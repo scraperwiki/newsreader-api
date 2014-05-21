@@ -2,6 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 
+import os
 import json
 
 from collections import namedtuple
@@ -41,10 +42,13 @@ class SparqlQuery(object):
         raise NotImplementedError("Should be implemented in child class.")
 
     def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
-                                        '/nwrdemo/sparql'):
+                                        '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
+        username = os.environ['NEWSREADER_USERNAME']
+        password = os.environ['NEWSREADER_PASSWORD']
         payload = {'query': self.query}
-        response = request_url(endpoint_url, params=payload)
+        response = request_url(endpoint_url, auth=(username, password),
+                               params=payload)
         self.json_result = json.loads(response.content)
 
     def parse_query_results(self):
