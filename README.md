@@ -1,8 +1,9 @@
 # Local install:
-`git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
-work on a virtualenv (optional)
-`pip install -r requirements.txt`
-`python run.py`
+* `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
+* Work on a virtualenv (optional)
+* `pip install -r requirements.txt`
+* `python run.py`
+
 App accessible via http://127.0.0.1:5000
 
 # Example query usage:
