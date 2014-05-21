@@ -36,7 +36,7 @@ class YourNewQuery(SparqlQuery):
         
         # query (and count) template may contain variable strings
         # that are injected by format in _build_query(),
-        # _build_count_query.
+        # _build_count_query()
         self.query_template = 'Your SPARQL query goes here'
         self.query = self._build_query()
         
