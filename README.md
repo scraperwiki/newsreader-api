@@ -57,7 +57,9 @@ class YourNewQuery(SparqlQuery):
         
     def parse_query_results(self):
         """ Returns nicely parsed values to pass into jinja_template """
-       
+        # do things to the JSON to get the data you want out
+        return data_that_can_be_handled_in_template
+
     def _build_count_query(self):
         return self.count_template.format(uri_0=self.uris[0],
                                           uri_1=self.uris[1])
