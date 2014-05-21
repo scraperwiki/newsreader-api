@@ -13,7 +13,7 @@ PER_PAGE = 10
 @app.route('/')
 def index():
     """ Demo function. """
-    return "Hello World!"
+    return "Hello World Cup News Hackers!"
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})
