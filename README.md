@@ -6,6 +6,10 @@
 
 App accessible via http://127.0.0.1:5000
 
+You'll need the username and password for the endpoint and have to store
+these in the environment variables: NEWSREADER_USERNAME and
+NEWSREADER_PASSWORD. (The deployed version has these setup already.)
+
 # Example query usage:
 
 ## Simple query:
