@@ -19,15 +19,18 @@ NEWSREADER_PASSWORD. (The deployed version has these setup already.)
 `http://127.0.0.1:5000/EntitiesThatAreActorsQuery/page/2`
 
 ## Pass in URIs with query string value:
-**URI format may change; may use `jsonurl` package to make nicer.**
+** WARNING: may change again if I move from `jsonurl`
+to handling with Flask **
+`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham`
 
-`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?uris=["<http://dbpedia.org/resource/David_Beckham>"]`
+Specify additional URIs with e.g.
+`?uris.0=http://dbpedia.org/resource/David_Beckham&uris.1=http://dbpedia.org/resource/Bobby_Robson`
 
 ## Query that outputs JSON instead of HTML:
 Use `output="json"` (the requirement for quotes around strings is a known
 issue; again should be fixable with `jsonurl`)
 
-`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?output="json"&uris=["<http://dbpedia.org/resource/David_Beckham>"]`
+`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
 
 # Adding a new query:
 In `queries.py`, specify a new subclass of `SparqlQuery`
