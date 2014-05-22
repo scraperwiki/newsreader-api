@@ -21,13 +21,13 @@ NEWSREADER_PASSWORD. (The deployed version has these setup already.)
 ## Pass in URIs with query string value:
 **URI format may change; may use `jsonurl` package to make nicer.**
 
-`https://newsreader.scraperwiki.com/SynerscopeQuery?uris=["<http://dbpedia.org/resource/David_Beckham>"]`
+`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?uris=["<http://dbpedia.org/resource/David_Beckham>"]`
 
 ## Query that outputs JSON instead of HTML:
 Use `output="json"` (the requirement for quotes around strings is a known
 issue; again should be fixable with `jsonurl`)
 
-`https://newsreader.scraperwiki.com/SynerscopeQuery?output="json"&uris=["<http://dbpedia.org/resource/David_Beckham>"]`
+`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?output="json"&uris=["<http://dbpedia.org/resource/David_Beckham>"]`
 
 # Adding a new query:
 In `queries.py`, specify a new subclass of SparqlQuery

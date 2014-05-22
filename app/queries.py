@@ -134,11 +134,11 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                 for result in self.json_result['results']['bindings']]
 
 
-class SynerscopeQuery(SparqlQuery):
+class GetEventDetailsByActorUri(SparqlQuery):
     """ Represents the Synerscope query (query 13) in the list. """
     def __init__(self, *args, **kwargs):
-        super(SynerscopeQuery, self).__init__(*args, **kwargs)
-        self.query_title = 'Query 13; Synerscope query'
+        super(GetEventDetailsByActorUri, self).__init__(*args, **kwargs)
+        self.query_title = 'Query 13; get event details by actor URI'
         self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
                                'SELECT ?event ?predicate ?object '
@@ -185,7 +185,7 @@ class SynerscopeQuery(SparqlQuery):
                                'OFFSET 0 '
                                '}} }}')
 
-        self.jinja_template = 'synerscope_query13.html'
+        self.jinja_template = 'event_details_by_actor_query13.html'
 
     def _build_query(self):
         """ Returns a query string. """
