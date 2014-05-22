@@ -43,18 +43,23 @@ class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
         fake_response.content = '{"test": "ok"}'
         mock_request_url.return_value = fake_response
         self.mock_request_url = mock_request_url
+        self.username = 'username'
+        self.password = 'password'
 
         self.query = queries.SparqlQuery()
-        self.query.submit_query()
+        self.query.submit_query(self.username, self.password)
 
     def test_result_from_submit_query(self):
         expected_json_result = {u'test': u'ok'}
         assert_equal(expected_json_result, self.query.json_result)
 
     def test_request_url_call_from_submit_query(self):
-        endpoint_url = 'https://knowledgestore.fbk.eu/nwrdemo/sparql'
+        endpoint_url = ('https://knowledgestore.fbk.eu/nwr/'
+                        'worldcup-hackathon/sparql')
         payload = {'query': self.query.query}
-        self.mock_request_url.assert_called_with(endpoint_url, params=payload)
+        auth = (self.username, self.password)
+        self.mock_request_url.assert_called_with(endpoint_url, params=payload,
+                                                 auth=auth)
 
 
 class CountQueryTestCase(unittest.TestCase):

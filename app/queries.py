@@ -42,11 +42,12 @@ class SparqlQuery(object):
         """ Implement in child classes. """
         raise NotImplementedError("Should be implemented in child class.")
 
-    def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
-                                        '/nwr/worldcup-hackathon/sparql'):
+    def submit_query(self,
+                     username=os.environ['NEWSREADER_USERNAME'],
+                     password=os.environ['NEWSREADER_PASSWORD'],
+                     endpoint_url='https://knowledgestore.fbk.eu'
+                                  '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
-        username = os.environ['NEWSREADER_USERNAME']
-        password = os.environ['NEWSREADER_PASSWORD']
         payload = {'query': self.query}
         response = request_url(endpoint_url, auth=(username, password),
                                params=payload)
