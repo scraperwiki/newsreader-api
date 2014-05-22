@@ -19,7 +19,8 @@ class SparqlQuery(object):
         if uris is None:
             self.uris = []
         else:
-            self.uris = uris
+            # SPARQL queries require URIs wrapped in <,>
+            self.uris = ['<' + item + '>' for item in uris]
 
         self.query_title = None
         self.query_template = None

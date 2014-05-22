@@ -6,6 +6,7 @@ from flask import abort, render_template, request, url_for
 from app import app
 from pagination import Pagination
 import queries
+import jsonurl
 
 PER_PAGE = 10
 
@@ -16,12 +17,19 @@ def index():
     return "Hello World Cup News Hackers!"
 
 
+def parse_query_string(query_string):
+    """ Return dict containing query string values.
+
+    uris can be entered as ?uris.0=http:...&uris.1=http:... """
+    return jsonurl.parse_query(query_string)
+
+
 @app.route('/<query_to_use>', defaults={'page': 1})
 @app.route('/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     query_name = getattr(queries, query_to_use)
-    query_args = parse_query_string(**request.args)
+    query_args = parse_query_string(request.query_string)
 
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
@@ -52,11 +60,6 @@ def cause_404_if_no_results(results, page_number):
     # TODO: Look into this; doesn't seem to apply for the SPARQL responses.
     if not results and page_number != 1:
         abort(404)
-
-
-def parse_query_string(**kwargs):
-    """ Take request.args and return a dict for passing in as **kwargs """
-    return {key: json.loads(request.args.get(key)) for key in kwargs}
 
 
 def url_for_other_page(page):
