@@ -30,7 +30,7 @@ issue; again should be fixable with `jsonurl`)
 `https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?output="json"&uris=["<http://dbpedia.org/resource/David_Beckham>"]`
 
 # Adding a new query:
-In `queries.py`, specify a new subclass of SparqlQuery
+In `queries.py`, specify a new subclass of `SparqlQuery`
 
 ```
 class YourNewQuery(SparqlQuery):
