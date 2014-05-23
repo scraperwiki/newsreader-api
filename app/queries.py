@@ -140,10 +140,13 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
 
 
 class GetEventDetailsByActorUri(SparqlQuery):
-    """ Represents the Synerscope query (query 13) in the list. """
+    """ Represents the Synerscope query (query 13) in the list. 
+        http://127.0.0.1:5000/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
+    """
     def __init__(self, *args, **kwargs):
         super(GetEventDetailsByActorUri, self).__init__(*args, **kwargs)
-        self.query_title = 'Query 13; get event details by actor URI'
+        self.query_title = 'Get event details by actor URI'
+        self.headers = ['event', 'predicate', 'object', 'object_type']
         self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
                                'SELECT ?event ?predicate ?object '
@@ -172,7 +175,7 @@ class GetEventDetailsByActorUri(SparqlQuery):
 
         self.count_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
-                               'SELECT (count(*) as ?n) '
+                               'SELECT (count(*) as ?count) '
                                'WHERE {{ '
                                '?event ?predicate ?object . '
                                'OPTIONAL '
@@ -190,7 +193,7 @@ class GetEventDetailsByActorUri(SparqlQuery):
                                'OFFSET 0 '
                                '}} }}')
 
-        self.jinja_template = 'event_details_by_actor_query13.html'
+        self.jinja_template = 'four_column.html'
 
     def _build_query(self):
         """ Returns a query string. """
