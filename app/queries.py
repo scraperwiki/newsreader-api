@@ -26,8 +26,8 @@ class SparqlQuery(object):
         self.query_template = None
         self.query = None
         self.json_result = None
-
         self.output = output
+        self.headers = []
         self.jinja_template = "default.html"
 
     def _build_query(self):
@@ -83,15 +83,17 @@ class CountQuery(SparqlQuery):
     def get_count(self):
         """ Parses and returns result from a count query. """
         self.submit_query()
-        return int(self.json_result['results']['bindings'][0]['n']['value'])
+        return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 
 class EntitiesThatAreActorsQuery(SparqlQuery):
-    """ Represents Query 3 in the Google Docs list of SPARQL queries. """
+    """ Represents Query 3 in the Google Docs list of SPARQL queries. 
+    http://127.0.0.1:5000/EntitiesThatAreActorsQuery?output=json
+    """
     def __init__(self, *args, **kwargs):
         super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
         self.query_title = 'Query 3; entities that are actors'
-        self.query_template = ("SELECT ?type (COUNT (*) as ?n) "
+        self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
                                "WHERE "
                                "{{?a rdf:type sem:Actor . "
                                "?a rdf:type ?type . "
@@ -99,12 +101,12 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                'STRSTARTS(STR(?type), '
                                '"http://dbpedia.org/ontology/"))}} '
                                "GROUP BY ?type "
-                               "ORDER BY DESC(?n) "
+                               "ORDER BY DESC(?count) "
                                "OFFSET {offset} "
                                "LIMIT {limit}")
         self.query = self._build_query()
 
-        self.count_template = ('SELECT (COUNT (distinct ?type) as ?n) '
+        self.count_template = ('SELECT (COUNT (distinct ?type) as ?count) '
                                'WHERE { '
                                '?a rdf:type sem:Actor . '
                                '?a rdf:type ?type . '
@@ -112,7 +114,8 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
                                'STRSTARTS(STR(?type), '
                                '"http://dbpedia.org/ontology/"))}')
 
-        self.jinja_template = 'actors_query3.html'
+        self.jinja_template = 'two_column.html'
+        self.headers = ['type','count']
 
     def _build_query(self):
         """ Returns a query string. """
@@ -130,9 +133,9 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
     def parse_query_results(self):
         # TODO: nicely parsed needs defining; may depend on query
         """ Returns nicely parsed result of query. """
-        Query3Result = namedtuple('Query3Result', 'entity_type count')
+        Query3Result = namedtuple('Query3Result', 'type count')
         # TODO: consider yielding results instead
-        return [Query3Result(result['type']['value'], result['n']['value'])
+        return [Query3Result(result['type']['value'], result['count']['value'])
                 for result in self.json_result['results']['bindings']]
 
 

@@ -8,7 +8,7 @@ from pagination import Pagination
 import queries
 import jsonurl
 
-PER_PAGE = 10
+PER_PAGE = 20
 
 
 @app.route('/')
@@ -59,6 +59,7 @@ def produce_response(query, page_number, offset):
                                pagination=pagination,
                                query=query.query,
                                count=count,
+                               headers=query.headers,
                                results=result, offset=offset+1)
 
 
