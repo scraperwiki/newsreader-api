@@ -28,7 +28,7 @@ class SparqlQuery(object):
         self.json_result = None
 
         self.output = output
-        self.jinja_template = None
+        self.jinja_template = "default.html"
 
     def _build_query(self):
         """ Implement in child classes. """

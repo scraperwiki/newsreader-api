@@ -51,6 +51,7 @@ def produce_response(query, page_number, offset):
         return render_template(query.jinja_template,
                                title=query.query_title,
                                pagination=pagination,
+                               query=query.query,
                                count=count,
                                results=result, offset=offset+1)
 
