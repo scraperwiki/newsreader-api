@@ -2,7 +2,7 @@
 # encoding: utf-8
 import json
 
-from flask import abort, render_template, request, url_for
+from flask import abort, render_template, request, url_for, Response
 from app import app
 from pagination import Pagination
 import queries
@@ -13,8 +13,14 @@ PER_PAGE = 10
 
 @app.route('/')
 def index():
-    """ Demo function. """
-    return "Hello World Cup News Hackers!"
+    """ Provide documentation when accessing the root page """
+    function_list = {"Description":"NewsReader Simple API: Endpoints available at this location", 
+                     "links":[]}
+    function_list['links'].append({"url":"EntitiesThatAreActorsQuery"})
+    function_list['links'].append({"url":"describe_uri"})
+    function_list['links'].append({"url":"GetEventDetailsByActorUri"})
+    help = json.dumps(function_list, ensure_ascii=False)
+    return Response(help, content_type='application/json; charset=utf-8')
 
 
 def parse_query_string(query_string):
