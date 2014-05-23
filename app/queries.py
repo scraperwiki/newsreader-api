@@ -28,7 +28,7 @@ class SparqlQuery(object):
         self.json_result = None
 
         self.output = output
-        self.jinja_template = None
+        self.jinja_template = "default.html"
 
     def _build_query(self):
         """ Implement in child classes. """
@@ -214,3 +214,46 @@ class GetEventDetailsByActorUri(SparqlQuery):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
+
+class describe_uri(SparqlQuery):
+    """ DESCRIBE a URI, getting triples where it is either subject or object
+        http://127.0.0.1:5000/describe_uri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
+    """
+    def __init__(self, *args, **kwargs):
+        super(describe_uri, self).__init__(*args, **kwargs)
+        self.query_title = 'Query 2; describe a URI'
+        self.query_template = ("""
+                               Describe {uri_0}
+                               """)
+
+        self.query = self._build_query()
+
+        self.count_template = ("""
+                               SELECT (count(?propertyname) as ?n)
+                                where
+                                {{
+                                {uri_0} ?propertyname ?propertyvalue .
+                                }}
+                               """)
+
+        self.jinja_template = 'default.html'
+
+    def _build_query(self):
+        """ Returns a query string. """
+        return self.query_template.format(offset=self.offset,
+                                          limit=self.limit,
+                                          uri_0=self.uris[0])
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template.format(uri_0=self.uris[0])
+
+    def get_total_result_count(self):
+        """ Returns result count for query. """
+        count_query = CountQuery(self._build_count_query())
+        return count_query.get_count()
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        return self.json_result
