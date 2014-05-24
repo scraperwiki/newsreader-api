@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import requests
 
 from collections import namedtuple
 
@@ -63,8 +64,12 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        response = request_url(endpoint_url, auth=(username, password),
+        response = requests.get(endpoint_url, auth=(username, password),
                                params=payload)
+        #response = request_url(endpoint_url, auth=(username, password),
+        #                       params=payload,
+        #                       back_off=True)
+        
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
 
@@ -157,6 +162,7 @@ class entities_that_are_actors(SparqlQuery):
         """ Returns nicely parsed result of query. """
         Query3Result = namedtuple('Query3Result', 'type count')
         # TODO: consider yielding results instead
+
         return [Query3Result(result['type']['value'], result['count']['value'])
                 for result in self.json_result['results']['bindings']]
 
@@ -280,3 +286,72 @@ class describe_uri(SparqlQuery):
         # TODO: nicely parsed needs defining; may depend on query
         """ Returns nicely parsed result of query. """
         return self.json_result
+
+class actors_of_a_type(SparqlQuery):
+    """ Get actors, counts and comments for actors with a specified type  
+
+    http://127.0.0.1:5000/actors_of_a_type?uris.0=http://dbpedia.org/ontology/Person&output=json&filter=david
+    """
+    def __init__(self, *args, **kwargs):
+        super(actors_of_a_type, self).__init__(*args, **kwargs)
+        self.query_title = 'Get URIs, counts and comments of actors with a specified type'
+        self.query_template = ("""
+                                SELECT ?actor (count(?actor) as ?count) ?comment
+                                WHERE {{ 
+                                ?event rdf:type sem:Event . 
+                                ?event sem:hasActor ?actor .
+                                ?actor rdf:type {uri_0} .
+                                OPTIONAL {{?actor rdfs:comment ?comment .}}
+                                #FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+                                }}
+                                GROUP BY ?actor ?comment
+                                ORDER BY desc(?n)
+                                OFFSET {offset}
+                                LIMIT {limit}
+                               """)
+        self.query = self._build_query()
+
+        self.count_template = ("""
+                                SELECT (count(DISTINCT ?actor) as ?count)
+                                WHERE {{ 
+                                ?event rdf:type sem:Event . 
+                                ?event sem:hasActor ?actor .
+                                ?actor rdf:type {uri_0} .
+                                OPTIONAL {{?actor rdfs:comment ?comment .}}
+                                #FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+                                }}
+                               """)
+
+        self.jinja_template = 'three_column.html'
+        self.headers = ['actor','count','comment']
+
+    def _build_query(self):
+        """ Returns a query string. """
+        query = self.query_template.format(offset=self.offset, 
+                                          limit=self.limit,
+                                          filter=self.filter,
+                                          uri_0=self.uris[0]) 
+        print query
+        return query
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template.format(filter=self.filter, 
+                                          uri_0=self.uris[0])
+
+    def get_total_result_count(self):
+        """ Returns result count for query. """
+        count_query = CountQuery(self._build_count_query())
+        return count_query.get_count()
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        Query3Result = namedtuple('Query3Result', 'actor count comment')
+        # TODO: consider yielding results instead
+        print self.json_result
+        return [Query3Result(result['actor']['value'], 
+                             result['count']['value'],
+                             result['comment']['value'],)
+                for result in self.json_result['results']['bindings']]
+
