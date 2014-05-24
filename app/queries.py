@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 import os
 import json
-import requests
 
 from collections import namedtuple
 
@@ -64,11 +63,9 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        response = requests.get(endpoint_url, auth=(username, password),
-                               params=payload)
-        #response = request_url(endpoint_url, auth=(username, password),
-        #                       params=payload,
-        #                       back_off=True)
+        response = request_url(endpoint_url, auth=(username, password),
+                               params=payload,
+                               back_off=True)
         
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
@@ -145,7 +142,7 @@ class entities_that_are_actors(SparqlQuery):
         query = self.query_template.format(offset=self.offset, 
                                           limit=self.limit,
                                           filter=self.filter) 
-        print query
+        #print query
         return query
 
     def _build_count_query(self):
@@ -300,10 +297,10 @@ class actors_of_a_type(SparqlQuery):
                                 ?event sem:hasActor ?actor .
                                 ?actor rdf:type {uri_0} .
                                 OPTIONAL {{?actor rdfs:comment ?comment .}}
-                                #FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+                                FILTER (contains(LCASE(str(?actor)), "{filter}"))
                                 }}
                                 GROUP BY ?actor ?comment
-                                ORDER BY desc(?n)
+                                ORDER BY desc(?count)
                                 OFFSET {offset}
                                 LIMIT {limit}
                                """)
@@ -316,7 +313,7 @@ class actors_of_a_type(SparqlQuery):
                                 ?event sem:hasActor ?actor .
                                 ?actor rdf:type {uri_0} .
                                 OPTIONAL {{?actor rdfs:comment ?comment .}}
-                                #FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+                                FILTER (contains(LCASE(str(?actor)), "{filter}")) .
                                 }}
                                """)
 
@@ -329,7 +326,7 @@ class actors_of_a_type(SparqlQuery):
                                           limit=self.limit,
                                           filter=self.filter,
                                           uri_0=self.uris[0]) 
-        print query
+        #print query
         return query
 
     def _build_count_query(self):
@@ -347,9 +344,8 @@ class actors_of_a_type(SparqlQuery):
         """ Returns nicely parsed result of query. """
         Query3Result = namedtuple('Query3Result', 'actor count comment')
         # TODO: consider yielding results instead
-        print self.json_result
-        return [Query3Result(result['actor']['value'], 
-                             result['count']['value'],
-                             result['comment']['value'],)
+        return [Query3Result(result.get('actor', {}).get('value'), 
+                             result.get('count', {}).get('value'),
+                             result.get('comment', {}).get('value'))
                 for result in self.json_result['results']['bindings']]
 
