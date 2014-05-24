@@ -49,7 +49,7 @@ def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     if query.output == 'json':
-        return json.dumps(query.json_result)
+        return json.dumps(query.clean_json)
     else:
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
