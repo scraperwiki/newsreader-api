@@ -24,9 +24,10 @@ def convert_raw_json_to_clean(SPARQL_json):
 
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
-    def __init__(self, offset=0, limit=100, uris=None, output='html'):
+    def __init__(self, offset=0, limit=100, uris=None, filter=":", output='html'):
         self.offset = offset
         self.limit = limit
+        self.filter = filter
 
         if uris is None:
             self.uris = []
@@ -100,21 +101,22 @@ class CountQuery(SparqlQuery):
         return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 
-class EntitiesThatAreActorsQuery(SparqlQuery):
+class entities_that_are_actors(SparqlQuery):
     """ List entities that appear in any event, restricted to dbpedia
 
-    http://127.0.0.1:5000/EntitiesThatAreActorsQuery?output=json
+    http://127.0.0.1:5000/entities_that_are_actors?output=json&filter=player
     """
     def __init__(self, *args, **kwargs):
-        super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
+        super(entities_that_are_actors, self).__init__(*args, **kwargs)
         self.query_title = 'dbpedia entities that are actors in any event'
         self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
-                               "WHERE "
-                               "{{?a rdf:type sem:Actor . "
+                               "WHERE {{ "
+                               "?a rdf:type sem:Actor . "
                                "?a rdf:type ?type . "
                                'FILTER (?type != sem:Actor && '
                                'STRSTARTS(STR(?type), '
-                               '"http://dbpedia.org/ontology/"))}} '
+                               '"http://dbpedia.org/ontology/") && '
+                               'contains(LCASE(str(?type)), "{filter}"))}} '
                                "GROUP BY ?type "
                                "ORDER BY DESC(?count) "
                                "OFFSET {offset} "
@@ -122,23 +124,28 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
         self.query = self._build_query()
 
         self.count_template = ('SELECT (COUNT (distinct ?type) as ?count) '
-                               'WHERE { '
+                               'WHERE {{ '
                                '?a rdf:type sem:Actor . '
                                '?a rdf:type ?type . '
                                'FILTER (?type != sem:Actor && '
                                'STRSTARTS(STR(?type), '
-                               '"http://dbpedia.org/ontology/"))}')
+                               '"http://dbpedia.org/ontology/") && '
+                               'contains(LCASE(str(?type)), "{filter}"))}}')
 
         self.jinja_template = 'two_column.html'
         self.headers = ['type','count']
 
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template.format(offset=self.offset, limit=self.limit)
+        query = self.query_template.format(offset=self.offset, 
+                                          limit=self.limit,
+                                          filter=self.filter) 
+        print query
+        return query
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        return self.count_template
+        return self.count_template.format(filter=self.filter)
 
     def get_total_result_count(self):
         """ Returns result count for query. """
