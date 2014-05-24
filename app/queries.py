@@ -101,13 +101,13 @@ class CountQuery(SparqlQuery):
         return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 
-class EntitiesThatAreActorsQuery(SparqlQuery):
+class entities_that_are_actors(SparqlQuery):
     """ List entities that appear in any event, restricted to dbpedia
 
-    http://127.0.0.1:5000/EntitiesThatAreActorsQuery?output=json&query=player
+    http://127.0.0.1:5000/entities_that_are_actors?output=json&filter=player
     """
     def __init__(self, *args, **kwargs):
-        super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
+        super(entities_that_are_actors, self).__init__(*args, **kwargs)
         self.query_title = 'dbpedia entities that are actors in any event'
         self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
                                "WHERE {{ "
@@ -145,7 +145,7 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        return self.count_template.format(filter=":")
+        return self.count_template.format(filter=self.filter)
 
     def get_total_result_count(self):
         """ Returns result count for query. """

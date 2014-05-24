@@ -14,11 +14,15 @@ PER_PAGE = 20
 @app.route('/')
 def index():
     """ Provide documentation when accessing the root page """
-    function_list = {"Description":"NewsReader Simple API: Endpoints available at this location", 
+    function_list = {"Description":"NewsReader Simple API: Endpoints available at this location",
+                     "Global parameters":"output={json|html}", 
                      "links":[]}
-    function_list['links'].append({"url":"EntitiesThatAreActorsQuery"})
-    function_list['links'].append({"url":"describe_uri"})
-    function_list['links'].append({"url":"GetEventDetailsByActorUri"})
+    function_list['links'].append({"url":"entities_that_are_actors",
+                                   "parameter":"filter"})
+    function_list['links'].append({"url":"describe_uri",
+                                   "parameter":"uris.0"})
+    function_list['links'].append({"url":"GetEventDetailsByActorUri",
+                                   "parameter":"uris.0"})
     help = json.dumps(function_list, ensure_ascii=False)
     return Response(help, content_type='application/json; charset=utf-8')
 
