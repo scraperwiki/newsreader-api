@@ -9,6 +9,18 @@ from collections import namedtuple
 
 from dshelpers import request_url
 
+def convert_raw_json_to_clean(SPARQL_json):
+    clean_json = []
+    # This handles the describe_uri query
+    if "results" not in SPARQL_json.keys():
+      return SPARQL_json
+
+    for entry in SPARQL_json['results']['bindings']:
+        line = {}
+        for key in entry.keys():
+            line[key] = entry[key]['value']
+        clean_json.append(line)
+    return clean_json
 
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
@@ -26,6 +38,7 @@ class SparqlQuery(object):
         self.query_template = None
         self.query = None
         self.json_result = None
+        self.clean_json = None
         self.output = output
         self.headers = []
         self.jinja_template = "default.html"
@@ -52,6 +65,7 @@ class SparqlQuery(object):
         response = request_url(endpoint_url, auth=(username, password),
                                params=payload)
         self.json_result = json.loads(response.content)
+        self.clean_json = convert_raw_json_to_clean(self.json_result)
 
     def parse_query_results(self):
         """ Implement in child classes. """
