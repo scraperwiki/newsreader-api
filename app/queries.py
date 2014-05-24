@@ -244,20 +244,14 @@ class describe_uri(SparqlQuery):
     """
     def __init__(self, *args, **kwargs):
         super(describe_uri, self).__init__(*args, **kwargs)
-        self.query_title = 'Query 2; describe a URI'
+        self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.query_template = ("""
                                Describe {uri_0}
                                """)
 
         self.query = self._build_query()
 
-        self.count_template = ("""
-                               SELECT (count(?propertyname) as ?n)
-                                where
-                                {{
-                                {uri_0} ?propertyname ?propertyvalue .
-                                }}
-                               """)
+        self.count_template = ("")
 
         self.jinja_template = 'default.html'
 
@@ -269,12 +263,11 @@ class describe_uri(SparqlQuery):
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        return self.count_template.format(uri_0=self.uris[0])
+        return self.count_template
 
     def get_total_result_count(self):
-        """ Returns result count for query. """
-        count_query = CountQuery(self._build_count_query())
-        return count_query.get_count()
+        """ Returns result count for query, exception for this describe query """
+        return 0
 
     def parse_query_results(self):
         # TODO: nicely parsed needs defining; may depend on query
