@@ -101,12 +101,13 @@ class CountQuery(SparqlQuery):
 
 
 class EntitiesThatAreActorsQuery(SparqlQuery):
-    """ Represents Query 3 in the Google Docs list of SPARQL queries. 
+    """ List entities that appear in any event, restricted to dbpedia
+
     http://127.0.0.1:5000/EntitiesThatAreActorsQuery?output=json
     """
     def __init__(self, *args, **kwargs):
         super(EntitiesThatAreActorsQuery, self).__init__(*args, **kwargs)
-        self.query_title = 'Query 3; entities that are actors'
+        self.query_title = 'dbpedia entities that are actors in any event'
         self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
                                "WHERE "
                                "{{?a rdf:type sem:Actor . "
@@ -154,7 +155,8 @@ class EntitiesThatAreActorsQuery(SparqlQuery):
 
 
 class GetEventDetailsByActorUri(SparqlQuery):
-    """ Represents the Synerscope query (query 13) in the list. 
+    """ Get event details involving a specified URI (limited to first 100) 
+
         http://127.0.0.1:5000/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
     def __init__(self, *args, **kwargs):
@@ -236,7 +238,8 @@ class GetEventDetailsByActorUri(SparqlQuery):
         return count_query.get_count()
 
 class describe_uri(SparqlQuery):
-    """ DESCRIBE a URI, getting triples where it is either subject or object
+    """ Details of a URI returned by the DESCRIBE query
+
         http://127.0.0.1:5000/describe_uri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
     def __init__(self, *args, **kwargs):

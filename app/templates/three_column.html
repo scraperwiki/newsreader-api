@@ -1,15 +1,35 @@
 <html>
   <head>
     <title>{{title}}</title>
+    <style>
+      table, th, td
+      {
+        border:1px solid black;
+        padding:1px;
+      }
+      table
+      {
+        border-spacing:0px;
+      }
+    </style>
   </head>
   <body>
-      <h1>Results</h1>
+      <h1>{{title}}</h1>
       <h2>Result count: {{ count }}</h2>
-      <ol start="{{ offset }}">
-      {% for result in results %}
-      <li> {{ result.entity_type }},{{result.count}}</li>
-      {% endfor %}
-      </ol>
+      <table style="width:500px">
+            <tr>
+              <th>{{headers[0]}}</th>
+              <th>{{headers[1]}}</th>
+              <th>{{headers[2]}}</th> 
+            </tr>
+            {% for result in results %}
+            <tr>
+              <td>{{result[headers[0]]}}</td>
+              <td>{{result[headers[1]]}}</td>
+              <td>{{result[headers[2]]}}</td>
+            </tr>
+            {% endfor %}         
+      </table>
 
       {% macro render_pagination(pagination) %}
         <div class=pagination>
