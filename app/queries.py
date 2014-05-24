@@ -193,12 +193,10 @@ class GetEventDetailsByActorUri(SparqlQuery):
                                '?event a sem:Event .'
                                '?event sem:hasActor {uri_0} .'
                                '}} '
-                               'LIMIT 100 '
-                               'OFFSET 0 '
-                               '}} }} '
-                               'ORDER BY DESC(?event) '
                                'LIMIT {limit} '
-                               'OFFSET {offset} ')
+                               'OFFSET {offset} '
+                               '}} }} '
+                               'ORDER BY DESC(?event) ')
 
         self.query = self._build_query()
 
