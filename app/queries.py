@@ -42,6 +42,7 @@ class SparqlQuery(object):
         self.clean_json = None
         self.output = output
         self.headers = []
+        self.result_is_tabular = True
         self.jinja_template = "default.html"
 
     def _build_query(self):
@@ -260,7 +261,7 @@ class describe_uri(SparqlQuery):
         self.query = self._build_query()
 
         self.count_template = ("")
-
+        self.result_is_tabular = False
         self.jinja_template = 'default.html'
 
     def _build_query(self):

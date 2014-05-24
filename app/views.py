@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import json
 
 from flask import abort, render_template, request, url_for, Response
 from app import app
 from pagination import Pagination
+from collections import OrderedDict
 import queries
 import jsonurl
+import io
+import csv
 
 PER_PAGE = 20
 
@@ -60,6 +65,20 @@ def produce_response(query, page_number, offset):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     if query.output == 'json':
         return json.dumps(query.clean_json)
+    elif query.output == 'csv':
+        if query.result_is_tabular:
+            output = io.StringIO()
+            fieldnames = OrderedDict(zip(query.headers, 
+                                    [None]*len(query.headers)))
+            dw = csv.DictWriter(output, fieldnames=fieldnames)
+            print fieldnames
+            dw.writeheader()
+            for row in query.clean_json:
+                print row
+                dw.writerow(row)
+            return dw.getvalue()
+        else:
+            return json.dumps({"Error":"query result cannot be written as csv"})
     else:
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
