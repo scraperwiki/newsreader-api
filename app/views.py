@@ -68,7 +68,7 @@ def run_query(page, query_to_use):
 
     error_message = check_parameters(query_args, current_query)
 
-    if error_message is not None:
+    if len(error_message) != 0:
         return error_message
     else:
         current_query.submit_query()
@@ -76,7 +76,17 @@ def run_query(page, query_to_use):
         return produce_response(current_query, page, offset)
 
 def check_parameters(query_args, query):
-    error_message = None
+    error_message = []
+
+    supplied_parameters = set(query_args.keys())
+    required_parameters = set(query.required_parameters)
+
+    #Test all required parameters are supplied
+    if not required_parameters.issubset(supplied_parameters):
+        missing_parameters = supplied_parameters not in required_parameters
+        error_message.append({"Missing_required_parameters":missing_parameters})
+    #Test the right number of uris is supplied
+
     return error_message
 
 def produce_response(query, page_number, offset):

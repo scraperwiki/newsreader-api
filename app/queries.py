@@ -33,10 +33,6 @@ class SparqlQuery(object):
         self.limit = limit
         self.filter = filter
 
-        self.required_parameters = []
-        self.optional_parameters = ["output", "offset", "limit"]
-        self.number_of_uris_required = 0
-
         if uris is None:
             self.uris = []
         else:
@@ -58,6 +54,10 @@ class SparqlQuery(object):
         self.headers = []
         self.result_is_tabular = True
         self.jinja_template = "default.html"
+        
+        self.required_parameters = []
+        self.optional_parameters = ["output", "offset", "limit"]
+        self.number_of_uris_required = 0
 
     def _build_query(self):
         """ Implement in child classes. """
