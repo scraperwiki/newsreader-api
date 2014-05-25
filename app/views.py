@@ -16,15 +16,16 @@ import unicodecsv as csv
 
 PER_PAGE = 20
 
+if app.config['DEBUG']:
+    root_url = "http://127.0.0.1:5000/"
+else:
+    root_url = "https://newsreader.scraperwiki.com/"
+
 
 @app.route('/')
 def index():
     """ Provide documentation when accessing the root page """
-    if app.config['DEBUG']:
-        root_url = "http://127.0.0.1:5000/"
-    else:
-        root_url = "https://newsreader.scraperwiki.com/"
-
+    
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
                      "global parameters":"output={json|html|csv}",
                      "known prefix 1":"dbo - types of things - i.e. dbo:SoccerPlayer", 
@@ -63,7 +64,7 @@ def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     query_name = getattr(queries, query_to_use)
     query_args = parse_query_string(request.query_string)
-
+    print query_args
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
     current_query.submit_query()
@@ -77,7 +78,14 @@ def produce_response(query, page_number, offset):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     print query.query
     if query.output == 'json':
-        return json.dumps(query.clean_json)
+        count = query.get_total_result_count()
+        pagination = Pagination(page_number, PER_PAGE, int(count))
+        output = {}
+        output['payload'] = query.clean_json
+        output['count'] = count
+        output['page number'] = page_number
+        output['next page'] = root_url + url_for_other_page(pagination.page + 1)
+        return json.dumps(output, sort_keys=True)
     elif query.output == 'csv':
         if query.result_is_tabular:
             output = StringIO.StringIO()
@@ -88,9 +96,10 @@ def produce_response(query, page_number, offset):
             for row in query.clean_json:
                 dw.writerow(row)
 
+            filename = 'results-page-{0}.csv'.format(page_number)
             response = make_response(output.getvalue())
             response.headers['Content-type']='text/csv; charset=utf-8'
-            response.headers['Content-disposition']='attachment;filename=results.csv'
+            response.headers['Content-disposition']='attachment;filename='+filename
             return response
             #return Response(output.getvalue(), 
             #  content_type='text/csv; charset=utf-8',
