@@ -62,32 +62,18 @@ def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     query_name = getattr(queries, query_to_use)
     query_args = parse_query_string(request.query_string)
-    print query_args
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
 
-    error_message = check_parameters(query_args, current_query)
-
-    if len(error_message) != 0:
-        return error_message
+    if len(current_query.error_message) != 0:
+        error_message_json = json.dumps(current_query.error_message)
+        return error_message_json
     else:
         current_query.submit_query()
         cause_404_if_no_results(current_query.parse_query_results(), page)
         return produce_response(current_query, page, offset)
 
-def check_parameters(query_args, query):
-    error_message = []
 
-    supplied_parameters = set(query_args.keys())
-    required_parameters = set(query.required_parameters)
-
-    #Test all required parameters are supplied
-    if not required_parameters.issubset(supplied_parameters):
-        missing_parameters = supplied_parameters not in required_parameters
-        error_message.append({"Missing_required_parameters":missing_parameters})
-    #Test the right number of uris is supplied
-
-    return error_message
 
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """

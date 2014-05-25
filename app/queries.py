@@ -54,10 +54,16 @@ class SparqlQuery(object):
         self.headers = []
         self.result_is_tabular = True
         self.jinja_template = "default.html"
-        
+
+        self.error_message = []
         self.required_parameters = []
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 0
+
+    
+    def check_parameters(self):
+        """ Implement in child classes. """
+        raise NotImplementedError("Should be implemented in child class.")
 
     def _build_query(self):
         """ Implement in child classes. """
@@ -149,7 +155,7 @@ class types_of_actors(SparqlQuery):
                                "ORDER BY DESC(?count) "
                                "OFFSET {offset} "
                                "LIMIT {limit}")
-        self.query = self._build_query()
+        
 
         self.count_template = ('SELECT (COUNT (distinct ?type) as ?count) '
                                'WHERE {{ '
@@ -166,13 +172,27 @@ class types_of_actors(SparqlQuery):
         self.optional_parameters = ["output", "offset", "limit", "filter"]
         self.number_of_uris_required = 0
 
+        self.query = self._build_query()
+
+    def check_parameters(self):
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
+
+
     def _build_query(self):
         """ Returns a query string. """
-        query = self.query_template.format(offset=self.offset, 
-                                          limit=self.limit,
-                                          filter=self.filter) 
+        self.check_parameters()
+
+        if len(self.error_message) == 0:
+            query = self.query_template.format(offset=self.offset, 
+                                               limit=self.limit,
+                                               filter=self.filter) 
         #print query
-        return query
+            return query
+        else:
+            return None
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -209,8 +229,6 @@ class event_details_filtered_by_actor(SparqlQuery):
                                '}} }} '
                                'ORDER BY DESC(?event) ')
 
-        self.query = self._build_query()
-
         self.count_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
                                'SELECT (count(*) as ?count) '
@@ -236,12 +254,25 @@ class event_details_filtered_by_actor(SparqlQuery):
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 1
 
+        self.query = self._build_query()
+
+    def check_parameters(self):
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
+
+
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template.format(offset=self.offset,
-                                          limit=self.limit,
-                                          uri_0=self.uris[0])
-
+        self.check_parameters()
+        if len(self.error_message) == 0:
+            return self.query_template.format(offset=self.offset,
+                                              limit=self.limit,
+                                              uri_0=self.uris[0])
+        else:
+            return None
+        
     def _build_count_query(self):
         """ Returns a count query string. """
         return self.count_template.format(uri_0=self.uris[0])
@@ -255,11 +286,8 @@ class describe_uri(SparqlQuery):
         super(describe_uri, self).__init__(*args, **kwargs)
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.query_template = ("""
-                               #PREFIX dbpedia: <http://dbpedia.org/resource/>
                                Describe {uri_0}
                                """)
-
-        self.query = self._build_query()
 
         self.count_template = ("")
         self.result_is_tabular = False
@@ -267,13 +295,25 @@ class describe_uri(SparqlQuery):
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit"]
-        self.number_of_uris_required = 0
+        self.number_of_uris_required = 1
+
+        self.query = self._build_query()
+
+    def check_parameters(self):
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
 
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template.format(offset=self.offset,
-                                          limit=self.limit,
-                                          uri_0=self.uris[0])
+        self.check_parameters()
+        if len(self.error_message) == 0:
+            return self.query_template.format(offset=self.offset,
+                                              limit=self.limit,
+                                              uri_0=self.uris[0])
+        else:
+            return None
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -310,7 +350,6 @@ class actors_of_a_type(SparqlQuery):
                                 OFFSET {offset}
                                 LIMIT {limit}
                                """)
-        self.query = self._build_query()
 
         self.count_template = ("""
                                 SELECT (count(DISTINCT ?actor) as ?count)
@@ -326,18 +365,29 @@ class actors_of_a_type(SparqlQuery):
         self.jinja_template = 'three_column.html'
         self.headers = ['actor','count','comment']
 
-        self.required_parameters = []
+        self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit"]
-        self.number_of_uris_required = 0
+        self.number_of_uris_required = 1
+
+        self.query = self._build_query()
+
+    def check_parameters(self):
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
 
     def _build_query(self):
         """ Returns a query string. """
-        query = self.query_template.format(offset=self.offset, 
-                                          limit=self.limit,
-                                          filter=self.filter,
-                                          uri_0=self.uris[0]) 
-        #print query
-        return query
+        self.check_parameters()
+        if len(self.error_message) == 0:
+            return self.query_template.format(offset=self.offset,
+                                              limit=self.limit,
+                                              filter=self.filter,
+                                              uri_0=self.uris[0])
+        else:
+            return None
+
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -364,7 +414,7 @@ class property_of_actors_of_a_type(SparqlQuery):
                                 LIMIT {limit}
                                 OFFSET {offset}
                                """)
-        self.query = self._build_query()
+
 
         self.count_template = ("""
                                 SELECT (count (DISTINCT ?actor) as ?count) where
@@ -383,14 +433,24 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 2
 
+        self.query = self._build_query()
+
+    def check_parameters(self):
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
+
     def _build_query(self):
         """ Returns a query string. """
-        query = self.query_template.format(offset=self.offset, 
-                                          limit=self.limit,
-                                          uri_0=self.uris[0],
-                                          uri_1=self.uris[1]) 
-        #print query
-        return query
+        self.check_parameters()
+        if len(self.error_message) == 0:
+            return self.query_template.format(offset=self.offset,
+                                              limit=self.limit,
+                                              uri_0=self.uris[0],
+                                              uri_1=self.uris[1]) 
+        else:
+            return None
 
     def _build_count_query(self):
         """ Returns a count query string. """
