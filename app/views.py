@@ -10,8 +10,8 @@ from pagination import Pagination
 from collections import OrderedDict
 import queries
 import jsonurl
-import io
-import csv
+import cStringIO as StringIO
+import unicodecsv as csv
 
 PER_PAGE = 20
 
@@ -67,7 +67,7 @@ def produce_response(query, page_number, offset):
         return json.dumps(query.clean_json)
     elif query.output == 'csv':
         if query.result_is_tabular:
-            output = io.StringIO()
+            output = StringIO.StringIO()
             fieldnames = OrderedDict(zip(query.headers, 
                                     [None]*len(query.headers)))
             dw = csv.DictWriter(output, fieldnames=fieldnames)
@@ -76,7 +76,7 @@ def produce_response(query, page_number, offset):
             for row in query.clean_json:
                 print row
                 dw.writerow(row)
-            return dw.getvalue()
+            return output.getvalue()
         else:
             return json.dumps({"Error":"query result cannot be written as csv"})
     else:
