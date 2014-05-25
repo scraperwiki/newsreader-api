@@ -76,13 +76,23 @@ class SparqlQuery(object):
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
 
-    def parse_query_results(self):
-        """ Implement in child classes. """
-        raise NotImplementedError("Should be implemented in child class.")
-
     def get_total_result_count(self):
         """ Implement in child classes. """
         raise NotImplementedError("Should be implemented in child class.")
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        QueryResult = namedtuple('QueryResult', ' '.join(self.headers))
+        # TODO: consider yielding results instead
+        results = []
+        for result in self.json_result['results']['bindings']:
+            values = []
+            for header in self.headers:
+                values.append(result.get(header, {}).get('value'))
+            next_entry = QueryResult._make(values)
+            results.append(next_entry)
+        return results
 
 
 class CountQuery(SparqlQuery):
@@ -160,16 +170,6 @@ class entities_that_are_actors(SparqlQuery):
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
 
-    def parse_query_results(self):
-        # TODO: nicely parsed needs defining; may depend on query
-        """ Returns nicely parsed result of query. """
-        Query3Result = namedtuple('Query3Result', 'type count')
-        # TODO: consider yielding results instead
-
-        return [Query3Result(result['type']['value'], result['count']['value'])
-                for result in self.json_result['results']['bindings']]
-
-
 class GetEventDetailsByActorUri(SparqlQuery):
     """ Get event details involving a specified URI (limited to first 100) 
 
@@ -230,17 +230,6 @@ class GetEventDetailsByActorUri(SparqlQuery):
         return self.query_template.format(offset=self.offset,
                                           limit=self.limit,
                                           uri_0=self.uris[0])
-
-    def parse_query_results(self):
-        """ Returns nicely parsed result of query. """
-        Query13Result = namedtuple('Query13Result',
-                                   'event predicate object object_type')
-        # Not all results contain all entries
-        return [Query13Result(result.get('event', {}).get('value'),
-                              result.get('predicate', {}).get('value'),
-                              result.get('object', {}).get('value'),
-                              result.get('object_type', {}).get('value'))
-                for result in self.json_result['results']['bindings']]
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -346,16 +335,6 @@ class actors_of_a_type(SparqlQuery):
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
 
-    def parse_query_results(self):
-        # TODO: nicely parsed needs defining; may depend on query
-        """ Returns nicely parsed result of query. """
-        Query3Result = namedtuple('Query3Result', 'actor count comment')
-        # TODO: consider yielding results instead
-        return [Query3Result(result.get('actor', {}).get('value'), 
-                             result.get('count', {}).get('value'),
-                             result.get('comment', {}).get('value'))
-                for result in self.json_result['results']['bindings']]
-
 class property_of_actors_of_a_type(SparqlQuery):
     """ Get a property of actors of one type mentioned in the news  
 
@@ -409,17 +388,3 @@ class property_of_actors_of_a_type(SparqlQuery):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
-
-    def parse_query_results(self):
-        # TODO: nicely parsed needs defining; may depend on query
-        """ Returns nicely parsed result of query. """
-        QueryResult = namedtuple('QueryResult', ' '.join(self.headers))
-        # TODO: consider yielding results instead
-        results = []
-        for result in self.json_result['results']['bindings']:
-            values = []
-            for header in self.headers:
-                values.append(result.get(header, {}).get('value'))
-            next_entry = QueryResult._make(values)
-            results.append(next_entry)
-        return results
