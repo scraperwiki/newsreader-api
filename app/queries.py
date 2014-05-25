@@ -9,6 +9,10 @@ from collections import namedtuple
 
 from dshelpers import request_url
 
+import requests_cache
+
+requests_cache.install_cache('requests_cache')
+
 def convert_raw_json_to_clean(SPARQL_json):
     clean_json = []
     # This handles the describe_uri query
@@ -72,7 +76,7 @@ class SparqlQuery(object):
         response = request_url(endpoint_url, auth=(username, password),
                                params=payload,
                                back_off=True)
-        
+        print "From cache: {0}".format(response.from_cache)
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
 
