@@ -119,13 +119,13 @@ class CountQuery(SparqlQuery):
         return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 
-class entities_that_are_actors(SparqlQuery):
-    """ List entities that appear in any event, restricted to dbpedia
+class types_of_actors(SparqlQuery):
+    """ List of types that appear in any event, restricted to dbpedia
 
-    http://127.0.0.1:5000/entities_that_are_actors?output=json&filter=player
+    http://127.0.0.1:5000/types_of_actors?output=json&filter=player
     """
     def __init__(self, *args, **kwargs):
-        super(entities_that_are_actors, self).__init__(*args, **kwargs)
+        super(types_of_actors, self).__init__(*args, **kwargs)
         self.query_title = 'dbpedia entities that are actors in any event'
         self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
                                "WHERE {{ "
@@ -170,14 +170,14 @@ class entities_that_are_actors(SparqlQuery):
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
 
-class GetEventDetailsByActorUri(SparqlQuery):
-    """ Get event details involving a specified URI (limited to first 100) 
+class event_details_filtered_by_actor(SparqlQuery):
+    """ Get event details involving a specified actor (limited to first 100) 
 
-        http://127.0.0.1:5000/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
+        http://127.0.0.1:5000/event_details_filtered_by_actor?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
     def __init__(self, *args, **kwargs):
-        super(GetEventDetailsByActorUri, self).__init__(*args, **kwargs)
-        self.query_title = 'Get event details by actor URI'
+        super(event_details_filtered_by_actor, self).__init__(*args, **kwargs)
+        self.query_title = 'Get event details by actor'
         self.headers = ['event', 'predicate', 'object', 'object_type']
         self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
@@ -338,7 +338,7 @@ class actors_of_a_type(SparqlQuery):
 class property_of_actors_of_a_type(SparqlQuery):
     """ Get a property of actors of one type mentioned in the news  
 
-    http://127.0.0.1:5000/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&dbo:height
+    http://127.0.0.1:5000/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height
     """
     def __init__(self, *args, **kwargs):
         super(property_of_actors_of_a_type, self).__init__(*args, **kwargs)
