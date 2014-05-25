@@ -20,21 +20,26 @@ PER_PAGE = 20
 @app.route('/')
 def index():
     """ Provide documentation when accessing the root page """
+    if app.config['DEBUG']:
+        root_url = "http://127.0.0.1:5000/"
+    else:
+        root_url = "https://newsreader.scraperwiki.com/"
+
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
                      "global parameters":"output={json|html|csv}", 
                      "links":[]}
     function_list['links'].append({"url":"entities_that_are_actors",
                                    "parameter":"filter",
-                                   "example":"http://127.0.0.1:5000/entities_that_are_actors?output=json&filter=player"})
+                                   "example":root_url + "entities_that_are_actors?output=html&filter=player"})
     function_list['links'].append({"url":"describe_uri",
                                    "parameter":"uris.0",
-                                   "example":"http://127.0.0.1:5000/describe_uri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json"})
+                                   "example":root_url + "describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['links'].append({"url":"GetEventDetailsByActorUri",
                                    "parameter":"uris.0",
-                                   "example":"http://127.0.0.1:5000/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json"})
+                                   "example":root_url + "GetEventDetailsByActorUri?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['links'].append({"url":"actors_of_a_type",
                                    "parameters":"uris.0, filter",
-                                   "example":"http://127.0.0.1:5000/actors_of_a_type?uris.0=http://dbpedia.org/ontology/Person&output=json&filter=david"})
+                                   "example":root_url + "actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
 
