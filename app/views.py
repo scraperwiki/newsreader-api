@@ -64,6 +64,7 @@ def run_query(page, query_to_use):
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
     # TODO: avoid calling count more than once, expensive (though OK if cached)
+    print query.query
     if query.output == 'json':
         return json.dumps(query.clean_json)
     elif query.output == 'csv':
@@ -72,10 +73,8 @@ def produce_response(query, page_number, offset):
             fieldnames = OrderedDict(zip(query.headers, 
                                     [None]*len(query.headers)))
             dw = csv.DictWriter(output, fieldnames=fieldnames)
-            print fieldnames
             dw.writeheader()
             for row in query.clean_json:
-                print row
                 dw.writerow(row)
 
             response = make_response(output.getvalue())

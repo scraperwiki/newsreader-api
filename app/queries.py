@@ -32,9 +32,15 @@ class SparqlQuery(object):
         if uris is None:
             self.uris = []
         else:
-            # SPARQL queries require URIs wrapped in <,>
-            self.uris = ['<' + item + '>' for item in uris]
-
+            # SPARQL queries require URIs wrapped in <,> unless they have PREFIXES
+            self.uris = []
+            for item in uris:
+                if "http" in item:
+                    self.uris.append('<' + item + '>')       
+                else:
+                    self.uris.append(item)
+            #self.uris = ['<' + item + '>' for item in uris if "http" in item]
+        print self.uris
         self.query_title = None
         self.query_template = None
         self.query = None
@@ -255,6 +261,7 @@ class describe_uri(SparqlQuery):
         super(describe_uri, self).__init__(*args, **kwargs)
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.query_template = ("""
+                               #PREFIX dbpedia: <http://dbpedia.org/resource/>
                                Describe {uri_0}
                                """)
 
