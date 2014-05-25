@@ -16,15 +16,13 @@ import unicodecsv as csv
 
 PER_PAGE = 20
 
-if app.config['DEBUG']:
-    root_url = "http://127.0.0.1:5000/"
-else:
-    root_url = "https://newsreader.scraperwiki.com/"
-
-
 @app.route('/')
 def index():
     """ Provide documentation when accessing the root page """
+    if app.config['DEBUG']:
+        root_url = "http://127.0.0.1:5000"
+    else:
+        root_url = "https://newsreader.scraperwiki.com"
     
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
                      "global parameters":"output={json|html|csv}",
@@ -33,19 +31,19 @@ def index():
                      "links":[]}
     function_list['links'].append({"url":"types_of_actors",
                                    "parameter":"filter",
-                                   "example":root_url + "types_of_actors?output=html&filter=player"})
+                                   "example":root_url + "/types_of_actors?output=html&filter=player"})
     function_list['links'].append({"url":"describe_uri",
                                    "parameter":"uris.0",
-                                   "example":root_url + "describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
+                                   "example":root_url + "/describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['links'].append({"url":"event_details_filtered_by_actor",
                                    "parameter":"uris.0",
-                                   "example":root_url + "event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
+                                   "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['links'].append({"url":"actors_of_a_type",
                                    "parameters":"uris.0, filter",
-                                   "example":root_url + "actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
+                                   "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
     function_list['links'].append({"url":"property_of_actors_of_a_type",
                                    "parameters":"uris.0, uris.1",
-                                   "example":root_url + "property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height"})
+                                   "example":root_url + "/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
@@ -77,6 +75,10 @@ def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     print query.query
+    if app.config['DEBUG']:
+        root_url = "http://127.0.0.1:5000"
+    else:
+        root_url = "https://newsreader.scraperwiki.com"
     if query.output == 'json':
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
