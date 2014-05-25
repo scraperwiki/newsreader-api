@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 # encoding: utf-8
+from __future__ import unicode_literals
+
 import json
 
-from flask import abort, render_template, request, url_for, Response
+from flask import (abort, render_template, request, url_for, Response, 
+                   make_response)
 from app import app
 from pagination import Pagination
+from collections import OrderedDict
 import queries
 import jsonurl
+import cStringIO as StringIO
+import unicodecsv as csv
 
 PER_PAGE = 20
 
@@ -15,7 +21,7 @@ PER_PAGE = 20
 def index():
     """ Provide documentation when accessing the root page """
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
-                     "global parameters":"output={json|html}", 
+                     "global parameters":"output={json|html|csv}", 
                      "links":[]}
     function_list['links'].append({"url":"entities_that_are_actors",
                                    "parameter":"filter",
@@ -60,6 +66,27 @@ def produce_response(query, page_number, offset):
     # TODO: avoid calling count more than once, expensive (though OK if cached)
     if query.output == 'json':
         return json.dumps(query.clean_json)
+    elif query.output == 'csv':
+        if query.result_is_tabular:
+            output = StringIO.StringIO()
+            fieldnames = OrderedDict(zip(query.headers, 
+                                    [None]*len(query.headers)))
+            dw = csv.DictWriter(output, fieldnames=fieldnames)
+            print fieldnames
+            dw.writeheader()
+            for row in query.clean_json:
+                print row
+                dw.writerow(row)
+
+            response = make_response(output.getvalue())
+            response.headers['Content-type']='text/csv; charset=utf-8'
+            response.headers['Content-disposition']='attachment;filename=results.csv'
+            return response
+            #return Response(output.getvalue(), 
+            #  content_type='text/csv; charset=utf-8',
+            #  content_disposition='attachment;filename=results.csv')
+        else:
+            return json.dumps({"Error":"query result cannot be written as csv"})
     else:
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
