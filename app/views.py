@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 import json
 
-from flask import abort, render_template, request, url_for, Response
+from flask import (abort, render_template, request, url_for, Response, 
+                   make_response)
 from app import app
 from pagination import Pagination
 from collections import OrderedDict
@@ -76,7 +77,14 @@ def produce_response(query, page_number, offset):
             for row in query.clean_json:
                 print row
                 dw.writerow(row)
-            return output.getvalue()
+
+            response = make_response(output.getvalue())
+            response.headers['Content-type']='text/csv; charset=utf-8'
+            response.headers['Content-disposition']='attachment;filename=results.csv'
+            return response
+            #return Response(output.getvalue(), 
+            #  content_type='text/csv; charset=utf-8',
+            #  content_disposition='attachment;filename=results.csv')
         else:
             return json.dumps({"Error":"query result cannot be written as csv"})
     else:
