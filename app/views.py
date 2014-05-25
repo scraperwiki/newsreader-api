@@ -26,20 +26,26 @@ def index():
         root_url = "https://newsreader.scraperwiki.com/"
 
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
-                     "global parameters":"output={json|html|csv}", 
+                     "global parameters":"output={json|html|csv}",
+                     "known prefix 1":"dbo - types of things - i.e. dbo:SoccerPlayer", 
+                     "known prefix 2":"dbpedia - instances of things - i.e. dbpedia:David_Beckham", 
                      "links":[]}
-    function_list['links'].append({"url":"entities_that_are_actors",
+    function_list['links'].append({"url":"types_of_actors",
                                    "parameter":"filter",
-                                   "example":root_url + "entities_that_are_actors?output=html&filter=player"})
+                                   "example":root_url + "types_of_actors?output=html&filter=player"})
     function_list['links'].append({"url":"describe_uri",
                                    "parameter":"uris.0",
                                    "example":root_url + "describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
-    function_list['links'].append({"url":"GetEventDetailsByActorUri",
+    function_list['links'].append({"url":"event_details_filtered_by_actor",
                                    "parameter":"uris.0",
-                                   "example":root_url + "GetEventDetailsByActorUri?uris.0=dbpedia:David_Beckham&output=json"})
+                                   "example":root_url + "event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['links'].append({"url":"actors_of_a_type",
                                    "parameters":"uris.0, filter",
                                    "example":root_url + "actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
+    function_list['links'].append({"url":"property_of_actors_of_a_type",
+                                   "parameters":"uris.0, uris.1",
+                                   "example":root_url + "property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height"})
+
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
 

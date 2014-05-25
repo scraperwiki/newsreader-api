@@ -40,7 +40,6 @@ class SparqlQuery(object):
                 else:
                     self.uris.append(item)
             #self.uris = ['<' + item + '>' for item in uris if "http" in item]
-        print self.uris
         self.query_title = None
         self.query_template = None
         self.query = None
@@ -77,13 +76,23 @@ class SparqlQuery(object):
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
 
-    def parse_query_results(self):
-        """ Implement in child classes. """
-        raise NotImplementedError("Should be implemented in child class.")
-
     def get_total_result_count(self):
         """ Implement in child classes. """
         raise NotImplementedError("Should be implemented in child class.")
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        QueryResult = namedtuple('QueryResult', ' '.join(self.headers))
+        # TODO: consider yielding results instead
+        results = []
+        for result in self.json_result['results']['bindings']:
+            values = []
+            for header in self.headers:
+                values.append(result.get(header, {}).get('value'))
+            next_entry = QueryResult._make(values)
+            results.append(next_entry)
+        return results
 
 
 class CountQuery(SparqlQuery):
@@ -110,13 +119,13 @@ class CountQuery(SparqlQuery):
         return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 
-class entities_that_are_actors(SparqlQuery):
-    """ List entities that appear in any event, restricted to dbpedia
+class types_of_actors(SparqlQuery):
+    """ List of types that appear in any event, restricted to dbpedia
 
-    http://127.0.0.1:5000/entities_that_are_actors?output=json&filter=player
+    http://127.0.0.1:5000/types_of_actors?output=json&filter=player
     """
     def __init__(self, *args, **kwargs):
-        super(entities_that_are_actors, self).__init__(*args, **kwargs)
+        super(types_of_actors, self).__init__(*args, **kwargs)
         self.query_title = 'dbpedia entities that are actors in any event'
         self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
                                "WHERE {{ "
@@ -161,24 +170,14 @@ class entities_that_are_actors(SparqlQuery):
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
 
-    def parse_query_results(self):
-        # TODO: nicely parsed needs defining; may depend on query
-        """ Returns nicely parsed result of query. """
-        Query3Result = namedtuple('Query3Result', 'type count')
-        # TODO: consider yielding results instead
+class event_details_filtered_by_actor(SparqlQuery):
+    """ Get event details involving a specified actor (limited to first 100) 
 
-        return [Query3Result(result['type']['value'], result['count']['value'])
-                for result in self.json_result['results']['bindings']]
-
-
-class GetEventDetailsByActorUri(SparqlQuery):
-    """ Get event details involving a specified URI (limited to first 100) 
-
-        http://127.0.0.1:5000/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
+        http://127.0.0.1:5000/event_details_filtered_by_actor?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
     def __init__(self, *args, **kwargs):
-        super(GetEventDetailsByActorUri, self).__init__(*args, **kwargs)
-        self.query_title = 'Get event details by actor URI'
+        super(event_details_filtered_by_actor, self).__init__(*args, **kwargs)
+        self.query_title = 'Get event details by actor'
         self.headers = ['event', 'predicate', 'object', 'object_type']
         self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
                                '2009/11/sem/> '
@@ -231,17 +230,6 @@ class GetEventDetailsByActorUri(SparqlQuery):
         return self.query_template.format(offset=self.offset,
                                           limit=self.limit,
                                           uri_0=self.uris[0])
-
-    def parse_query_results(self):
-        """ Returns nicely parsed result of query. """
-        Query13Result = namedtuple('Query13Result',
-                                   'event predicate object object_type')
-        # Not all results contain all entries
-        return [Query13Result(result.get('event', {}).get('value'),
-                              result.get('predicate', {}).get('value'),
-                              result.get('object', {}).get('value'),
-                              result.get('object_type', {}).get('value'))
-                for result in self.json_result['results']['bindings']]
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -347,13 +335,56 @@ class actors_of_a_type(SparqlQuery):
         count_query = CountQuery(self._build_count_query())
         return count_query.get_count()
 
-    def parse_query_results(self):
-        # TODO: nicely parsed needs defining; may depend on query
-        """ Returns nicely parsed result of query. """
-        Query3Result = namedtuple('Query3Result', 'actor count comment')
-        # TODO: consider yielding results instead
-        return [Query3Result(result.get('actor', {}).get('value'), 
-                             result.get('count', {}).get('value'),
-                             result.get('comment', {}).get('value'))
-                for result in self.json_result['results']['bindings']]
+class property_of_actors_of_a_type(SparqlQuery):
+    """ Get a property of actors of one type mentioned in the news  
 
+    http://127.0.0.1:5000/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height
+    """
+    def __init__(self, *args, **kwargs):
+        super(property_of_actors_of_a_type, self).__init__(*args, **kwargs)
+        self.query_title = 'Get a property of actors of a type mentioned in the news'
+        self.query_template = ("""
+                                SELECT DISTINCT ?actor ?value where
+                                {{
+                                  ?event a sem:Event . 
+                                  ?event sem:hasActor ?actor .
+                                  ?actor a {uri_0} .
+                                  ?actor {uri_1} ?value . 
+                                }}
+                                order by desc(?value)
+                                LIMIT {limit}
+                                OFFSET {offset}
+                               """)
+        self.query = self._build_query()
+
+        self.count_template = ("""
+                                SELECT (count (DISTINCT ?actor) as ?count) where
+                                {{
+                                  ?event a sem:Event . 
+                                  ?event sem:hasActor ?actor .
+                                  ?actor a {uri_0} .
+                                  ?actor {uri_1} ?value . 
+                                }}
+                               """)
+
+        self.jinja_template = 'two_column.html'
+        self.headers = ['actor','value']
+
+    def _build_query(self):
+        """ Returns a query string. """
+        query = self.query_template.format(offset=self.offset, 
+                                          limit=self.limit,
+                                          uri_0=self.uris[0],
+                                          uri_1=self.uris[1]) 
+        #print query
+        return query
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template.format(uri_0=self.uris[0],
+                                          uri_1=self.uris[1])
+
+    def get_total_result_count(self):
+        """ Returns result count for query. """
+        count_query = CountQuery(self._build_count_query())
+        return count_query.get_count()
