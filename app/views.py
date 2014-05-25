@@ -65,11 +65,19 @@ def run_query(page, query_to_use):
     print query_args
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
-    current_query.submit_query()
 
-    cause_404_if_no_results(current_query.parse_query_results(), page)
-    return produce_response(current_query, page, offset)
+    error_message = check_parameters(query_args, current_query)
 
+    if error_message is not None:
+        return error_message
+    else:
+        current_query.submit_query()
+        cause_404_if_no_results(current_query.parse_query_results(), page)
+        return produce_response(current_query, page, offset)
+
+def check_parameters(query_args, query):
+    error_message = None
+    return error_message
 
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
