@@ -21,7 +21,7 @@ PER_PAGE = 20
 def index():
     """ Provide documentation when accessing the root page """
     function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
-                     "global parameters":"output={json|html}", 
+                     "global parameters":"output={json|html|csv}", 
                      "links":[]}
     function_list['links'].append({"url":"entities_that_are_actors",
                                    "parameter":"filter",
