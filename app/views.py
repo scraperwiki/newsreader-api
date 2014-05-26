@@ -54,7 +54,8 @@ def index():
                                    "parameters":"uris.0",
                                    "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham"})
     function_list['links'].append({"url":"actors_sharing_event_with_an_actor",
-                                   "parameters":"uris.0",
+                                   "parameters":"uris.0, datefilter",
+                                   "description":"datefilter is optional, it can be YYYY, YYYY-MM or YYYY-MM-DD",
                                    "example":root_url + "/actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
