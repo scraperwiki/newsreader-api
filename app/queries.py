@@ -93,6 +93,7 @@ class SparqlQuery(object):
         response = request_url(endpoint_url, auth=(username, password),
                                params=payload,
                                back_off=True)
+        print repr(response)
         print "From cache: {0}".format(response.from_cache)
         self.json_result = json.loads(response.content)
         self.clean_json = convert_raw_json_to_clean(self.json_result)
@@ -100,6 +101,7 @@ class SparqlQuery(object):
     def get_total_result_count(self):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query())
+        print count_query.query
         return count_query.get_count()
 
     def parse_query_results(self):
@@ -473,19 +475,19 @@ class summary_of_events_with_actor(SparqlQuery):
         super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a named actor'
         self.query_template = ("""
-                                select 
+select 
 ?event (count (?event) as ?event_size) ?datetime
 WHERE {{
-?e ?p ?o .
-{{ ?e sem:hasActor {uri_0} .}}
+?event ?p ?o .
+{{ ?event sem:hasActor {uri_0} .}}
 UNION
-{{ ?e sem:hasPlace {uri_0} .}}
-?e sem:hasTime ?t .
+{{ ?event sem:hasPlace {uri_0} .}}
+?event sem:hasTime ?t .
 ?t owltime:inDateTime ?d .
 ?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\d{{4}}-\\d{{2}}"))
+  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
 }}
-group by ?e ?datetime
+group by ?event ?datetime
 order by desc(?datetime)
 offset {offset}
 limit {limit}
@@ -493,16 +495,17 @@ limit {limit}
 
 
         self.count_template = ("""
-(count (?e) as ?count)
+Select
+(count (?event) as ?count)
 WHERE {{
-?e ?p ?o .
-{{ ?e sem:hasActor {uri_0} .}}
+?event ?p ?o .
+{{ ?event sem:hasActor {uri_0} .}}
 UNION
-{{ ?e sem:hasPlace {uri_0} .}}
-?e sem:hasTime ?t .
+{{ ?event sem:hasPlace {uri_0} .}}
+?event sem:hasTime ?t .
 ?t owltime:inDateTime ?d .
 ?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\d{4}-\\d{2}"))
+  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
 }}
                                """)
 
@@ -514,7 +517,7 @@ UNION
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
-
+        print self.query
 #    def check_parameters(self):
 #        if len(self.uris) < self.number_of_uris_required:
 #            message = "{0} required, {1} supplied".format(
