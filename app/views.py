@@ -53,6 +53,9 @@ def index():
     function_list['links'].append({"url":"summary_of_events_with_actor",
                                    "parameters":"uris.0",
                                    "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham"})
+    function_list['links'].append({"url":"actors_sharing_event_with_an_actor",
+                                   "parameters":"uris.0",
+                                   "example":root_url + "/actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
