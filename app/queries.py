@@ -90,18 +90,24 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        response = request_url(endpoint_url, auth=(username, password),
-                               params=payload,
-                               back_off=True)
-        print repr(response)
+        print self.query
+        try:
+            response = request_url(endpoint_url, auth=(username, password),
+                                    params=payload,
+                                    back_off=True)
+        except Exception as e:
+            print e 
+
         print "From cache: {0}".format(response.from_cache)
-        self.json_result = json.loads(response.content)
-        self.clean_json = convert_raw_json_to_clean(self.json_result)
+        try:
+            self.json_result = json.loads(response.content)
+            self.clean_json = convert_raw_json_to_clean(self.json_result)
+        except:
+            self.error_message.append({"No JSON in SPARQL response":0})
 
     def get_total_result_count(self):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query())
-        print count_query.query
         return count_query.get_count()
 
     def parse_query_results(self):
@@ -469,7 +475,7 @@ class summary_of_events_with_actor(SparqlQuery):
     """ Get events mentioning a named actor, summarise with count of entries for
         event and date  
 
-    http://127.0.0.1:5000/summary_of_events_with_actor?uris.0=dbpedia:Sepp_Blatter
+    http://127.0.0.1:5000/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham
     """
     def __init__(self, *args, **kwargs):
         super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
@@ -488,7 +494,7 @@ UNION
   FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
 }}
 group by ?event ?datetime
-order by desc(?datetime)
+order by ?datetime
 offset {offset}
 limit {limit}
                                """)
@@ -517,7 +523,6 @@ UNION
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
-        print self.query
 #    def check_parameters(self):
 #        if len(self.uris) < self.number_of_uris_required:
 #            message = "{0} required, {1} supplied".format(
@@ -527,9 +532,7 @@ UNION
     def _build_query(self):
         """ Returns a query string. """
         self.check_parameters()
-        print self.uris[0]
         if len(self.error_message) == 0:
-            print self.uris[0]
             return self.query_template.format(offset=self.offset, limit=self.limit, uri_0=self.uris[0]) 
         else:
             return None

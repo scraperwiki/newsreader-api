@@ -13,16 +13,16 @@ import queries
 import jsonurl
 import cStringIO as StringIO
 import unicodecsv as csv
+import logging
+
+logging.basicConfig()
 
 PER_PAGE = 20
 
 @app.route('/')
 def index():
     """ Provide documentation when accessing the root page """
-    if app.config['DEBUG']:
-        root_url = "http://127.0.0.1:5000"
-    else:
-        root_url = "https://newsreader.scraperwiki.com"
+    root_url = get_root_url()
     
     function_list = {"description":["NewsReader Simple API: Endpoints available at this location",
                                     "",
@@ -50,6 +50,9 @@ def index():
     function_list['links'].append({"url":"property_of_actors_of_a_type",
                                    "parameters":"uris.0, uris.1",
                                    "example":root_url + "/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height"})
+    function_list['links'].append({"url":"summary_of_events_with_actor",
+                                   "parameters":"uris.0",
+                                   "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
@@ -66,7 +69,15 @@ def parse_query_string(query_string):
 @app.route('/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
-    query_name = getattr(queries, query_to_use)
+    try:
+        query_name = getattr(queries, query_to_use)
+    except AttributeError:
+        missing_query_response = []
+        missing_query_response.append({"Error":"Query '{0}' does not exist".format(query_to_use)})
+        missing_query_response.append({"Message":["For available queries, see here:",
+                                        get_root_url()]})
+        return json.dumps(missing_query_response, sort_keys=True)
+
     query_args = parse_query_string(request.query_string)
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
@@ -84,11 +95,8 @@ def run_query(page, query_to_use):
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
     # TODO: avoid calling count more than once, expensive (though OK if cached)
-    print query.query
-    if app.config['DEBUG']:
-        root_url = "http://127.0.0.1:5000"
-    else:
-        root_url = "https://newsreader.scraperwiki.com"
+    root_url = get_root_url()
+
     if query.output == 'json':
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
@@ -141,5 +149,12 @@ def url_for_other_page(page):
     args = dict(request.view_args.items() + request.args.to_dict().items())
     args['page'] = page
     return url_for(request.endpoint, **args)
+
+def get_root_url():
+    if app.config['DEBUG']:
+        root_url = "http://127.0.0.1:5000"
+    else:
+        root_url = "https://newsreader.scraperwiki.com"
+    return root_url
 
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
