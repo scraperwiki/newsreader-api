@@ -61,9 +61,15 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
     
+    #def check_parameters(self):
+    #    """ Implement in child classes. """
+    #    raise NotImplementedError("Should be implemented in child class.")
+
     def check_parameters(self):
-        """ Implement in child classes. """
-        raise NotImplementedError("Should be implemented in child class.")
+        if len(self.uris) < self.number_of_uris_required:
+            message = "{0} required, {1} supplied".format(
+                                self.number_of_uris_required, len(self.uris))
+            self.error_message.append({"Insufficient_uris_supplied":message}) 
 
     def _build_query(self):
         """ Implement in child classes. """
@@ -84,12 +90,20 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        response = request_url(endpoint_url, auth=(username, password),
-                               params=payload,
-                               back_off=True)
+        print self.query
+        try:
+            response = request_url(endpoint_url, auth=(username, password),
+                                    params=payload,
+                                    back_off=True)
+        except Exception as e:
+            print e 
+
         print "From cache: {0}".format(response.from_cache)
-        self.json_result = json.loads(response.content)
-        self.clean_json = convert_raw_json_to_clean(self.json_result)
+        try:
+            self.json_result = json.loads(response.content)
+            self.clean_json = convert_raw_json_to_clean(self.json_result)
+        except:
+            self.error_message.append({"No JSON in SPARQL response":0})
 
     def get_total_result_count(self):
         """ Returns result count for query. """
@@ -457,4 +471,72 @@ class property_of_actors_of_a_type(SparqlQuery):
         return self.count_template.format(uri_0=self.uris[0],
                                           uri_1=self.uris[1])
 
- 
+class summary_of_events_with_actor(SparqlQuery):
+    """ Get events mentioning a named actor, summarise with count of entries for
+        event and date  
+
+    http://127.0.0.1:5000/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham
+    """
+    def __init__(self, *args, **kwargs):
+        super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
+        self.query_title = 'Get events mentioning a named actor'
+        self.query_template = ("""
+                                SELECT 
+                                ?event (COUNT (?event) AS ?event_size) ?datetime
+                                WHERE {{
+                                ?event ?p ?o .
+                                {{ ?event sem:hasActor {uri_0} .}}
+                                UNION
+                                {{ ?event sem:hasPlace {uri_0} .}}
+                                ?event sem:hasTime ?t .
+                                ?t owltime:inDateTime ?d .
+                                ?t rdfs:label ?datetime .
+                                  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
+                                }}
+                                GROUP BY ?event ?datetime
+                                ORDER BY ?datetime
+                                OFFSET {offset}
+                                LIMIT {limit}
+                               """)
+
+
+        self.count_template = ("""
+                                SELECT
+                                (COUNT (?event) AS ?count)
+                                WHERE {{
+                                ?event ?p ?o .
+                                {{ ?event sem:hasActor {uri_0} .}}
+                                UNION
+                                {{ ?event sem:hasPlace {uri_0} .}}
+                                ?event sem:hasTime ?t .
+                                ?t owltime:inDateTime ?d .
+                                ?t rdfs:label ?datetime .
+                                  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
+                                }}
+                               """)
+
+        self.jinja_template = 'three_column.html'
+        self.headers = ['event','event_size','datetime']
+
+        self.required_parameters = ["uris"]
+        self.optional_parameters = ["output", "offset", "limit"]
+        self.number_of_uris_required = 1
+
+        self.query = self._build_query()
+#    def check_parameters(self):
+#        if len(self.uris) < self.number_of_uris_required:
+#            message = "{0} required, {1} supplied".format(
+#                                self.number_of_uris_required, len(self.uris))
+#            self.error_message.append({"Insufficient_uris_supplied":message}) 
+
+    def _build_query(self):
+        """ Returns a query string. """
+        self.check_parameters()
+        if len(self.error_message) == 0:
+            return self.query_template.format(offset=self.offset, limit=self.limit, uri_0=self.uris[0]) 
+        else:
+            return None
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return self.count_template.format(uri_0=self.uris[0])
