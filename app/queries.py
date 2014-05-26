@@ -481,38 +481,38 @@ class summary_of_events_with_actor(SparqlQuery):
         super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a named actor'
         self.query_template = ("""
-select 
-?event (count (?event) as ?event_size) ?datetime
-WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor {uri_0} .}}
-UNION
-{{ ?event sem:hasPlace {uri_0} .}}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
-}}
-group by ?event ?datetime
-order by ?datetime
-offset {offset}
-limit {limit}
+                                SELECT 
+                                ?event (COUNT (?event) AS ?event_size) ?datetime
+                                WHERE {{
+                                ?event ?p ?o .
+                                {{ ?event sem:hasActor {uri_0} .}}
+                                UNION
+                                {{ ?event sem:hasPlace {uri_0} .}}
+                                ?event sem:hasTime ?t .
+                                ?t owltime:inDateTime ?d .
+                                ?t rdfs:label ?datetime .
+                                  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
+                                }}
+                                GROUP BY ?event ?datetime
+                                ORDER BY ?datetime
+                                OFFSET {offset}
+                                LIMIT {limit}
                                """)
 
 
         self.count_template = ("""
-Select
-(count (?event) as ?count)
-WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor {uri_0} .}}
-UNION
-{{ ?event sem:hasPlace {uri_0} .}}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
-}}
+                                SELECT
+                                (COUNT (?event) AS ?count)
+                                WHERE {{
+                                ?event ?p ?o .
+                                {{ ?event sem:hasActor {uri_0} .}}
+                                UNION
+                                {{ ?event sem:hasPlace {uri_0} .}}
+                                ?event sem:hasTime ?t .
+                                ?t owltime:inDateTime ?d .
+                                ?t rdfs:label ?datetime .
+                                  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
+                                }}
                                """)
 
         self.jinja_template = 'three_column.html'
