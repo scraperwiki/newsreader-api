@@ -24,7 +24,13 @@ def index():
     else:
         root_url = "https://newsreader.scraperwiki.com"
     
-    function_list = {"description":"NewsReader Simple API: Endpoints available at this location",
+    function_list = {"description":["NewsReader Simple API: Endpoints available at this location",
+                                    "",
+                                    "Queries are of the form:",
+                                    root_url + "{page/[n]}/query_name?param1=[string]&param2=[string]",
+                                    "Where page is an option component with default /page/1",
+                                    "",
+                        ],
                      "global parameters":"output={json|html|csv}",
                      "known prefix 1":"dbo - types of things - i.e. dbo:SoccerPlayer", 
                      "known prefix 2":"dbpedia - instances of things - i.e. dbpedia:David_Beckham", 
