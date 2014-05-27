@@ -1,22 +1,45 @@
 <html>
   <head>
     <title>{{title}}</title>
-    <style>
-      table, th, td
-      {
-        border:1px solid black;
-        padding:1px;
-      }
-      table
-      {
-        border-spacing:0px;
-      }
-    </style>
+      <link rel="stylesheet" href="https://www.scraperwiki.com/vendor/style/bootstrap.min.css">
+      <link rel="stylesheet" href="style.css">    
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+      <script src="//www.scraperwiki.com/vendor/js/bootstrap.min.js"></script>
   </head>
   <body>
+      <div class="container">
+      <img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image">
       <h1>{{title}}</h1>
-      <h2>Result count: {{ count }}</h2>
-      <table style="width:900px">
+      <h4>Total number of results from this query: {{ count }}</h2>
+      {% macro render_pagination(pagination) %}
+        <div class=pagination>
+        {% if pagination.has_prev %}
+        <a href="{{ url_for_other_page(pagination.page - 1)
+          }}">&laquo;Previous</a>
+        {% endif %}
+
+        {%- for page in pagination.iter_pages() %}
+          {% if page %}
+            {% if page != pagination.page %}
+              <a href="{{ url_for_other_page(page) }}">{{ page }}</a>
+            {% else %}
+              <strong>{{ page }}</strong>
+            {% endif %}
+          {% else %}
+            <span class=ellipsis>…</span>
+          {% endif %}
+        {%- endfor %}
+        
+        {% if pagination.has_next %}
+        <a href="{{ url_for_other_page(pagination.page + 1)
+          }}">Next &raquo;</a>
+        {% endif %}
+        </div>
+      {% endmacro %}
+
+      {{ render_pagination(pagination) }}
+
+      <table class="table table-striped">
             <tr>
               {% for header in headers %}
               <th>{{header}}</th>
@@ -58,5 +81,6 @@
       {% endmacro %}
 
       {{ render_pagination(pagination) }}
+      </div>
   </body>
 </html>
