@@ -11,6 +11,8 @@ from dshelpers import request_url
 
 import requests_cache
 
+import time
+
 requests_cache.install_cache('requests_cache')
 
 
@@ -152,9 +154,14 @@ class SparqlQuery(object):
         payload = {'query': self.query}
         print self.query
         try:
+            t0 = time.time()
             response = request_url(endpoint_url, auth=(username, password),
                                    params=payload,
                                    back_off=False)
+            t1 = time.time()
+            total = t1-t0
+            print "Time to return from query: {0}".format(total)
+            print "Response code: {0}".format(response.status_code)
         except Exception as e:
             print e
 
