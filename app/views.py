@@ -65,7 +65,7 @@ def index():
     function_list['queries'].append({"url":"summary_of_events_with_actor",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["output","offset","limit"],
-                                   "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham&&datefilter=1999-08"})
+                                   "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham&datefilter=1999-08"})
     function_list['queries'].append({"url":"actors_sharing_event_with_an_actor",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["datefilter","output","offset","limit"],
