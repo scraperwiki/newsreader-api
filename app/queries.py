@@ -32,24 +32,18 @@ class SparqlQuery(object):
 
     """ Represents a general SPARQL query for the KnowledgeStore. """
 
-    def __init__(self, offset=0, limit=100, uris=None, datefilter=None, filter=":", output='html'):
+    def __init__(self, offset=0, limit=100, uris=None, output='html',
+                 datefilter=None,
+                 filter=":"):
+
         self.offset = offset
         self.limit = limit
         self.filter = filter
         self.datefilter = str(datefilter)
+        self.date_filter_block = None
+        self.original_uris = uris
 
-        if uris is None:
-            self.uris = []
-        else:
-            # SPARQL queries require URIs wrapped in <,> unless they have
-            # PREFIXES
-            self.uris = []
-            for item in uris:
-                if "http" in item:
-                    self.uris.append('<' + item + '>')
-                else:
-                    self.uris.append(item)
-            #self.uris = ['<' + item + '>' for item in uris if "http" in item]
+        self._process_input_uris(uris)
         self._make_date_filter_block()
 
         self.query_title = None
@@ -67,6 +61,31 @@ class SparqlQuery(object):
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 0
 
+        self.prefix_block = """
+        PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
+
+                            """
+        self.allowed_parameters_block = """
+                                        # All allowed parameters:
+                                        # {output}, {offset}, {filter}, 
+                                        # {uri_0}, {uri_1}
+                                        # {filter}, {date_filter_block}
+                                        """
+
+    def _process_input_uris(self, uris):
+        if uris is None:
+            self.uris = [None, None]
+        else:
+            # SPARQL queries require URIs wrapped in <,> unless they have
+            # PREFIXES
+            self.uris = []
+            for item in uris:
+                if "http" in item:
+                    self.uris.append('<' + item + '>')
+                else:
+                    self.uris.append(item)
+            #self.uris = ['<' + item + '>' for item in uris if "http" in item]
+
     def _make_date_filter_block(self):
         if self.datefilter != 'None':
             dateparts = self.datefilter.split('-')
@@ -80,26 +99,49 @@ class SparqlQuery(object):
             self.date_filter_block = ''
         
 
-    # def check_parameters(self):
-    #    """ Implement in child classes. """
-    #    raise NotImplementedError("Should be implemented in child class.")
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
+    def _check_parameters(self):
+        if self.original_uris is None:
+            len_uris = 0
+        else:
+            len_uris =len(self.original_uris)
+
+        if len_uris < self.number_of_uris_required:
             message = "{0} required, {1} supplied".format(
                 self.number_of_uris_required, len(self.uris))
             self.error_message.append({"Insufficient_uris_supplied": message})
 
     def _build_query(self):
-        """ Implement in child classes. """
-        # TODO: Consider making return self.query_template
-        # so we could then have self.query = self._build_query()
-        raise NotImplementedError("Should be implemented in child class.")
+        """ Returns a query string. """
+        self._check_parameters()
+
+        if len(self.error_message) == 0:
+            full_query = (self.prefix_block + 
+                          self.allowed_parameters_block + 
+                          self.query_template)
+
+            query = full_query.format(offset=self.offset,
+                                      limit=self.limit,
+                                      output=self.output,
+                                      filter=self.filter,
+                                      date_filter_block=self.date_filter_block,
+                                      uri_0=self.uris[0],
+                                      uri_1=self.uris[0])
+            return query
+        else:
+            return None
 
     def _build_count_query(self):
-        # TODO: Consider making return self.count_template
-        # and making self.count_template = None
-        """ Implement in child classes. """
-        raise NotImplementedError("Should be implemented in child class.")
+        """ Returns a count query string. """
+        full_query = (self.prefix_block + 
+                          self.allowed_parameters_block + 
+                          self.count_template)
+        return full_query.format(offset=self.offset,
+                                 limit=self.limit,
+                                 output=self.output,
+                                 filter=self.filter,
+                                 date_filter_block=self.date_filter_block,
+                                 uri_0=self.uris[0],
+                                 uri_1=self.uris[0])
 
     def submit_query(self,
                      username=os.environ['NEWSREADER_USERNAME'],
@@ -209,30 +251,6 @@ class types_of_actors(SparqlQuery):
 
         self.query = self._build_query()
 
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
-            message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-
-        if len(self.error_message) == 0:
-            query = self.query_template.format(offset=self.offset,
-                                               limit=self.limit,
-                                               filter=self.filter)
-        # print query
-            return query
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(filter=self.filter)
-
-
 class event_details_filtered_by_actor(SparqlQuery):
 
     """ Get event details involving a specified actor (limited to first 100)
@@ -244,9 +262,7 @@ class event_details_filtered_by_actor(SparqlQuery):
         super(event_details_filtered_by_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get event details by actor'
         self.headers = ['event', 'predicate', 'object', 'object_type']
-        self.query_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
-                               '2009/11/sem/> '
-                               'SELECT ?event ?predicate ?object '
+        self.query_template = ('SELECT ?event ?predicate ?object '
                                '?object_type '
                                'WHERE {{ '
                                '?event ?predicate ?object . '
@@ -266,9 +282,7 @@ class event_details_filtered_by_actor(SparqlQuery):
                                '}} }} '
                                'ORDER BY DESC(?event) ')
 
-        self.count_template = ('PREFIX sem: <http://semanticweb.cs.vu.nl/'
-                               '2009/11/sem/> '
-                               'SELECT (count(*) as ?count) '
+        self.count_template = ('SELECT (count(*) as ?count) '
                                'WHERE {{ '
                                '?event ?predicate ?object . '
                                'OPTIONAL '
@@ -293,27 +307,6 @@ class event_details_filtered_by_actor(SparqlQuery):
 
         self.query = self._build_query()
 
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
-            message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset,
-                                              limit=self.limit,
-                                              uri_0=self.uris[0])
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(uri_0=self.uris[0])
-
-
 class describe_uri(SparqlQuery):
 
     """ Details of a URI returned by the DESCRIBE query
@@ -337,26 +330,6 @@ class describe_uri(SparqlQuery):
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
-
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
-            message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset,
-                                              limit=self.limit,
-                                              uri_0=self.uris[0])
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template
 
     def get_total_result_count(self):
         """ Returns result count for query, exception for this describe query """
@@ -413,29 +386,6 @@ class actors_of_a_type(SparqlQuery):
 
         self.query = self._build_query()
 
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
-            message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset,
-                                              limit=self.limit,
-                                              filter=self.filter,
-                                              uri_0=self.uris[0])
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(filter=self.filter,
-                                          uri_0=self.uris[0])
-
-
 class property_of_actors_of_a_type(SparqlQuery):
 
     """ Get a property of actors of one type mentioned in the news
@@ -477,29 +427,6 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.number_of_uris_required = 2
 
         self.query = self._build_query()
-
-    def check_parameters(self):
-        if len(self.uris) < self.number_of_uris_required:
-            message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset,
-                                              limit=self.limit,
-                                              uri_0=self.uris[0],
-                                              uri_1=self.uris[1])
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(uri_0=self.uris[0],
-                                          uri_1=self.uris[1])
-
 
 class summary_of_events_with_actor(SparqlQuery):
 
@@ -556,28 +483,6 @@ class summary_of_events_with_actor(SparqlQuery):
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
-#    def check_parameters(self):
-#        if len(self.uris) < self.number_of_uris_required:
-#            message = "{0} required, {1} supplied".format(
-#                                self.number_of_uris_required, len(self.uris))
-#            self.error_message.append({"Insufficient_uris_supplied":message})
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset, 
-                                              limit=self.limit, 
-                                              uri_0=self.uris[0],
-                                              date_filter_block=self.date_filter_block)
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(uri_0=self.uris[0],
-                                          date_filter_block=self.date_filter_block)
-
 
 class actors_sharing_event_with_an_actor(SparqlQuery):
 
@@ -626,15 +531,3 @@ class actors_sharing_event_with_an_actor(SparqlQuery):
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
-
-    def _build_query(self):
-        """ Returns a query string. """
-        self.check_parameters()
-        if len(self.error_message) == 0:
-            return self.query_template.format(offset=self.offset, limit=self.limit, uri_0=self.uris[0])
-        else:
-            return None
-
-    def _build_count_query(self):
-        """ Returns a count query string. """
-        return self.count_template.format(uri_0=self.uris[0])
