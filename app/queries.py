@@ -9,6 +9,7 @@ from collections import namedtuple
 
 from dshelpers import request_url
 
+import requests
 import requests_cache
 
 import time
@@ -64,14 +65,13 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
         self.prefix_block = """
-        PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
-
+PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                             """
         self.allowed_parameters_block = """
-                                        # All allowed parameters:
-                                        # {output}, {offset}, {filter}, 
-                                        # {uri_0}, {uri_1}
-                                        # {filter}, {date_filter_block}
+# All allowed parameters:
+# {output}, {offset}, {filter}, 
+# {uri_0}, {uri_1}
+# {filter}, {date_filter_block}
                                         """
 
     def _process_input_uris(self, uris):
@@ -153,24 +153,30 @@ class SparqlQuery(object):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         print self.query
+        t0 = time.time()
         try:
-            t0 = time.time()
             response = request_url(endpoint_url, auth=(username, password),
                                    params=payload,
                                    back_off=False)
-            t1 = time.time()
-            total = t1-t0
-            print "Time to return from query: {0}".format(total)
-            print "Response code: {0}".format(response.status_code)
         except Exception as e:
-            print e
+            print "Query raised an exception"
+            print type(e)
+            self.error_message.append({"Query raised an exception:": e})
+            return
 
-        #print "From cache: {0}".format(response.from_cache)
-        try:
+        t1 = time.time()
+        total = t1-t0
+        print "Time to return from query: {0:.2f} seconds".format(total)
+        print "Response code: {0}".format(response.status_code)
+        print "From cache: {0}".format(response.from_cache)
+
+        if response and (response.status_code == requests.codes.ok):
             self.json_result = json.loads(response.content)
             self.clean_json = convert_raw_json_to_clean(self.json_result)
-        except:
-            self.error_message.append({"No JSON in SPARQL response": 0})
+        else:
+            self.error_message.append({"Response code not OK:": response.status_code})
+        #print "From cache: {0}".format(response.from_cache)
+        
 
     def get_total_result_count(self):
         """ Returns result count for query. """
@@ -228,27 +234,31 @@ class types_of_actors(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(types_of_actors, self).__init__(*args, **kwargs)
         self.query_title = 'dbpedia entities that are actors in any event'
-        self.query_template = ("SELECT ?type (COUNT (*) as ?count) "
-                               "WHERE {{ "
-                               "?a rdf:type sem:Actor . "
-                               "?a rdf:type ?type . "
-                               'FILTER (?type != sem:Actor && '
-                               'STRSTARTS(STR(?type), '
-                               '"http://dbpedia.org/ontology/") && '
-                               'contains(LCASE(str(?type)), "{filter}"))}} '
-                               "GROUP BY ?type "
-                               "ORDER BY DESC(?count) "
-                               "OFFSET {offset} "
-                               "LIMIT {limit}")
+        self.query_template = ("""
+SELECT ?type (COUNT (*) as ?count) 
+WHERE {{
+?a rdf:type sem:Actor . 
+?a rdf:type ?type . 
+FILTER (?type != sem:Actor && 
+STRSTARTS(STR(?type), 
+"http://dbpedia.org/ontology/") && 
+contains(LCASE(str(?type)), "{filter}"))}} 
+GROUP BY ?type 
+ORDER BY DESC(?count) 
+OFFSET {offset} 
+LIMIT {limit}
+                               """)
 
-        self.count_template = ('SELECT (COUNT (distinct ?type) as ?count) '
-                               'WHERE {{ '
-                               '?a rdf:type sem:Actor . '
-                               '?a rdf:type ?type . '
-                               'FILTER (?type != sem:Actor && '
-                               'STRSTARTS(STR(?type), '
-                               '"http://dbpedia.org/ontology/") && '
-                               'contains(LCASE(str(?type)), "{filter}"))}}')
+        self.count_template = ("""
+SELECT (COUNT (distinct ?type) as ?count) 
+WHERE {{ 
+?a rdf:type sem:Actor . 
+?a rdf:type ?type . 
+FILTER (?type != sem:Actor && 
+STRSTARTS(STR(?type), 
+"http://dbpedia.org/ontology/") && 
+contains(LCASE(str(?type)), "{filter}"))}}
+                                """)
 
         self.jinja_template = 'table.html'
         self.headers = ['type', 'count']
@@ -269,43 +279,47 @@ class event_details_filtered_by_actor(SparqlQuery):
         super(event_details_filtered_by_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get event details by actor'
         self.headers = ['event', 'predicate', 'object', 'object_type']
-        self.query_template = ('SELECT ?event ?predicate ?object '
-                               '?object_type '
-                               'WHERE {{ '
-                               '?event ?predicate ?object . '
-                               'OPTIONAL '
-                               '{{ '
-                               '?object a ?object_type . '
-                               'FILTER(STRSTARTS(STR(?object_type), '
-                               '"http://semanticweb.cs.vu.nl/2009/11/sem/"))'
-                               '}} {{ '
-                               'SELECT ?event '
-                               'WHERE {{ '
-                               '?event a sem:Event .'
-                               '?event sem:hasActor {uri_0} .'
-                               '}} '
-                               'LIMIT {limit} '
-                               'OFFSET {offset} '
-                               '}} }} '
-                               'ORDER BY DESC(?event) ')
+        self.query_template = ("""
+SELECT ?event ?predicate ?object 
+?object_type 
+WHERE {{ 
+?event ?predicate ?object . 
+OPTIONAL 
+{{ 
+?object a ?object_type . 
+FILTER(STRSTARTS(STR(?object_type), 
+"http://semanticweb.cs.vu.nl/2009/11/sem/"))
+}} {{ 
+SELECT ?event 
+WHERE {{ 
+?event a sem:Event .
+?event sem:hasActor {uri_0} .
+}} 
+LIMIT {limit} 
+OFFSET {offset} 
+}} }} 
+ORDER BY DESC(?event) 
+                               """)
 
-        self.count_template = ('SELECT (count(*) as ?count) '
-                               'WHERE {{ '
-                               '?event ?predicate ?object . '
-                               'OPTIONAL '
-                               '{{ '
-                               '?object a ?object_type . '
-                               'FILTER(STRSTARTS(STR(?object_type), '
-                               '"http://semanticweb.cs.vu.nl/2009/11/sem/"))'
-                               '}} {{ '
-                               'SELECT ?event '
-                               'WHERE {{ '
-                               '?event a sem:Event .'
-                               '?event sem:hasActor {uri_0} .'
-                               '}} '
-                               'LIMIT 100 '
-                               'OFFSET 0 '
-                               '}} }}')
+        self.count_template = ("""
+SELECT (count(*) as ?count) 
+WHERE {{ 
+?event ?predicate ?object . 
+OPTIONAL 
+{{ 
+?object a ?object_type . 
+FILTER(STRSTARTS(STR(?object_type), 
+"http://semanticweb.cs.vu.nl/2009/11/sem/"))
+}} {{ 
+SELECT ?event 
+WHERE {{ 
+?event a sem:Event .
+?event sem:hasActor {uri_0} .
+}} 
+LIMIT 100 
+OFFSET 0 
+}} }}
+                               """)
 
         self.jinja_template = 'table.html'
         self.required_parameters = ["uris"]
@@ -359,29 +373,29 @@ class actors_of_a_type(SparqlQuery):
         super(actors_of_a_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get URIs, counts and comments of actors with a specified type'
         self.query_template = ("""
-                                SELECT ?actor (count(?actor) as ?count) ?comment
-                                WHERE {{ 
-                                ?event rdf:type sem:Event . 
-                                ?event sem:hasActor ?actor .
-                                ?actor rdf:type {uri_0} .
-                                OPTIONAL {{?actor rdfs:comment ?comment .}}
-                                FILTER (contains(LCASE(str(?actor)), "{filter}"))
-                                }}
-                                GROUP BY ?actor ?comment
-                                ORDER BY desc(?count)
-                                OFFSET {offset}
-                                LIMIT {limit}
+SELECT ?actor (count(?actor) as ?count) ?comment
+WHERE {{ 
+?event rdf:type sem:Event . 
+?event sem:hasActor ?actor .
+?actor rdf:type {uri_0} .
+OPTIONAL {{?actor rdfs:comment ?comment .}}
+FILTER (contains(LCASE(str(?actor)), "{filter}"))
+}}
+GROUP BY ?actor ?comment
+ORDER BY desc(?count)
+OFFSET {offset}
+LIMIT {limit}
                                """)
 
         self.count_template = ("""
-                                SELECT (count(DISTINCT ?actor) as ?count)
-                                WHERE {{ 
-                                ?event rdf:type sem:Event . 
-                                ?event sem:hasActor ?actor .
-                                ?actor rdf:type {uri_0} .
-                                OPTIONAL {{?actor rdfs:comment ?comment .}}
-                                FILTER (contains(LCASE(str(?actor)), "{filter}")) .
-                                }}
+SELECT (count(DISTINCT ?actor) as ?count)
+WHERE {{ 
+?event rdf:type sem:Event . 
+?event sem:hasActor ?actor .
+?actor rdf:type {uri_0} .
+OPTIONAL {{?actor rdfs:comment ?comment .}}
+FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+}}
                                """)
 
         self.jinja_template = 'table.html'
@@ -404,26 +418,26 @@ class property_of_actors_of_a_type(SparqlQuery):
         super(property_of_actors_of_a_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get a property of actors of a type mentioned in the news'
         self.query_template = ("""
-                                SELECT DISTINCT ?actor ?value where
-                                {{
-                                  ?event a sem:Event . 
-                                  ?event sem:hasActor ?actor .
-                                  ?actor a {uri_0} .
-                                  ?actor {uri_1} ?value . 
-                                }}
-                                order by desc(?value)
-                                LIMIT {limit}
-                                OFFSET {offset}
+SELECT DISTINCT ?actor ?value where
+{{
+  ?event a sem:Event . 
+  ?event sem:hasActor ?actor .
+  ?actor a {uri_0} .
+  ?actor {uri_1} ?value . 
+}}
+order by desc(?value)
+LIMIT {limit}
+OFFSET {offset}
                                """)
 
         self.count_template = ("""
-                                SELECT (count (DISTINCT ?actor) as ?count) where
-                                {{
-                                  ?event a sem:Event . 
-                                  ?event sem:hasActor ?actor .
-                                  ?actor a {uri_0} .
-                                  ?actor {uri_1} ?value . 
-                                }}
+SELECT (count (DISTINCT ?actor) as ?count) where
+{{
+  ?event a sem:Event . 
+  ?event sem:hasActor ?actor .
+  ?actor a {uri_0} .
+  ?actor {uri_1} ?value . 
+}}
                                """)
 
         self.jinja_template = 'table.html'
@@ -447,39 +461,39 @@ class summary_of_events_with_actor(SparqlQuery):
         super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a named actor'
         self.query_template = ("""
-                                SELECT 
-                                ?event (COUNT (?event) AS ?event_size) ?datetime
-                                WHERE {{
-                                ?event ?p ?o .
-                                {{ ?event sem:hasActor {uri_0} .}}
-                                UNION
-                                {{ ?event sem:hasPlace {uri_0} .}}
-                                ?event sem:hasTime ?t .
-                                ?t owltime:inDateTime ?d .
-                                {date_filter_block}
-                                ?t rdfs:label ?datetime .
-                                  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
-                                }}
-                                GROUP BY ?event ?datetime
-                                ORDER BY ?datetime
-                                OFFSET {offset}
-                                LIMIT {limit}
+SELECT 
+?event (COUNT (?event) AS ?event_size) ?datetime
+WHERE {{
+?event ?p ?o .
+{{ ?event sem:hasActor {uri_0} .}}
+UNION
+{{ ?event sem:hasPlace {uri_0} .}}
+?event sem:hasTime ?t .
+?t owltime:inDateTime ?d .
+{date_filter_block}
+?t rdfs:label ?datetime .
+  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
+}}
+GROUP BY ?event ?datetime
+ORDER BY ?datetime
+OFFSET {offset}
+LIMIT {limit}
                                """)
 
         self.count_template = ("""
-                                SELECT
-                                (COUNT (?event) AS ?count)
-                                WHERE {{
-                                ?event ?p ?o .
-                                {{ ?event sem:hasActor {uri_0} .}}
-                                UNION
-                                {{ ?event sem:hasPlace {uri_0} .}}
-                                ?event sem:hasTime ?t .
-                                ?t owltime:inDateTime ?d .
-                                {date_filter_block}
-                                ?t rdfs:label ?datetime .
-                                  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
-                                }}
+SELECT
+(COUNT (?event) AS ?count)
+WHERE {{
+?event ?p ?o .
+{{ ?event sem:hasActor {uri_0} .}}
+UNION
+{{ ?event sem:hasPlace {uri_0} .}}
+?event sem:hasTime ?t .
+?t owltime:inDateTime ?d .
+{date_filter_block}
+?t rdfs:label ?datetime .
+  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
+}}
                                """)
 
         self.jinja_template = 'table.html'
@@ -503,31 +517,31 @@ class actors_sharing_event_with_an_actor(SparqlQuery):
               self).__init__(*args, **kwargs)
         self.query_title = 'Get actors sharing an event with a named actor with count of occurence'
         self.query_template = ("""
-                                SELECT DISTINCT ?actor ?actor2 (COUNT(?evt) as ?numEvent) ?comment
-                                WHERE {{
-                                ?evt a sem:Event .
-                                ?evt sem:hasActor ?actor .
-                                ?evt sem:hasActor ?actor2 .
-                                ?actor2 a dbo:Person . 
-                                FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
-                                ?actor2 rdfs:comment ?comment .
-                                }}
-                                GROUP BY ?actor2 ?actor ?comment
-                                ORDER BY DESC(?numEvent)
-                                                    OFFSET {offset}
-                                                    LIMIT {limit}
+SELECT DISTINCT ?actor ?actor2 (COUNT(?evt) as ?numEvent) ?comment
+WHERE {{
+?evt a sem:Event .
+?evt sem:hasActor ?actor .
+?evt sem:hasActor ?actor2 .
+?actor2 a dbo:Person . 
+FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
+?actor2 rdfs:comment ?comment .
+}}
+GROUP BY ?actor2 ?actor ?comment
+ORDER BY DESC(?numEvent)
+OFFSET {offset}
+LIMIT {limit}
                                """)
 
         self.count_template = ("""
-                                SELECT (COUNT (DISTINCT ?actor2) as ?count)
-                                WHERE {{
-                                ?evt a sem:Event .
-                                ?evt sem:hasActor ?actor .
-                                ?evt sem:hasActor ?actor2 .
-                                ?actor2 a dbo:Person . 
-                                FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
-                                ?actor2 rdfs:comment ?comment .
-                                }}
+SELECT (COUNT (DISTINCT ?actor2) as ?count)
+WHERE {{
+?evt a sem:Event .
+?evt sem:hasActor ?actor .
+?evt sem:hasActor ?actor2 .
+?actor2 a dbo:Person . 
+FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
+?actor2 rdfs:comment ?comment .
+}}
                                """)
 
         self.jinja_template = 'table.html'

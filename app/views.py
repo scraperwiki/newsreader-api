@@ -104,8 +104,11 @@ def run_query(page, query_to_use):
         return error_message_json
     else:
         current_query.submit_query()
-        cause_404_if_no_results(current_query.parse_query_results(), page)
-        return produce_response(current_query, page, offset)
+        if len(current_query.error_message) != 0:
+            cause_404_if_no_results(current_query.parse_query_results(), page)
+            return produce_response(current_query, page, offset)
+        else:
+            return error_message_json   
 
 
 
