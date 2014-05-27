@@ -201,7 +201,7 @@ class types_of_actors(SparqlQuery):
                                '"http://dbpedia.org/ontology/") && '
                                'contains(LCASE(str(?type)), "{filter}"))}}')
 
-        self.jinja_template = 'two_column.html'
+        self.jinja_template = 'table.html'
         self.headers = ['type', 'count']
         self.required_parameters = []
         self.optional_parameters = ["output", "offset", "limit", "filter"]
@@ -286,7 +286,7 @@ class event_details_filtered_by_actor(SparqlQuery):
                                'OFFSET 0 '
                                '}} }}')
 
-        self.jinja_template = 'four_column.html'
+        self.jinja_template = 'table.html'
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 1
@@ -404,7 +404,7 @@ class actors_of_a_type(SparqlQuery):
                                 }}
                                """)
 
-        self.jinja_template = 'three_column.html'
+        self.jinja_template = 'table.html'
         self.headers = ['actor', 'count', 'comment']
 
         self.required_parameters = ["uris"]
@@ -469,7 +469,7 @@ class property_of_actors_of_a_type(SparqlQuery):
                                 }}
                                """)
 
-        self.jinja_template = 'two_column.html'
+        self.jinja_template = 'table.html'
         self.headers = ['actor', 'value']
 
         self.required_parameters = ["uris"]
@@ -548,7 +548,7 @@ class summary_of_events_with_actor(SparqlQuery):
                                 }}
                                """)
 
-        self.jinja_template = 'three_column.html'
+        self.jinja_template = 'table.html'
         self.headers = ['event', 'event_size', 'datetime']
 
         self.required_parameters = ["uris"]
@@ -618,7 +618,7 @@ class actors_sharing_event_with_an_actor(SparqlQuery):
                                 }}
                                """)
 
-        self.jinja_template = 'four_column.html'
+        self.jinja_template = 'table.html'
         self.headers = ['actor', 'actor2', 'numEvent', 'comment']
 
         self.required_parameters = ["uris"]
