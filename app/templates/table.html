@@ -16,13 +16,17 @@
   <body>
       <h1>{{title}}</h1>
       <h2>Result count: {{ count }}</h2>
-      <table style="width:500px">
+      <table style="width:900px">
             <tr>
-              <th>{{headers[0]}}</th> 
+              {% for header in headers %}
+              <th>{{header}}</th>
+              {% endfor %}
             </tr>
             {% for result in results %}
             <tr>
-              <td>{{result[headers[0]]}}</td>
+              {% for header in headers %}
+              <td>{{result[header]}}</td>
+              {% endfor %}
             </tr>
             {% endfor %}         
       </table>
