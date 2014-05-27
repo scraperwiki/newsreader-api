@@ -86,6 +86,8 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                     self.uris.append('<' + item + '>')
                 else:
                     self.uris.append(item)
+            if len(self.uris) == 1:
+                self.uris.append(None)
             #self.uris = ['<' + item + '>' for item in uris if "http" in item]
 
     def _make_date_filter_block(self):
@@ -127,14 +129,14 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                                       filter=self.filter,
                                       date_filter_block=self.date_filter_block,
                                       uri_0=self.uris[0],
-                                      uri_1=self.uris[0])
+                                      uri_1=self.uris[1])
             return query
         else:
             return None
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        full_query = (self.prefix_block + 
+        full_query = ("#Counting query\n" + self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.count_template)
         return full_query.format(offset=self.offset,
@@ -143,7 +145,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                                  filter=self.filter,
                                  date_filter_block=self.date_filter_block,
                                  uri_0=self.uris[0],
-                                 uri_1=self.uris[0])
+                                 uri_1=self.uris[1])
 
     def submit_query(self,
                      username=os.environ['NEWSREADER_USERNAME'],
@@ -152,6 +154,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
+        print "\n\n**New query**"
         print self.query
         t0 = time.time()
         try:
@@ -162,20 +165,21 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
             print "Query raised an exception"
             print type(e)
             self.error_message.append({"Query raised an exception:": e})
-            return
-
-        t1 = time.time()
-        total = t1-t0
-        print "Time to return from query: {0:.2f} seconds".format(total)
-        print "Response code: {0}".format(response.status_code)
-        print "From cache: {0}".format(response.from_cache)
-
-        if response and (response.status_code == requests.codes.ok):
-            self.json_result = json.loads(response.content)
-            self.clean_json = convert_raw_json_to_clean(self.json_result)
+            t1 = time.time()
+            total = t1-t0
         else:
-            self.error_message.append({"Response code not OK:": response.status_code})
-        #print "From cache: {0}".format(response.from_cache)
+            t1 = time.time()
+            total = t1-t0
+            print "Time to return from query: {0:.2f} seconds".format(total)
+            print "Response code: {0}".format(response.status_code)
+            print "From cache: {0}".format(response.from_cache)
+
+            if response and (response.status_code == requests.codes.ok):
+                self.json_result = json.loads(response.content)
+                self.clean_json = convert_raw_json_to_clean(self.json_result)
+            else:
+                self.error_message.append({"Response code not OK:": response.status_code})
+            #print "From cache: {0}".format(response.from_cache)
         
 
     def get_total_result_count(self):
@@ -339,7 +343,7 @@ class describe_uri(SparqlQuery):
         super(describe_uri, self).__init__(*args, **kwargs)
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.query_template = ("""
-                               Describe {uri_0}
+DESCRIBE {uri_0}
                                """)
 
         self.count_template = ("")
