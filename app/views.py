@@ -27,35 +27,48 @@ def index():
     function_list = {"description":["NewsReader Simple API: Endpoints available at this location",
                                     "",
                                     "Queries are of the form:",
-                                    root_url + "{page/[n]}/query_name?param1=[string]&param2=[string]",
+                                    root_url + "{page/[n]/}query_name?param1=[string]&param2=[string]",
                                     "Where page is an option component with default /page/1",
                                     "",
+                                    ""
                         ],
-                     "global parameters":"output={json|html|csv}",
-                     "known prefix 1":"dbo - types of things - i.e. dbo:SoccerPlayer", 
-                     "known prefix 2":"dbpedia - instances of things - i.e. dbpedia:David_Beckham", 
-                     "links":[]}
-    function_list['links'].append({"url":"types_of_actors",
-                                   "parameter":"filter",
+                     "parameters":["output={json|html|csv}",
+                                   "limit",
+                                   "offset",
+                                   "filter",
+                                   "uris.[n]",
+                                   "timefilter - YYYY, YYYY-MM or YYYY-MM-DD"],
+                     "prefixes":["dbo - types of things - i.e. dbo:SoccerPlayer", 
+                                 "dbpedia - instances of things - i.e. dbpedia:David_Beckham"], 
+                     "queries":[],
+                     "resources":[]}
+    function_list['queries'].append({"url":"types_of_actors",
+                                   "required_parameters":[],
+                                   "optional_parameters":["filter","output","offset","limit"],
                                    "example":root_url + "/types_of_actors?output=html&filter=player"})
-    function_list['links'].append({"url":"describe_uri",
-                                   "parameter":"uris.0",
+    function_list['queries'].append({"url":"describe_uri",
+                                   "parameter":["uris.0"],
+                                   "optional_parameters":[],
                                    "example":root_url + "/describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
-    function_list['links'].append({"url":"event_details_filtered_by_actor",
-                                   "parameter":"uris.0",
+    function_list['queries'].append({"url":"event_details_filtered_by_actor",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":["output","offset","limit"],                                   
                                    "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
-    function_list['links'].append({"url":"actors_of_a_type",
-                                   "parameters":"uris.0, filter",
+    function_list['queries'].append({"url":"actors_of_a_type",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":["filter","output","offset","limit"],
                                    "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
-    function_list['links'].append({"url":"property_of_actors_of_a_type",
-                                   "parameters":"uris.0, uris.1",
+    function_list['queries'].append({"url":"property_of_actors_of_a_type",
+                                   "required_parameters":["uris.0", "uris.1"],
+                                   "optional_parameters":["output","offset","limit"],
                                    "example":root_url + "/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height"})
-    function_list['links'].append({"url":"summary_of_events_with_actor",
-                                   "parameters":"uris.0",
+    function_list['queries'].append({"url":"summary_of_events_with_actor",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":["output","offset","limit"],
                                    "example":root_url + "/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham"})
-    function_list['links'].append({"url":"actors_sharing_event_with_an_actor",
-                                   "parameters":"uris.0, datefilter",
-                                   "description":"datefilter is optional, it can be YYYY, YYYY-MM or YYYY-MM-DD",
+    function_list['queries'].append({"url":"actors_sharing_event_with_an_actor",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":["datefilter","output","offset","limit"],
                                    "example":root_url + "/actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
