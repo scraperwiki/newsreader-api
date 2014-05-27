@@ -4,7 +4,7 @@
 * `pip install -r requirements.txt`
 * `python run.py`
 
-App accessible via http://127.0.0.1:5000
+App accessible via http://127.0.0.1:5000, which also shows up-to-date documentation
 
 You'll need the username and password for the endpoint and have to store
 these in the environment variables: NEWSREADER_USERNAME and
@@ -13,24 +13,23 @@ NEWSREADER_PASSWORD. (The deployed version has these setup already.)
 # Example query usage:
 
 ## Simple query:
-`http://127.0.0.1:5000/EntitiesThatAreActorsQuery`
+`/types_of_actors`
 
 ## Access pages directly with /page/<page_number>:
-`http://127.0.0.1:5000/EntitiesThatAreActorsQuery/page/2`
+`http://127.0.0.1:5000/page/2/types_of_actors`
 
 ## Pass in URIs with query string value:
 ** WARNING: may change again if I move from `jsonurl`
 to handling with Flask **
-`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?uris.0=http://dbpedia.org/resource/David_Beckham`
+`https://newsreader.scraperwiki.com/Gevent_details_filtered_by_actor?uris.0=http://dbpedia.org/resource/David_Beckham`
 
 Specify additional URIs with e.g.
 `?uris.0=http://dbpedia.org/resource/David_Beckham&uris.1=http://dbpedia.org/resource/Bobby_Robson`
 
 ## Query that outputs JSON instead of HTML:
-Use `output="json"` (the requirement for quotes around strings is a known
-issue; again should be fixable with `jsonurl`)
+Use `output=json` 
 
-`https://newsreader.scraperwiki.com/GetEventDetailsByActorUri?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
+`https://newsreader.scraperwiki.com/event_details_filtered_by_actor?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
 
 # Adding a new query:
 In `queries.py`, specify a new subclass of `SparqlQuery`
@@ -50,8 +49,16 @@ class YourNewQuery(SparqlQuery):
         self.count_template = 'Your counting query goes here'
         
         # Jinja templates stored in app/templates
+        # You should be able to use the generic two_column.html etc
         self.jinja_template = 'your_new_query.html'
     
+        self.headers = ['actor', 'actor2']
+        self.required_parameters = ["uris"]
+        self.optional_parameters = ["output", "offset", "limit"]
+        self.number_of_uris_required = 1
+
+        self.query = self._build_query()
+
     def _build_query(self):
         # use {uri_0}, {offset} etc in your query template
         # add all named strings you specify to the format call
@@ -61,18 +68,8 @@ class YourNewQuery(SparqlQuery):
                                           uri_0 = self.uris[0],
                                           uri_1 = self.uris[1])
                                          
-        
-    def parse_query_results(self):
-        """ Returns nicely parsed values to pass into jinja_template """
-        # do things to the JSON to get the data you want out
-        return data_that_can_be_handled_in_template
-
     def _build_count_query(self):
         return self.count_template.format(uri_0=self.uris[0],
                                           uri_1=self.uris[1])
     
-    def get_total_result_count(self):
-        # Probably could be moved into parent class; same everytime
-        count_query = CountQuery(self._build_count_query())
-        return count_query.get_count()
 ```

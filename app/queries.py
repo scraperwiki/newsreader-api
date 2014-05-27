@@ -68,8 +68,6 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
     def _make_date_filter_block(self):
-        print type(self.datefilter)
-        print self.datefilter=='None'
         if self.datefilter != 'None':
             dateparts = self.datefilter.split('-')
             if len(dateparts) >= 1:
@@ -114,11 +112,11 @@ class SparqlQuery(object):
         try:
             response = request_url(endpoint_url, auth=(username, password),
                                    params=payload,
-                                   back_off=True)
+                                   back_off=False)
         except Exception as e:
             print e
 
-        print "From cache: {0}".format(response.from_cache)
+        #print "From cache: {0}".format(response.from_cache)
         try:
             self.json_result = json.loads(response.content)
             self.clean_json = convert_raw_json_to_clean(self.json_result)
