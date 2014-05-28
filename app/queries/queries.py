@@ -165,7 +165,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         except Exception as e:
             print "Query raised an exception"
             print type(e)
-            self.error_message.append({"Query raised an exception:": e})
+            self.error_message.append({"Query raised an exception:": str(e.message)})
             t1 = time.time()
             total = t1-t0
         else:
