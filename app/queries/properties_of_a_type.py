@@ -2,7 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 
-from queries import *
+from queries import SparqlQuery
 
 class properties_of_a_type(SparqlQuery):
     """ Get the properties defined for a type
@@ -16,20 +16,20 @@ class properties_of_a_type(SparqlQuery):
         self.query_title = 'Get the properties of a type'
         self.query_template = ("""
 SELECT DISTINCT ?property
-WHERE {
+WHERE {{
 ?pl ?property ?o .
 ?pl a {uri_0} .
-}
+}}
 LIMIT {limit}
 OFFSET {offset}
                                """)
 
         self.count_template = ("""
 SELECT (COUNT (DISTINCT ?property) as ?count)
-WHERE {
+WHERE {{
 ?pl ?property ?o .
 ?pl a {uri_0} .
-}
+}}
                                """)
 
         self.jinja_template = 'table.html'

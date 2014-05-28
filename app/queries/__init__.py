@@ -3,5 +3,6 @@
 
 __all__ = ["properties_of_a_type"]
 
-from queries import *
+import queries
 
+from .properties_of_a_type import properties_of_a_type 
