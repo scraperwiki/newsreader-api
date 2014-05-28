@@ -32,9 +32,22 @@ Use `output=json`
 `https://newsreader.scraperwiki.com/event_details_filtered_by_actor?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
 
 # Adding a new query:
-In `queries.py`, specify a new subclass of `SparqlQuery`
+In the queries subdirectory specify a new subclass of `SparqlQuery` in a file of its own.
+The main action should be in adding the queries. { and } in the original need to be escaped to
+{{ and }}. Once the query has been created add a line like:
+
+`from .types_of_actors import types_of_actors`
+
+to `__init.py__` and add an entry to `function_list` in `index` in the`queries.py` file 
+
 
 ```
+#!/usr/bin/env python
+# encoding: utf-8
+from __future__ import unicode_literals
+
+from queries import SparqlQuery
+
 class YourNewQuery(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(YourNewQuery).__init__(*args, **kwargs)

@@ -66,12 +66,14 @@ class SparqlQuery(object):
 
         self.prefix_block = """
 PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                             """
         self.allowed_parameters_block = """
 # All allowed parameters:
-# {output}, {offset}, {filter}, 
-# {uri_0}, {uri_1}
-# {filter}, {date_filter_block}
+# output: {output}, offset: {offset}, limit: {limit}, 
+# uri.0: {uri_0}, uri.1: {uri_1}
+# filter: {filter}, date_filter_block: {date_filter_block}
                                         """
 
     def _process_input_uris(self, uris):

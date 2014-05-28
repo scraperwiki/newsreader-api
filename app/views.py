@@ -15,6 +15,7 @@ import cStringIO as StringIO
 import unicodecsv as csv
 import logging
 
+
 logging.basicConfig()
 
 PER_PAGE = 20
@@ -53,11 +54,11 @@ def index():
     function_list['queries'].append({"url":"event_details_filtered_by_actor",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["output","offset","limit"],                                   
-                                   "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
+                                   "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham"})
     function_list['queries'].append({"url":"actors_of_a_type",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["filter","output","offset","limit"],
-                                   "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
+                                   "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&filter=david"})
     function_list['queries'].append({"url":"property_of_actors_of_a_type",
                                    "required_parameters":["uris.0", "uris.1"],
                                    "optional_parameters":["output","offset","limit"],
@@ -70,6 +71,10 @@ def index():
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["datefilter","output","offset","limit"],
                                    "example":root_url + "/actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham"})
+    function_list['queries'].append({"url":"properties_of_a_type",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":["output","offset","limit"],
+                                   "example":root_url + "/properties_of_a_type?uris.0=dbo:SoccerPlayer"})
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
@@ -105,6 +110,7 @@ def run_query(page, query_to_use):
     else:
         current_query.submit_query()
         if len(current_query.error_message) != 0:
+            error_message_json = json.dumps(current_query.error_message)
             return error_message_json               
         else:
             cause_404_if_no_results(current_query.parse_query_results(), page)
