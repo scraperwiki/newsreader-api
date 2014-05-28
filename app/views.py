@@ -15,6 +15,7 @@ import cStringIO as StringIO
 import unicodecsv as csv
 import logging
 
+
 logging.basicConfig()
 
 PER_PAGE = 20

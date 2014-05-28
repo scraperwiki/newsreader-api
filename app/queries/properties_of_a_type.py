@@ -2,7 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 
-from queries import SparqlQuery
+from queries import *
 
 class properties_of_a_type(SparqlQuery):
     """ Get the properties defined for a type
