@@ -68,7 +68,6 @@ class SparqlQuery(object):
 PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                             """
         self.allowed_parameters_block = """
 # All allowed parameters:
