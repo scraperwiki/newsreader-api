@@ -53,11 +53,11 @@ def index():
     function_list['queries'].append({"url":"event_details_filtered_by_actor",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["output","offset","limit"],                                   
-                                   "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json"})
+                                   "example":root_url + "/event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham"})
     function_list['queries'].append({"url":"actors_of_a_type",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["filter","output","offset","limit"],
-                                   "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&output=json&filter=david"})
+                                   "example":root_url + "/actors_of_a_type?uris.0=dbo:Person&filter=david"})
     function_list['queries'].append({"url":"property_of_actors_of_a_type",
                                    "required_parameters":["uris.0", "uris.1"],
                                    "optional_parameters":["output","offset","limit"],
