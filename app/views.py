@@ -84,7 +84,10 @@ def parse_query_string(query_string):
     """ Return dict containing query string values.
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
-    return jsonurl.parse_query(query_string)
+    try:
+        return jsonurl.parse_query(query_string)
+    except ValueError:
+        return {"Error":"Malformed query URL"}
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})
@@ -101,6 +104,10 @@ def run_query(page, query_to_use):
         return json.dumps(missing_query_response, sort_keys=True)
 
     query_args = parse_query_string(request.query_string)
+
+    if "Error" in query_args.keys():
+        return json.dumps(query_args)
+
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
 
