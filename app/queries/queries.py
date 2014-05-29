@@ -228,3 +228,55 @@ class CountQuery(SparqlQuery):
         self.submit_query()
         return int(self.json_result['results']['bindings'][0]['count']['value'])
 
+class CRUDQuery(SparqlQuery):
+
+    """
+    Represents a general query to the CRUD endpoint for the KnowledgeStore.
+
+    """
+    # TODO: is *args, **kwargs really needed here?
+
+    def __init__(self, count_query, *args, **kwargs):
+        super(CountQuery, self).__init__(*args, **kwargs)
+        self.query_title = 'Count query'
+        self.query_template = count_query
+        self.query = self._build_query()
+
+    def _build_query(self):
+        """ Returns a query string. """
+        return self.query_template
+
+    # TODO: Should get_count() be the more general parse_query_results()?
+    def get_count(self):
+        """ Parses and returns result from a count query. """
+        return 0
+
+    def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
+                                        '/nwr/worldcup-hackathon/sparql'):
+        """ Submit query to endpoint; return result. """
+        username = os.environ['NEWSREADER_USERNAME']
+        password = os.environ['NEWSREADER_PASSWORD']
+        payload = {'query': self.query}
+        response = request_url(endpoint_url, auth=(username, password),
+                               params=payload)
+        self.json_result = json.loads(response.content)
+#def get_raw_resource_metadata(resource_identifier, endpoint_url='https://knowledgestore.fbk.eu/nwrdemo/resources'):
+        """Get raw resource metadata from the CRUD endpoint"""
+#     https://knowledgestore.fbk.eu/nwrdemo/resources?id=%3Chttp://www.newsreader-project.eu/data/cars/2004/4/4/4C3S-T3H0-01CY-M246.xml%3E
+        clean_identifier = _clean_resource_identifier(resource_identifier) 
+        payload = {'id': clean_identifier}
+        response = requests.get(endpoint_url, params=payload)
+        return json.loads(response.content)
+
+    def _clean_resource_identifier(resource_identifier):
+        """Ensure that the resource identifier starts with a <, ends with a > 
+        and remove anything after a #"""
+        parts = resource_identifier.split('#')
+        core = parts[0]
+        prefix = ''
+        suffix = ''
+        if core[0] != '<':
+            prefix = '<'
+        if core[-1] != '>':
+            suffix = '>'
+        return prefix + core + suffix
