@@ -36,8 +36,9 @@ LIMIT {limit}
                                """)
 
         self.count_template = ("""
+SELECT (COUNT(*) as ?count) {{
 SELECT
-(COUNT (?event) AS ?count)
+DISTINCT ?event ?datetime
 WHERE {{
 ?event ?p ?o .
 {{ ?event sem:hasActor {uri_0} .}}
@@ -48,6 +49,7 @@ UNION
 {date_filter_block}
 ?t rdfs:label ?datetime .
   FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
+}}
 }}
                                """)
 

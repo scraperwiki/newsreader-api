@@ -84,7 +84,10 @@ def parse_query_string(query_string):
     """ Return dict containing query string values.
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
-    return jsonurl.parse_query(query_string)
+    try:
+        return jsonurl.parse_query(query_string)
+    except ValueError:
+        return {"error":"Malformed query URL"}
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})
@@ -95,12 +98,16 @@ def run_query(page, query_to_use):
         query_name = getattr(queries, query_to_use)
     except AttributeError:
         missing_query_response = []
-        missing_query_response.append({"Error":"Query '{0}' does not exist".format(query_to_use)})
+        missing_query_response.append({"error":"Query '{0}' does not exist".format(query_to_use)})
         missing_query_response.append({"Message":["For available queries, see here:",
                                         get_root_url()]})
         return json.dumps(missing_query_response, sort_keys=True)
 
     query_args = parse_query_string(request.query_string)
+
+    if "error" in query_args.keys():
+        return json.dumps(query_args)
+
     offset = PER_PAGE * (page - 1)
     current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
 
@@ -152,7 +159,7 @@ def produce_response(query, page_number, offset):
             #  content_type='text/csv; charset=utf-8',
             #  content_disposition='attachment;filename=results.csv')
         else:
-            return json.dumps({"Error":"query result cannot be written as csv"})
+            return json.dumps({"error":"query result cannot be written as csv"})
     else:
         count = query.get_total_result_count()
         pagination = Pagination(page_number, PER_PAGE, int(count))
