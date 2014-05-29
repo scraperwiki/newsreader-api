@@ -37,7 +37,7 @@ LIMIT {limit}
 
         self.count_template = ("""
 SELECT
-(COUNT (?event) AS ?count)
+(COUNT DISTINCT (?event) AS ?count)
 WHERE {{
 ?event ?p ?o .
 {{ ?event sem:hasActor {uri_0} .}}
