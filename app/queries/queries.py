@@ -113,7 +113,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         if len_uris < self.number_of_uris_required:
             message = "{0} required, {1} supplied".format(
                 self.number_of_uris_required, len(self.uris))
-            self.error_message.append({"Insufficient_uris_supplied": message})
+            self.error_message.append({"error":"Insufficient_uris_supplied: {0}".format(message)})
 
     def _build_query(self):
         """ Returns a query string. """
@@ -165,7 +165,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         except Exception as e:
             print "Query raised an exception"
             print type(e)
-            self.error_message.append({"Query raised an exception:": type(e).__name__})
+            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
         else:
@@ -179,7 +179,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 self.json_result = json.loads(response.content)
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
             else:
-                self.error_message.append({"Response code not OK:": response.status_code})
+                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
             #print "From cache: {0}".format(response.from_cache)
         
 
