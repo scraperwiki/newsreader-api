@@ -39,10 +39,10 @@
 
       {{ render_pagination(pagination) }}
 
-      <table class="table table-striped">
+      <table class="table table-striped table-condensed">
             <tr>
               {% for header in headers %}
-              <th>{{header}}</th>
+              <th class="col-sm-1">{{header}}</th>
               {% endfor %}
             </tr>
             {% for result in results %}
