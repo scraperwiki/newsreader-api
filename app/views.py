@@ -79,6 +79,10 @@ def index():
                                    "required_parameters":["uris.0","uris.1"],
                                    "optional_parameters":["output","offset","limit","datefilter"],
                                    "example":root_url + "/summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter"})
+    function_list['queries'].append({"url":"get_document_metadata",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":[],
+                                   "example":root_url + "/get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm"})
 
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
@@ -104,10 +108,10 @@ def run_query(page, query_to_use):
     except AttributeError:
         missing_query_response = []
         missing_query_response.append({"error":"Query '{0}' does not exist".format(query_to_use)})
-        missing_query_response.append({"Message":["For available queries, see here:",
+        missing_query_response.append({"message":["For available queries, see here:",
                                         get_root_url()]})
         return json.dumps(missing_query_response, sort_keys=True)
-
+    print request.query_string
     query_args = parse_query_string(request.query_string)
 
     if "error" in query_args.keys():

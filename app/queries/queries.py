@@ -64,6 +64,7 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
         self.prefix_block = """
+# Query from Newsreader Simple API
 PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -232,41 +233,69 @@ class CRUDQuery(SparqlQuery):
 
     """
     Represents a general query to the CRUD endpoint for the KnowledgeStore.
-
+    # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/{action}?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
+    action = resources, mentions or files
     """
     # TODO: is *args, **kwargs really needed here?
 
-    def __init__(self, count_query, *args, **kwargs):
-        super(CountQuery, self).__init__(*args, **kwargs)
-        self.query_title = 'Count query'
-        self.query_template = count_query
+    def __init__(self, offset=0, limit=100, uris=None, output='html', *args, **kwargs):
+        super(CRUDQuery, self).__init__(*args, **kwargs)
+        self.query_title = 'CRUD query'
+        self.query_template = "{uri_0}"
+        self.original_uris = uris
+
+        self._process_input_uris(uris)
         self.query = self._build_query()
 
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template
+        return self.query_template.format(uri_0=self.uris[0])
+
+    def _build_count_query(self):
+        """ Returns a count query string. """
+        return ""
 
     # TODO: Should get_count() be the more general parse_query_results()?
     def get_count(self):
         """ Parses and returns result from a count query. """
         return 0
 
-    def submit_query(self, endpoint_url='https://knowledgestore.fbk.eu'
-                                        '/nwr/worldcup-hackathon/sparql'):
+    def submit_query(self, endpoint_url_stub='https://knowledgestore.fbk.eu'
+                                        '/nwr/worldcup-hackathon/{action}'):
         """ Submit query to endpoint; return result. """
+
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
-        payload = {'query': self.query}
-        response = request_url(endpoint_url, auth=(username, password),
-                               params=payload)
-        self.json_result = json.loads(response.content)
-#def get_raw_resource_metadata(resource_identifier, endpoint_url='https://knowledgestore.fbk.eu/nwrdemo/resources'):
-        """Get raw resource metadata from the CRUD endpoint"""
-#     https://knowledgestore.fbk.eu/nwrdemo/resources?id=%3Chttp://www.newsreader-project.eu/data/cars/2004/4/4/4C3S-T3H0-01CY-M246.xml%3E
-        clean_identifier = _clean_resource_identifier(resource_identifier) 
-        payload = {'id': clean_identifier}
-        response = requests.get(endpoint_url, params=payload)
-        return json.loads(response.content)
+        payload = {'id': self.query}
+        
+        endpoint_url = endpoint_url_stub.format(action=self.action)
+        print "\n\n**New CRUD query**"
+        print endpoint_url, payload
+        t0 = time.time()
+        try:
+            response = request_url(endpoint_url, auth=(username, password),
+                                   params=payload,
+                                   back_off=False)
+        except Exception as e:
+            print "Query raised an exception"
+            print type(e)
+            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
+            t1 = time.time()
+            total = t1-t0
+        else:
+            t1 = time.time()
+            total = t1-t0
+            print "Time to return from query: {0:.2f} seconds".format(total)
+            print "Response code: {0}".format(response.status_code)
+            print "From cache: {0}".format(response.from_cache)
+
+            print response.content
+            
+            if response and (response.status_code == requests.codes.ok):
+                self.json_result = json.loads(response.content)
+                self.clean_json = convert_raw_json_to_clean(self.json_result)
+            else:
+                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
 
     def _clean_resource_identifier(resource_identifier):
         """Ensure that the resource identifier starts with a <, ends with a > 
