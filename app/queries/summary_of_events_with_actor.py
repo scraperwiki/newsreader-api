@@ -26,8 +26,9 @@ UNION
 ?event sem:hasTime ?t .
 ?t owltime:inDateTime ?d .
 {date_filter_block}
-?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\\d{{4}}-\\\d{{2}}"))
+?t rdfs:label ?datetimetmp .
+  FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
+  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
 }}
 GROUP BY ?event ?datetime
 ORDER BY ?datetime
@@ -47,8 +48,9 @@ UNION
 ?event sem:hasTime ?t .
 ?t owltime:inDateTime ?d .
 {date_filter_block}
-?t rdfs:label ?datetime .
-  FILTER (regex(?datetime,"\\\\d{{4}}-\\\\d{{2}}"))
+?t rdfs:label ?datetimetmp .
+  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
 }}
 }}
                                """)
