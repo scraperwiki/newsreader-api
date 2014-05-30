@@ -179,7 +179,11 @@ def produce_response(query, page_number, offset):
                                query=query.query,
                                count=count,
                                headers=query.headers,
-                               results=result, offset=offset+1)
+                               results=result, 
+                               offset=offset+1,
+                               filter=query.filter,
+                               datefilter=query.datefilter,
+                               uris=query.uris)
 
 
 def cause_404_if_no_results(results, page_number):

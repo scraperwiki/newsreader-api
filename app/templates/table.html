@@ -8,9 +8,12 @@
   </head>
   <body>
       <div class="container">
-      <img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image">
+      <a href="http://www.newsreader-project.eu/"><img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image"></a>
+      <p>Simple API by <a href="https://scraperwiki.com/>ScraperWiki">ScraperWiki</a></p>
       <h1>{{title}}</h1>
-      <h4>Total number of results from this query: {{ count }}</h2>
+      <h3>Total number of results from this query: {{ count }}</h3>
+      <h4>Query parameters:</h4>
+      <p><strong>Filter:</strong> {{ filter }}, <strong>Date filter:</strong> {{ datefilter }}, <strong>uris.0:</strong> {{ uris[0] }}, <strong>uris.1:</strong> {{ uris[1] }}</p> 
       {% macro render_pagination(pagination) %}
         <div class=pagination>
         {% if pagination.has_prev %}
