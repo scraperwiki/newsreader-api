@@ -15,6 +15,7 @@ class get_document_metadata(CRUDQuery):
         self.query_title = 'Get document metadata'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
+        self.output = "json"
         self.action = "resources"
         
         self.jinja_template = 'table.html'
@@ -26,5 +27,14 @@ class get_document_metadata(CRUDQuery):
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
+
+    def get_total_result_count(self):
+        """ Returns result count for query, exception for this describe query """
+        return 0
+
+    def parse_query_results(self):
+        # TODO: nicely parsed needs defining; may depend on query
+        """ Returns nicely parsed result of query. """
+        return self.json_result
 
     

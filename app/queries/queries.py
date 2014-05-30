@@ -242,11 +242,14 @@ class CRUDQuery(SparqlQuery):
         super(CRUDQuery, self).__init__(*args, **kwargs)
         self.query_title = 'CRUD query'
         self.query_template = "{uri_0}"
+        self.original_uris = uris
+
+        self._process_input_uris(uris)
         self.query = self._build_query()
 
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template(uri_0=self.uris[0])
+        return self.query_template.format(uri_0=self.uris[0])
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -264,7 +267,7 @@ class CRUDQuery(SparqlQuery):
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
         payload = {'id': self.query}
-        
+        print self.query
         endpoint_url = endpoint_url_stub.format(action=self.action)
         print "\n\n**New CRUD query**"
         print endpoint_url, payload
@@ -286,6 +289,8 @@ class CRUDQuery(SparqlQuery):
             print "Response code: {0}".format(response.status_code)
             print "From cache: {0}".format(response.from_cache)
 
+            print response.content
+            
             if response and (response.status_code == requests.codes.ok):
                 self.json_result = json.loads(response.content)
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
