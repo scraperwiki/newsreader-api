@@ -48,7 +48,7 @@
             {% for result in results %}
             <tr>
               {% for header in headers %}
-                {% if result[header].startswith('http') %}
+                {% if result[header] != None and result[header].startswith('http') %}
               <td><a href="{{ result[header] }}">{{ result[header] }}</td>
                 {% else %}
               <td>{{result[header]}}</td>
