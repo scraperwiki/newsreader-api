@@ -267,7 +267,7 @@ class CRUDQuery(SparqlQuery):
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
         payload = {'id': self.query}
-        print self.query
+        
         endpoint_url = endpoint_url_stub.format(action=self.action)
         print "\n\n**New CRUD query**"
         print endpoint_url, payload
