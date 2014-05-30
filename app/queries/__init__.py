@@ -15,3 +15,4 @@ from .summary_of_events_with_actor import summary_of_events_with_actor
 from .actors_sharing_event_with_an_actor import (
                                         actors_sharing_event_with_an_actor)
 from .get_document_metadata import get_document_metadata
+from .summary_of_events_with_two_actors import summary_of_events_with_two_actors
