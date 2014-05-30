@@ -64,6 +64,7 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
         self.prefix_block = """
+# Query from Newsreader Simple API
 PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
