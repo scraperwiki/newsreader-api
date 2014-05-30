@@ -102,7 +102,7 @@ def run_query(page, query_to_use):
         missing_query_response.append({"Message":["For available queries, see here:",
                                         get_root_url()]})
         return json.dumps(missing_query_response, sort_keys=True)
-
+    print request.query_string
     query_args = parse_query_string(request.query_string)
 
     if "error" in query_args.keys():
