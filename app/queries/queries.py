@@ -246,7 +246,7 @@ class CRUDQuery(SparqlQuery):
 
     def _build_query(self):
         """ Returns a query string. """
-        return self.query_template
+        return self.query_template(uri_0=self.uris[0])
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -260,12 +260,14 @@ class CRUDQuery(SparqlQuery):
     def submit_query(self, endpoint_url_stub='https://knowledgestore.fbk.eu'
                                         '/nwr/worldcup-hackathon/{action}'):
         """ Submit query to endpoint; return result. """
+
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
         payload = {'id': self.query}
-        print endpoint_url_stub
-        print self.action
-        endpoint_url = endpoint_url_stub.format(self.action)
+        
+        endpoint_url = endpoint_url_stub.format(action=self.action)
+        print "\n\n**New CRUD query**"
+        print endpoint_url, payload
         t0 = time.time()
         try:
             response = request_url(endpoint_url, auth=(username, password),
