@@ -75,6 +75,11 @@ def index():
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":["output","offset","limit"],
                                    "example":root_url + "/properties_of_a_type?uris.0=dbo:SoccerPlayer"})
+    function_list['queries'].append({"url":"summary_of_events_with_two_actors",
+                                   "required_parameters":["uris.0","uris.1"],
+                                   "optional_parameters":["output","offset","limit","datefilter"],
+                                   "example":root_url + "/summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter"})
+
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')

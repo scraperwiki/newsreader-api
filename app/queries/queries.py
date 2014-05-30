@@ -112,7 +112,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
         if len_uris < self.number_of_uris_required:
             message = "{0} required, {1} supplied".format(
-                self.number_of_uris_required, len(self.uris))
+                self.number_of_uris_required, len_uris)
             self.error_message.append({"error":"Insufficient_uris_supplied: {0}".format(message)})
 
     def _build_query(self):
