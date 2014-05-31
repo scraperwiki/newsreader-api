@@ -25,7 +25,7 @@ def index():
     """ Provide documentation when accessing the root page """
     root_url = get_root_url()
     
-    function_list = make_documentation(root_url)    
+    function_list = make_documentation.make_documentation(root_url)    
     
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
     return Response(help, content_type='application/json; charset=utf-8')
