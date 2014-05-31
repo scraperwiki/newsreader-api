@@ -24,12 +24,15 @@ PER_PAGE = 20
 def index():
     """ Provide documentation when accessing the root page """
     root_url = get_root_url()
-    
-    function_list = make_documentation.make_documentation(root_url)    
-    
-    help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
-    return Response(help, content_type='application/json; charset=utf-8')
-
+    function_list = make_documentation.make_documentation(root_url)
+    output = parse_query_string(request.query_string)
+    if "output" not in output.keys():
+        output['output'] = 'html'
+    if output['output'] == 'json':
+        help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
+        return Response(help, content_type='application/json; charset=utf-8')
+    elif output['output'] == 'html':
+        return render_template('index.html', help=function_list)
 
 def parse_query_string(query_string):
     """ Return dict containing query string values.
