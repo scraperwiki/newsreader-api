@@ -289,7 +289,7 @@ class CRUDQuery(SparqlQuery):
             print "Response code: {0}".format(response.status_code)
             print "From cache: {0}".format(response.from_cache)
 
-            print response.content
+            #print response.content
             
             if response and (response.status_code == requests.codes.ok):
                 self.json_result = json.loads(response.content)
