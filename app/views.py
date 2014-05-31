@@ -83,6 +83,10 @@ def index():
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":[],
                                    "example":root_url + "/get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm"})
+    function_list['queries'].append({"url":"get_mention_metadata",
+                                   "required_parameters":["uris.0"],
+                                   "optional_parameters":[],
+                                   "example":root_url + "/get_mention_metadata?uris.0=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E"})
 
 
     help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)

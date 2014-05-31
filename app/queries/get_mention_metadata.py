@@ -7,7 +7,7 @@ from queries import CRUDQuery
 class get_mention_metadata(CRUDQuery):
     """ Get the metadata of a mention
 
-    http://127.0.0.1:5000/get_mention_metadata?uris.0=<uri>
+    http://127.0.0.1:5000/get_mention_metadata?uris.0=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E
     """
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/mentions?id=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
