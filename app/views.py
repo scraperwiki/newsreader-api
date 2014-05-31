@@ -93,7 +93,9 @@ def produce_response(query, page_number, offset):
         output['count'] = count
         output['page number'] = page_number
         output['next page'] = root_url + url_for_other_page(pagination.page + 1)
-        return json.dumps(output, sort_keys=True)
+        response = make_response(json.dumps(output, sort_keys=True))
+        response.headers['Content-type']='application/json; charset=utf-8'
+        return response
     elif query.output == 'csv':
         if query.result_is_tabular:
             output = StringIO.StringIO()

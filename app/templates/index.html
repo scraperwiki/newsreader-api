@@ -14,7 +14,18 @@
       <p></p>
       {% for query in help['queries'] %}
       <h3>{{ query['url'] }}</h3>
+      <p><strong>Required parameters: </strong>
+        {%for parameter in query['required_parameters']%}
+          {{parameter}}, 
+        {% endfor %}
+      </p>
+      <p><strong>Optional parameters: </strong>
+        {%for parameter in query['optional_parameters']%}
+          {{parameter}}, 
+        {% endfor %}
+      </p>
       <p><strong>Example: </strong><a href="{{query['example']}}">{{query['example']}}</a></p>
+      <p></p>
       {% endfor %}
       </div>
   </body>
