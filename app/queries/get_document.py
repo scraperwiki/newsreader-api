@@ -4,6 +4,15 @@ from __future__ import unicode_literals
 
 from queries import CRUDQuery
 
+import os
+import time
+
+from dshelpers import request_url
+
+import requests
+import json
+
+
 class get_document(CRUDQuery):
     """ Get the text of a document
 
@@ -37,5 +46,42 @@ class get_document(CRUDQuery):
         # TODO: nicely parsed needs defining; may depend on query
         """ Returns nicely parsed result of query. """
         return self.json_result
+
+    def submit_query(self, endpoint_url_stub='https://knowledgestore.fbk.eu'
+                                        '/nwr/worldcup-hackathon/{action}'):
+        """ Submit query to endpoint; return result. """
+
+        username = os.environ['NEWSREADER_USERNAME']
+        password = os.environ['NEWSREADER_PASSWORD']
+        payload = {'id': self.query}
+        
+        endpoint_url = endpoint_url_stub.format(action=self.action)
+        print "\n\n**New CRUD query**"
+        print endpoint_url, payload
+        t0 = time.time()
+        try:
+            response = request_url(endpoint_url, auth=(username, password),
+                                   params=payload,
+                                   back_off=False)
+        except Exception as e:
+            print "Query raised an exception"
+            print type(e)
+            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
+            t1 = time.time()
+            total = t1-t0
+        else:
+            t1 = time.time()
+            total = t1-t0
+            print "Time to return from query: {0:.2f} seconds".format(total)
+            print "Response code: {0}".format(response.status_code)
+            print "From cache: {0}".format(response.from_cache)
+
+            #print response.content
+            
+            if response and (response.status_code == requests.codes.ok):
+                self.json_result = {"content":response.content}
+                self.clean_json = self.json_result
+            else:
+                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
 
     
