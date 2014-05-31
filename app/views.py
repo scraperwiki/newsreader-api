@@ -24,12 +24,15 @@ PER_PAGE = 20
 def index():
     """ Provide documentation when accessing the root page """
     root_url = get_root_url()
-    
-    function_list = make_documentation.make_documentation(root_url)    
-    
-    help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
-    return Response(help, content_type='application/json; charset=utf-8')
-
+    function_list = make_documentation.make_documentation(root_url)
+    output = parse_query_string(request.query_string)
+    if "output" not in output.keys():
+        output['output'] = 'html'
+    if output['output'] == 'json':
+        help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
+        return Response(help, content_type='application/json; charset=utf-8')
+    elif output['output'] == 'html':
+        return render_template('index.html', help=function_list, root_url=root_url)
 
 def parse_query_string(query_string):
     """ Return dict containing query string values.
@@ -90,7 +93,9 @@ def produce_response(query, page_number, offset):
         output['count'] = count
         output['page number'] = page_number
         output['next page'] = root_url + url_for_other_page(pagination.page + 1)
-        return json.dumps(output, sort_keys=True)
+        response = make_response(json.dumps(output, sort_keys=True))
+        response.headers['Content-type']='application/json; charset=utf-8'
+        return response
     elif query.output == 'csv':
         if query.result_is_tabular:
             output = StringIO.StringIO()

@@ -26,7 +26,7 @@ def make_documentation(root_url):
                                    "optional_parameters":["filter","output","offset","limit"],
                                    "example":root_url + "/types_of_actors?output=html&filter=player"})
     function_list['queries'].append({"url":"describe_uri",
-                                   "parameter":["uris.0"],
+                                   "required_parameters":["uris.0"],
                                    "optional_parameters":[],
                                    "example":root_url + "/describe_uri?uris.0=dbpedia:David_Beckham&output=json"})
     function_list['queries'].append({"url":"event_details_filtered_by_actor",
@@ -64,7 +64,7 @@ def make_documentation(root_url):
     function_list['queries'].append({"url":"get_mention_metadata",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":[],
-                                   "example":root_url + "/get_mention_metadata?uris.0=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E"})
+                                   "example":root_url + "/get_mention_metadata?uris.0=http%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220"})
     function_list['queries'].append({"url":"get_document",
                                    "required_parameters":["uris.0"],
                                    "optional_parameters":[],
