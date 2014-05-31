@@ -32,7 +32,7 @@ def index():
         help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
         return Response(help, content_type='application/json; charset=utf-8')
     elif output['output'] == 'html':
-        return render_template('index.html', help=function_list)
+        return render_template('index.html', help=function_list, root_url=root_url)
 
 def parse_query_string(query_string):
     """ Return dict containing query string values.
