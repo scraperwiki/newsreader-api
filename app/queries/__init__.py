@@ -17,6 +17,8 @@ from .actors_sharing_event_with_an_actor import (
 
 from .summary_of_events_with_two_actors import summary_of_events_with_two_actors
 
+from .framenet_frequency_count import framenet_frequency_count
+
 from .get_document_metadata import get_document_metadata
 from .get_mention_metadata import get_mention_metadata
 from .get_document import get_document
