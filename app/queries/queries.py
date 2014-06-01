@@ -68,6 +68,9 @@ class SparqlQuery(object):
 PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX framenet: <http://www.newsreader-project.eu/framenet/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dbpedia: <http://dbpedia.org/resource/>
                             """
         self.allowed_parameters_block = """
 # All allowed parameters:
@@ -105,7 +108,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             self.date_filter_block = ''
     
     def _make_filter_block(self):
-        print self.filter
         if self.filter != 'None':
             self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
         else:
@@ -174,6 +176,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
+            print "Time to return from query: {0:.2f} seconds".format(total)
         else:
             t1 = time.time()
             total = t1-t0
