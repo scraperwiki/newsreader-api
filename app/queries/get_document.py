@@ -22,7 +22,9 @@ class get_document(CRUDQuery):
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
     def __init__(self, *args, **kwargs):
         super(get_document, self).__init__(*args, **kwargs)
-        self.query_title = 'Get document'
+        self.query_title = 'Get document the text of a document'
+        self.url = 'get_document'
+        self.example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = "json"
@@ -30,7 +32,7 @@ class get_document(CRUDQuery):
         
         self.jinja_template = 'table.html'
         
-        self.headers = ['property']
+        self.headers = ['content']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = []

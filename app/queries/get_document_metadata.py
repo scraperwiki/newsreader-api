@@ -13,6 +13,8 @@ class get_document_metadata(CRUDQuery):
     def __init__(self, *args, **kwargs):
         super(get_document_metadata, self).__init__(*args, **kwargs)
         self.query_title = 'Get document metadata'
+        self.url = 'get_document_metadata'
+        self.example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = "json"
@@ -20,7 +22,7 @@ class get_document_metadata(CRUDQuery):
         
         self.jinja_template = 'table.html'
         
-        self.headers = ['property']
+        self.headers = ['**output is a graph**']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = []

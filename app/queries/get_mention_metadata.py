@@ -14,6 +14,8 @@ class get_mention_metadata(CRUDQuery):
     def __init__(self, *args, **kwargs):
         super(get_mention_metadata, self).__init__(*args, **kwargs)
         self.query_title = 'Get mention metadata'
+        self.url = 'get_mention_metadata'
+        self.example = 'get_mention_metadata?uris.0=http%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = "json"
@@ -21,7 +23,7 @@ class get_mention_metadata(CRUDQuery):
         
         self.jinja_template = 'table.html'
         
-        self.headers = ['property']
+        self.headers = ['**output is a graph**']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = []

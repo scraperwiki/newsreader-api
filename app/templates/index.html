@@ -15,9 +15,22 @@
       {{root_url}}/{page/[n]/}query_name?param1=[string]&amp;param2=[string]
       <p></p>
       <p>Where page is an option component with default /page/1</p>
-      <h2>Queries</h2>
+      <h3>Parameters</h3>
+        <ul>
+          {%for parameter in help['parameters']%}
+            <li>{{parameter}}</li> 
+          {% endfor %}
+        </ul>
+      <h3>Prefixes</h3>
+        <ul>
+          {%for prefix in help['prefixes']%}
+            <li>{{prefix}}</li> 
+          {% endfor %}
+        </ul>
+      <h3>Queries</h3>
       {% for query in help['queries'] %}
-      <h3>{{ query['url'] }}</h3>
+      <h3>{{ query['title'] }}</h3>
+      <p><strong>url: </strong>{{query['url']}}</p>
       <p><strong>Required parameters: </strong>
         {%for parameter in query['required_parameters']%}
           {{parameter}}, 
@@ -25,6 +38,11 @@
       </p>
       <p><strong>Optional parameters: </strong>
         {%for parameter in query['optional_parameters']%}
+          {{parameter}}, 
+        {% endfor %}
+      </p>
+      <p><strong>Output headers: </strong>
+        {%for parameter in query['output_columns']%}
           {{parameter}}, 
         {% endfor %}
       </p>

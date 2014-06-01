@@ -14,6 +14,8 @@ class properties_of_a_type(SparqlQuery):
         super(properties_of_a_type,
               self).__init__(*args, **kwargs)
         self.query_title = 'Get the properties of a type'
+        self.url = 'properties_of_a_type'
+        self.example = 'properties_of_a_type?uris.0=dbo:SoccerPlayer'
         self.query_template = ("""
 SELECT DISTINCT ?property
 WHERE {{
