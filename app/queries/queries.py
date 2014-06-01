@@ -40,7 +40,7 @@ class SparqlQuery(object):
 
         self.offset = offset
         self.limit = limit
-        self.filter = filter
+        self.filter = str(filter)
         self.datefilter = str(datefilter)
         self.date_filter_block = None
         self.filter_block = None
@@ -107,6 +107,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             self.date_filter_block = ''
     
     def _make_filter_block(self):
+        print self.filter
         if self.filter != 'None':
             self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
         else:
