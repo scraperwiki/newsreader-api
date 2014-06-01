@@ -49,6 +49,7 @@ class SparqlQuery(object):
         self._make_filter_block()
 
         self.query_title = None
+        self.description = ""
         self.query_template = None
         self.query = None
         self.json_result = None
@@ -132,14 +133,14 @@ PREFIX dbpedia: <http://dbpedia.org/resource/>
             full_query = (self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.query_template)
-
             query = full_query.format(offset=self.offset,
                                       limit=self.limit,
                                       output=self.output,
                                       filter_block=self.filter_block,
                                       date_filter_block=self.date_filter_block,
                                       uri_0=self.uris[0],
-                                      uri_1=self.uris[1])
+                                      uri_1=self.uris[1]
+                                      )
             return query
         else:
             return None
@@ -278,7 +279,6 @@ class CRUDQuery(SparqlQuery):
         
         endpoint_url = endpoint_url_stub.format(action=self.action)
         print "\n\n**New CRUD query**"
-        print endpoint_url, payload
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),

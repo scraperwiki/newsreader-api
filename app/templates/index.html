@@ -30,6 +30,7 @@
       <h3>Queries</h3>
       {% for query in help['queries'] %}
       <h3>{{ query['title'] }}</h3>
+      <p>{{query['description']}}</p>
       <p><strong>url: </strong>{{query['url']}}</p>
       <p><strong>Required parameters: </strong>
         {%for parameter in query['required_parameters']%}
