@@ -7,8 +7,6 @@ import json
 
 from collections import namedtuple
 
-from dshelpers import request_url
-
 import requests
 import requests_cache
 
@@ -168,9 +166,8 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         print self.query
         t0 = time.time()
         try:
-            response = request_url(endpoint_url, auth=(username, password),
-                                   params=payload,
-                                   back_off=False)
+            response = requests.get(endpoint_url, auth=(username, password),
+                                    params=payload)
         except Exception as e:
             print "Query raised an exception"
             print type(e)
@@ -281,9 +278,8 @@ class CRUDQuery(SparqlQuery):
         print endpoint_url, payload
         t0 = time.time()
         try:
-            response = request_url(endpoint_url, auth=(username, password),
-                                   params=payload,
-                                   back_off=False)
+            response = requests.get(endpoint_url, auth=(username, password),
+                                    params=payload)
         except Exception as e:
             print "Query raised an exception"
             print type(e)
