@@ -20,8 +20,10 @@ class property_of_actors_of_a_type(SparqlQuery):
 SELECT DISTINCT ?actor ?value where
 {{
   ?event a sem:Event . 
-  ?event sem:hasActor ?actor .
-  ?actor a {uri_0} .
+  ?event sem:hasActor ?filterfield .
+  ?filterfield a {uri_0} .
+  {filter_block}
+  BIND (?filterfield as ?actor) . 
   ?actor {uri_1} ?value . 
 }}
 order by desc(?value)
@@ -33,9 +35,11 @@ OFFSET {offset}
 SELECT (count (DISTINCT ?actor) as ?count) where
 {{
   ?event a sem:Event . 
-  ?event sem:hasActor ?actor .
-  ?actor a {uri_0} .
-  ?actor {uri_1} ?value . 
+  ?event sem:hasActor ?filterfield .
+  ?filterfield a {uri_0} .
+  {filter_block}
+  BIND (?filterfield as ?actor) . 
+  ?actor {uri_1} ?value .
 }}
                                """)
 
@@ -43,7 +47,7 @@ SELECT (count (DISTINCT ?actor) as ?count) where
         self.headers = ['actor', 'value']
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit"]
+        self.optional_parameters = ["output", "offset", "limit", "field"]
         self.number_of_uris_required = 2
 
         self.query = self._build_query()

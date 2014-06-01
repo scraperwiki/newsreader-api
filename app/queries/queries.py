@@ -36,17 +36,19 @@ class SparqlQuery(object):
 
     def __init__(self, offset=0, limit=100, uris=None, output='html',
                  datefilter=None,
-                 filter=":"):
+                 filter=None):
 
         self.offset = offset
         self.limit = limit
-        self.filter = filter
+        self.filter = str(filter)
         self.datefilter = str(datefilter)
         self.date_filter_block = None
+        self.filter_block = None
         self.original_uris = uris
 
         self._process_input_uris(uris)
         self._make_date_filter_block()
+        self._make_filter_block()
 
         self.query_title = None
         self.query_template = None
@@ -73,7 +75,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 # All allowed parameters:
 # output: {output}, offset: {offset}, limit: {limit}, 
 # uri.0: {uri_0}, uri.1: {uri_1}
-# filter: {filter}, date_filter_block: {date_filter_block}
+# filter_block: {filter_block}, date_filter_block: {date_filter_block}
                                         """
 
     def _process_input_uris(self, uris):
@@ -103,7 +105,13 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 self.date_filter_block += '?d owltime:day "{0}"^^xsd:int . '.format(dateparts[2])
         else:
             self.date_filter_block = ''
-        
+    
+    def _make_filter_block(self):
+        print self.filter
+        if self.filter != 'None':
+            self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+        else:
+            self.filter_block = ''    
 
     def _check_parameters(self):
         if self.original_uris is None:
@@ -128,7 +136,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
             query = full_query.format(offset=self.offset,
                                       limit=self.limit,
                                       output=self.output,
-                                      filter=self.filter,
+                                      filter_block=self.filter_block,
                                       date_filter_block=self.date_filter_block,
                                       uri_0=self.uris[0],
                                       uri_1=self.uris[1])
@@ -144,7 +152,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         return full_query.format(offset=self.offset,
                                  limit=self.limit,
                                  output=self.output,
-                                 filter=self.filter,
+                                 filter_block=self.filter_block,
                                  date_filter_block=self.date_filter_block,
                                  uri_0=self.uris[0],
                                  uri_1=self.uris[1])

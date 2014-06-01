@@ -20,11 +20,12 @@ class types_of_actors(SparqlQuery):
 SELECT ?type (COUNT (*) as ?count) 
 WHERE {{
 ?a rdf:type sem:Actor . 
-?a rdf:type ?type . 
-FILTER (?type != sem:Actor && 
-STRSTARTS(STR(?type), 
-"http://dbpedia.org/ontology/") && 
-contains(LCASE(str(?type)), "{filter}"))}} 
+?a rdf:type ?filterfield . 
+FILTER (?filterfield != sem:Actor) . 
+FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
+{filter_block}
+BIND (?filterfield as ?type) . 
+}}
 GROUP BY ?type 
 ORDER BY DESC(?count) 
 OFFSET {offset} 
@@ -35,11 +36,12 @@ LIMIT {limit}
 SELECT (COUNT (distinct ?type) as ?count) 
 WHERE {{ 
 ?a rdf:type sem:Actor . 
-?a rdf:type ?type . 
-FILTER (?type != sem:Actor && 
-STRSTARTS(STR(?type), 
-"http://dbpedia.org/ontology/") && 
-contains(LCASE(str(?type)), "{filter}"))}}
+?a rdf:type ?filterfield . 
+FILTER (?filterfield != sem:Actor) . 
+FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
+{filter_block}
+BIND (?filterfield as ?type) . 
+}}
                                 """)
 
         self.jinja_template = 'table.html'
