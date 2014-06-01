@@ -49,6 +49,7 @@ class SparqlQuery(object):
         self._make_filter_block()
 
         self.query_title = None
+        self.description = ""
         self.query_template = None
         self.query = None
         self.json_result = None
