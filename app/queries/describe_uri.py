@@ -16,7 +16,7 @@ class describe_uri(SparqlQuery):
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.description = 'Uses the SPARQL DESCRIBE keyword which returns a network not compatible with HTML display'
         self.url = 'describe_uri'
-        self.example = 'describe_uri?uris.0=dbpedia:David_Beckham'
+        self.example = 'describe_uri?uris.0=dbpedia:David_Beckham&output=json'
         self.query_template = ("""
 DESCRIBE {uri_0}
                                """)
