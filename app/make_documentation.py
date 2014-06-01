@@ -21,6 +21,7 @@ def make_documentation(root_url):
                      "prefixes":["dbo - types of things - i.e. dbo:SoccerPlayer", 
                                  "dbpedia - instances of things - i.e. dbpedia:David_Beckham",
                                  "framenet - NewsReader link to FrameNet semantic frames",
+                                 "gaf - Grounded Annotation Framework, just contains gaf:denotedBy which references mentions", 
                                  "rdf - Resource Description Framework",
                                  "rdfs - RDF Schema",
                                  "sem - semanticweb, key to the NewsReader technology"], 

@@ -72,6 +72,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX framenet: <http://www.newsreader-project.eu/framenet/>
 PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX dbpedia: <http://dbpedia.org/resource/>
+PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
                             """
         self.allowed_parameters_block = """
 # All allowed parameters:
