@@ -23,7 +23,7 @@ class get_mention_metadata(CRUDQuery):
         
         self.jinja_template = 'table.html'
         
-        self.headers = ['property']
+        self.headers = ['**output is a graph**']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = []

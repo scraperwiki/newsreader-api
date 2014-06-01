@@ -15,7 +15,7 @@ class describe_uri(SparqlQuery):
         super(describe_uri, self).__init__(*args, **kwargs)
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.url = 'describe_uri'
-        self.example = 'describe_uri?uris.0=dbpedia:David_Beckham&output=json'
+        self.example = 'describe_uri?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""
 DESCRIBE {uri_0}
                                """)
@@ -26,6 +26,7 @@ DESCRIBE {uri_0}
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit"]
+        self.headers = ['**output is a graph**']
         self.number_of_uris_required = 1
 
         self.query = self._build_query()

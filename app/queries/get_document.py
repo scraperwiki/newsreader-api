@@ -32,7 +32,7 @@ class get_document(CRUDQuery):
         
         self.jinja_template = 'table.html'
         
-        self.headers = ['property']
+        self.headers = ['content']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = []
