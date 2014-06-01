@@ -14,6 +14,8 @@ class event_details_filtered_by_actor(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(event_details_filtered_by_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get event details by actor'
+        self.url = 'event_details_filtered_by_actor'
+        self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json'
         self.headers = ['event', 'predicate', 'object', 'object_type']
         self.query_template = ("""
 SELECT ?event ?predicate ?object 

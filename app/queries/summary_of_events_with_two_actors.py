@@ -14,7 +14,9 @@ class summary_of_events_with_two_actors(SparqlQuery):
 
     def __init__(self, *args, **kwargs):
         super(summary_of_events_with_two_actors, self).__init__(*args, **kwargs)
-        self.query_title = 'Get events mentioning a two named actors'
+        self.query_title = 'Get events mentioning two named actors'
+        self.url = 'summary_of_events_with_two_actors'
+        self.example = 'summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter'
         self.query_template = ("""
 SELECT 
 ?event (COUNT (?event) AS ?event_size) ?datetime

@@ -15,6 +15,8 @@ class actors_sharing_event_with_an_actor(SparqlQuery):
         super(actors_sharing_event_with_an_actor,
               self).__init__(*args, **kwargs)
         self.query_title = 'Get actors sharing an event with a named actor with count of occurence'
+        self.url = 'actors_sharing_event_with_an_actor'
+        self.example = 'actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""
 SELECT DISTINCT ?actor ?actor2 (COUNT(?evt) as ?numEvent) ?comment
 WHERE {{

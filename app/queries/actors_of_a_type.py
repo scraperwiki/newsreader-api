@@ -15,7 +15,7 @@ class actors_of_a_type(SparqlQuery):
         super(actors_of_a_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get URIs, counts and comments of actors with a specified type'
         self.url = 'actors_of_a_type'
-        self.example = 'actors_of_a_type?uris.0=dbpedia:Person&output=json&filter=david'
+        self.example = 'actors_of_a_type?uris.0=dbo:Person&output=json&filter=david'
         self.query_template = ("""
 SELECT ?actor (count(?actor) as ?count) ?comment
 WHERE {{ 
