@@ -15,15 +15,16 @@ class actors_of_a_type(SparqlQuery):
         super(actors_of_a_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get URIs, counts and comments of actors with a specified type'
         self.url = 'actors_of_a_type'
-        self.example = 'actors_of_a_type?uris.0=dbo:Person&output=json&filter=david'
+        self.example = 'actors_of_a_type?uris.0=dbo:Person&filter=david'
         self.query_template = ("""
 SELECT ?actor (count(?actor) as ?count) ?comment
 WHERE {{ 
 ?event rdf:type sem:Event . 
-?event sem:hasActor ?actor .
-?actor rdf:type {uri_0} .
-OPTIONAL {{?actor rdfs:comment ?comment .}}
-FILTER (contains(LCASE(str(?actor)), "{filter}"))
+?event sem:hasActor ?filterfield .
+?filterfield rdf:type {uri_0} .
+OPTIONAL {{?filterfield rdfs:comment ?comment .}}
+{filter_block}
+BIND (?filterfield as ?actor) .
 }}
 GROUP BY ?actor ?comment
 ORDER BY desc(?count)
@@ -35,10 +36,11 @@ LIMIT {limit}
 SELECT (count(DISTINCT ?actor) as ?count)
 WHERE {{ 
 ?event rdf:type sem:Event . 
-?event sem:hasActor ?actor .
-?actor rdf:type {uri_0} .
-OPTIONAL {{?actor rdfs:comment ?comment .}}
-FILTER (contains(LCASE(str(?actor)), "{filter}")) .
+?event sem:hasActor ?filterfield .
+?filterfield rdf:type {uri_0} .
+OPTIONAL {{?filterfield rdfs:comment ?comment .}}
+{filter_block}
+BIND (?filterfield as ?actor) .
 }}
                                """)
 
