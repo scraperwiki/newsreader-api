@@ -19,7 +19,11 @@ def make_documentation(root_url):
                                    "uris.[n]",
                                    "timefilter - YYYY, YYYY-MM or YYYY-MM-DD"],
                      "prefixes":["dbo - types of things - i.e. dbo:SoccerPlayer", 
-                                 "dbpedia - instances of things - i.e. dbpedia:David_Beckham"], 
+                                 "dbpedia - instances of things - i.e. dbpedia:David_Beckham",
+                                 "framenet - NewsReader link to FrameNet semantic frames",
+                                 "rdf - Resource Description Framework",
+                                 "rdfs - RDF Schema",
+                                 "sem - semanticweb, key to the NewsReader technology"], 
                      "queries":[]}
 
     query_long_list = dir(queries)
@@ -33,11 +37,11 @@ def make_documentation(root_url):
         query_object = query_name()
         function_list['queries'].append({
                                    "title": query_object.query_title,
+                                   "description": query_object.description,
                                    "url": query_object.url,
                                    "required_parameters":query_object.required_parameters,
                                    "optional_parameters":query_object.optional_parameters,
                                    "output_columns":query_object.headers,
                                    "example":root_url + '/' + query_object.example})
-
-        print query_object.query_title
     return function_list
+

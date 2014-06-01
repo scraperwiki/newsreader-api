@@ -16,6 +16,7 @@ from .actors_sharing_event_with_an_actor import (
                                         actors_sharing_event_with_an_actor)
 
 from .summary_of_events_with_two_actors import summary_of_events_with_two_actors
+from .summary_of_events_with_framenet import summary_of_events_with_framenet
 
 from .framenet_frequency_count import framenet_frequency_count
 
