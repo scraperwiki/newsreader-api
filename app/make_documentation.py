@@ -35,7 +35,7 @@ def make_documentation(root_url):
         if query in reject_list:
             continue
         query_name = getattr(queries, query)
-        query_object = query_name()
+        query_object = query_name(offset=0, limit=100, uris=["dbpedia:David_Beckham", "dbpedia:David_Beckham"], filter='David', datefilter='1999-08', output='html')
         function_list['queries'].append({
                                    "title": query_object.query_title,
                                    "description": query_object.description,
@@ -43,6 +43,7 @@ def make_documentation(root_url):
                                    "required_parameters":query_object.required_parameters,
                                    "optional_parameters":query_object.optional_parameters,
                                    "output_columns":query_object.headers,
-                                   "example":root_url + '/' + query_object.example})
+                                   "example":root_url + '/' + query_object.example,
+                                   "sparql": query_object.query})
     return function_list
 
