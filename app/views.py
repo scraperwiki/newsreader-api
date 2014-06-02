@@ -94,7 +94,7 @@ def produce_response(query, page_number, offset):
         output['page number'] = page_number
         output['next page'] = root_url + url_for_other_page(pagination.page + 1)
         response = make_response(json.dumps(output, sort_keys=True))
-        response.headers['Content-type']=str('application/json; charset=utf-8')
+        response.headers[str('Content-type')]=str('application/json; charset=utf-8')
         return response
     elif query.output == 'csv':
         if query.result_is_tabular:
@@ -108,8 +108,8 @@ def produce_response(query, page_number, offset):
 
             filename = 'results-page-{0}.csv'.format(page_number)
             response = make_response(output.getvalue())
-            response.headers['Content-type']=str('text/csv; charset=utf-8')
-            response.headers['Content-disposition']=str('attachment;filename='+filename)
+            response.headers[str('Content-type')]=str('text/csv; charset=utf-8')
+            response.headers[str('Content-disposition')]=str('attachment;filename='+filename)
             return response
             #return Response(output.getvalue(), 
             #  content_type='text/csv; charset=utf-8',
