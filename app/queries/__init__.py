@@ -20,6 +20,7 @@ from .actors_sharing_event_with_an_actor import (
 
 from .summary_of_events_with_two_actors import summary_of_events_with_two_actors
 from .summary_of_events_with_actor import summary_of_events_with_actor
+from .summary_of_events_with_actor_type import summary_of_events_with_actor_type
 
 from .summary_of_events_with_event_label import summary_of_events_with_event_label
 from .event_label_frequency_count import event_label_frequency_count
