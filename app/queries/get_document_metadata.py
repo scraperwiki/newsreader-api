@@ -13,7 +13,11 @@ class get_document_metadata(CRUDQuery):
     def __init__(self, *args, **kwargs):
         super(get_document_metadata, self).__init__(*args, **kwargs)
         self.query_title = 'Get document metadata'
-        self.description = 'Uses the SPARQL DESCRIBE keyword which returns a network not compatible with HTML display'
+        self.description = ('Get the metadata of a document, this includes title'
+            ' and author where available and also a list of all the "mentions" '
+            'it contains, which can be lengthy and not necessarily informative.'
+            ' It uses the SPARQL DESCRIBE keyword which returns'
+            ' a network not compatible with HTML display.')
         self.url = 'get_document_metadata'
         self.example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")

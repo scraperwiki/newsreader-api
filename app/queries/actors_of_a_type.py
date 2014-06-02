@@ -13,7 +13,8 @@ class actors_of_a_type(SparqlQuery):
 
     def __init__(self, *args, **kwargs):
         super(actors_of_a_type, self).__init__(*args, **kwargs)
-        self.query_title = 'Get URIs, counts and comments of actors with a specified type'
+        self.query_title = 'Actors of a specified type'
+        self.description = 'Get actors of a specified type, i.e dbo:people with the option to filter the URI with a text string i.e. "David"'
         self.url = 'actors_of_a_type'
         self.example = 'actors_of_a_type?uris.0=dbo:Person&filter=david'
         self.query_template = ("""

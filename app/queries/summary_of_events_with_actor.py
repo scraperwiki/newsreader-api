@@ -15,6 +15,8 @@ class summary_of_events_with_actor(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(summary_of_events_with_actor, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a named actor'
+        self.description = ('A list of events mentioning a specified actor'
+          ', providing a link to the event and some summary information.')
         self.url = 'summary_of_events_with_actor'
         self.example = 'summary_of_events_with_actor?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""

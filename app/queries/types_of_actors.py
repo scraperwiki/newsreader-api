@@ -13,7 +13,9 @@ class types_of_actors(SparqlQuery):
 
     def __init__(self, *args, **kwargs):
         super(types_of_actors, self).__init__(*args, **kwargs)
-        self.query_title = 'dbpedia entities that are actors in any event'
+        self.query_title = 'Types of actors'
+        self.dsecription = ('The types of actors, i.e. dbo:SoccerPlayer found' 
+            ' in any event')
         self.url = 'types_of_actors'
         self.example = 'types_of_actors?filter=player'
         self.query_template = ("""
