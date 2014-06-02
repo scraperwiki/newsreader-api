@@ -13,11 +13,11 @@ def make_documentation(root_url):
                                     ""
                         ],
                      "parameters":["output = {json|html|csv}",
-                                   "limit",
-                                   "offset",
-                                   "filter",
-                                   "uris.[n]",
-                                   "timefilter - YYYY, YYYY-MM or YYYY-MM-DD"],
+                                   "limit = a number of results to return",
+                                   "offset = an offset into the returned results",
+                                   "filter = a character string on which to filter",
+                                   "uris.[n] = a URI to a thing, e.g. dbpedia:David_Beckham",
+                                   "timefilter = YYYY, YYYY-MM or YYYY-MM-DD, filter to a year, month or day"],
                      "prefixes":["dbo - types of things - i.e. dbo:SoccerPlayer", 
                                  "dbpedia - instances of things - i.e. dbpedia:David_Beckham",
                                  "framenet - NewsReader link to FrameNet semantic frames",
@@ -35,7 +35,7 @@ def make_documentation(root_url):
         if query in reject_list:
             continue
         query_name = getattr(queries, query)
-        query_object = query_name(offset=0, limit=100, uris=["dbpedia:David_Beckham", "dbpedia:David_Beckham"], filter='David', datefilter='1999-08', output='html')
+        query_object = query_name(offset=0, limit=100, uris=["{uri_0}", "{uri_1}"], filter='{string}', datefilter='{datefilter}', output='html')
         function_list['queries'].append({
                                    "title": query_object.query_title,
                                    "description": query_object.description,
