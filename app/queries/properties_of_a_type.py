@@ -14,6 +14,9 @@ class properties_of_a_type(SparqlQuery):
         super(properties_of_a_type,
               self).__init__(*args, **kwargs)
         self.query_title = 'Get the properties of a type'
+        self.description = ('Lists all the available properties of a type of '
+            'actor, e.g. dbo:SoccerPlayer have propertie like height, birthdays,'
+            'positions, teams, nationality and so forth')
         self.url = 'properties_of_a_type'
         self.example = 'properties_of_a_type?uris.0=dbo:SoccerPlayer'
         self.query_template = ("""

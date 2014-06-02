@@ -21,6 +21,8 @@ class get_document(CRUDQuery):
     def __init__(self, *args, **kwargs):
         super(get_document, self).__init__(*args, **kwargs)
         self.query_title = 'Get the text of a document'
+        self.description = ('Get the text of a document from the CRUD endpoint,'
+            ' where it is available. This excludes LexisNexis material')
         self.url = 'get_document'
         self.example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
