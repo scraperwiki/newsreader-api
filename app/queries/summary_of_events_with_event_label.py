@@ -39,7 +39,7 @@ LIMIT {limit}
         self.count_template = ("""
 SELECT (COUNT(*) as ?count) {{
 SELECT
-DISTINCT ?event ?datetime ?event_label
+DISTINCT ?event
 WHERE {{
 ?event a sem:Event .
 ?event rdfs:label ?filterfield .
