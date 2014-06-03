@@ -11,10 +11,9 @@
       <a href="http://www.newsreader-project.eu/"><img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image"></a>
       <p>Simple API by <a href="https://scraperwiki.com">ScraperWiki</a></p>
       <h2>NewsReader Simple API: Endpoints available at this location</h2>
-      <p>Queries are of the form:</p>
-      {{root_url}}/{page/[n]/}query_name?param1=[string]&amp;param2=[string]
-      <p></p>
-      <p>Where page is an option component with default /page/1</p>
+      {%for sentence in help['description']%}
+        <p>{{sentence}}</p>
+      {% endfor %}
       <h3>Parameters</h3>
         <ul>
           {%for parameter in help['parameters']%}
