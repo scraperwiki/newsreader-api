@@ -21,7 +21,9 @@ class actors_of_a_type(SparqlQuery):
 SELECT ?actor (count(?actor) as ?count) ?comment
 WHERE {{ 
 ?event rdf:type sem:Event . 
-?event sem:hasActor ?filterfield .
+{{?event sem:hasActor ?filterfield .}}
+UNION
+{{?event sem:hasPlace ?filterfield .}}
 ?filterfield rdf:type {uri_0} .
 OPTIONAL {{?filterfield rdfs:comment ?comment .}}
 {filter_block}
@@ -37,7 +39,9 @@ LIMIT {limit}
 SELECT (count(DISTINCT ?actor) as ?count)
 WHERE {{ 
 ?event rdf:type sem:Event . 
-?event sem:hasActor ?filterfield .
+{{?event sem:hasActor ?filterfield .}}
+UNION
+{{?event sem:hasPlace ?filterfield .}}
 ?filterfield rdf:type {uri_0} .
 OPTIONAL {{?filterfield rdfs:comment ?comment .}}
 {filter_block}

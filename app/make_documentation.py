@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 import queries
 
 def make_documentation(root_url):
-    function_list = {"description":["NewsReader Simple API: Endpoints available at this location",
-                                    "",
+    function_list = {"description":["",
                                     "Queries are of the form:",
                                     root_url + "{page/[n]/}query_name?param1=[string]&param2=[string]",
                                     "Where page is an option component with default /page/1",
