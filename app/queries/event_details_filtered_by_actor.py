@@ -28,7 +28,9 @@ WHERE {{
 SELECT ?event 
 WHERE {{ 
 ?event a sem:Event .
-?event sem:hasActor {uri_0} .
+{{?event sem:hasActor {uri_0} .}}
+UNION
+{{?event sem:hasPlace {uri_0} .}}
 }} 
 LIMIT {limit} 
 OFFSET {offset} 
@@ -44,7 +46,9 @@ WHERE {{
 SELECT ?event 
 WHERE {{ 
 ?event a sem:Event .
-?event sem:hasActor {uri_0} .
+{{?event sem:hasActor {uri_0} .}}
+UNION
+{{?event sem:hasPlace {uri_0} .}}
 }} 
 LIMIT 100 
 OFFSET 0 
