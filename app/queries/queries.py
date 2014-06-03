@@ -38,7 +38,7 @@ class SparqlQuery(object):
 
         self.offset = offset
         self.limit = limit
-        self.filter = str(filter)
+        self.filter = str(filter).lower()
         self.datefilter = str(datefilter)
         self.date_filter_block = None
         self.filter_block = None
