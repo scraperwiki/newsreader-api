@@ -15,8 +15,8 @@ from .property_of_actors_of_a_type import property_of_actors_of_a_type
 from .event_details_filtered_by_actor import event_details_filtered_by_actor
 from .describe_uri import describe_uri
 
-from .actors_sharing_event_with_an_actor import (
-                                        actors_sharing_event_with_an_actor)
+from .people_sharing_event_with_a_person import (
+                                        people_sharing_event_with_a_person)
 
 from .summary_of_events_with_two_actors import summary_of_events_with_two_actors
 from .summary_of_events_with_actor import summary_of_events_with_actor
