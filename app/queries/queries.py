@@ -110,7 +110,7 @@ PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
             self.date_filter_block = ''
     
     def _make_filter_block(self):
-        if self.filter != 'None':
+        if self.filter != 'none':
             self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
         else:
             self.filter_block = ''    

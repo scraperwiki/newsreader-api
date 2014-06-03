@@ -23,8 +23,8 @@ SELECT DISTINCT ?actor ?value where
 {{
   ?event a sem:Event . 
   {{?event sem:hasActor ?filterfield .}}
-  UNION
-  {{?event sem:hasPlace ?filterfield .}}
+  #UNION
+  #{{?event sem:hasPlace ?filterfield .}}
   ?filterfield a {uri_0} .
   {filter_block}
   BIND (?filterfield as ?actor) . 
@@ -40,8 +40,8 @@ SELECT (count (DISTINCT ?actor) as ?count) where
 {{
   ?event a sem:Event . 
   {{?event sem:hasActor ?filterfield .}}
-  UNION
-  {{?event sem:hasPlace ?filterfield .}}
+  #UNION
+  #{{?event sem:hasPlace ?filterfield .}}
   ?filterfield a {uri_0} .
   {filter_block}
   BIND (?filterfield as ?actor) . 
