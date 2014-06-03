@@ -18,19 +18,13 @@ class event_details_filtered_by_actor(SparqlQuery):
                            ' i.e. a list of events involving dbpedia:David_Beckham.'
                            ' The number of entries describing an event varies, so the result count is not very meaningful.')
         self.url = 'event_details_filtered_by_actor'
-        self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham&output=json'
-        self.headers = ['event', 'predicate', 'object', 'object_type']
+        self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham'
+        self.headers = ['event', 'property', 'value']
         self.query_template = ("""
-SELECT ?event ?predicate ?object 
-?object_type 
+SELECT ?event ?property ?value  
 WHERE {{ 
-?event ?predicate ?object . 
-OPTIONAL 
+?event ?property ?value . 
 {{ 
-?object a ?object_type . 
-FILTER(STRSTARTS(STR(?object_type), 
-"http://semanticweb.cs.vu.nl/2009/11/sem/"))
-}} {{ 
 SELECT ?event 
 WHERE {{ 
 ?event a sem:Event .
@@ -45,13 +39,8 @@ ORDER BY DESC(?event)
         self.count_template = ("""
 SELECT (count(*) as ?count) 
 WHERE {{ 
-?event ?predicate ?object . 
-OPTIONAL 
+?event ?property ?value . 
 {{ 
-?object a ?object_type . 
-FILTER(STRSTARTS(STR(?object_type), 
-"http://semanticweb.cs.vu.nl/2009/11/sem/"))
-}} {{ 
 SELECT ?event 
 WHERE {{ 
 ?event a sem:Event .

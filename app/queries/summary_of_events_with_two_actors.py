@@ -51,8 +51,8 @@ WHERE {{
 ?event sem:hasActor {uri_0} .
 ?event sem:hasActor {uri_1} .
 }}
-UNION
-{{ ?event sem:hasPlace {uri_0} .}}
+#UNION
+#{{ ?event sem:hasPlace {uri_0} .}}
 ?event sem:hasTime ?t .
 ?t owltime:inDateTime ?d .
 {date_filter_block}

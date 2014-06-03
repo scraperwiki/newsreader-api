@@ -43,7 +43,7 @@ LIMIT {limit}
         self.count_template = ("""
 SELECT (COUNT(*) as ?count) {{
 SELECT
-DISTINCT ?event ?datetime
+DISTINCT ?event
 WHERE {{
 ?event ?p ?o .
 {{ ?event sem:hasActor ?actor .}}
