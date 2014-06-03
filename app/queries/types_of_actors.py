@@ -21,9 +21,11 @@ class types_of_actors(SparqlQuery):
         self.query_template = ("""
 SELECT ?type (COUNT (*) as ?count) 
 WHERE {{
-?a rdf:type sem:Actor . 
+{{?a rdf:type sem:Actor . }}
+UNION
+{{?a rdf:type sem:Place . }}
 ?a rdf:type ?filterfield . 
-FILTER (?filterfield != sem:Actor) . 
+FILTER (?filterfield != sem:Actor && ?filterfield != sem:Place) . 
 FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
 {filter_block}
 BIND (?filterfield as ?type) . 
@@ -37,9 +39,11 @@ LIMIT {limit}
         self.count_template = ("""
 SELECT (COUNT (distinct ?type) as ?count) 
 WHERE {{ 
-?a rdf:type sem:Actor . 
+{{?a rdf:type sem:Actor . }}
+UNION
+{{?a rdf:type sem:Place . }}
 ?a rdf:type ?filterfield . 
-FILTER (?filterfield != sem:Actor) . 
+FILTER (?filterfield != sem:Actor && ?filterfield != sem:Place) . 
 FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
 {filter_block}
 BIND (?filterfield as ?type) . 

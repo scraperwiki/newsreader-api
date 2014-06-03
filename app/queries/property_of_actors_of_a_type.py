@@ -22,7 +22,9 @@ class property_of_actors_of_a_type(SparqlQuery):
 SELECT DISTINCT ?actor ?value where
 {{
   ?event a sem:Event . 
-  ?event sem:hasActor ?filterfield .
+  {{?event sem:hasActor ?filterfield .}}
+  #UNION
+  #{{?event sem:hasPlace ?filterfield .}}
   ?filterfield a {uri_0} .
   {filter_block}
   BIND (?filterfield as ?actor) . 
@@ -37,7 +39,9 @@ OFFSET {offset}
 SELECT (count (DISTINCT ?actor) as ?count) where
 {{
   ?event a sem:Event . 
-  ?event sem:hasActor ?filterfield .
+  {{?event sem:hasActor ?filterfield .}}
+  #UNION
+  #{{?event sem:hasPlace ?filterfield .}}
   ?filterfield a {uri_0} .
   {filter_block}
   BIND (?filterfield as ?actor) . 
