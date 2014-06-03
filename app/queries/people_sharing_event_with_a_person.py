@@ -4,20 +4,18 @@ from __future__ import unicode_literals
 
 from queries import SparqlQuery
 
-class actors_sharing_event_with_an_actor(SparqlQuery):
+class people_sharing_event_with_a_person(SparqlQuery):
 
-    """ Get actors sharing an event with a named actor with count of occurence
-
-    http://127.0.0.1:5000/actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham
+    """ Get people sharing an event with a named person with count of occurence
     """
 
     def __init__(self, *args, **kwargs):
-        super(actors_sharing_event_with_an_actor,
+        super(people_sharing_event_with_a_person,
               self).__init__(*args, **kwargs)
-        self.query_title = 'Actors who share an event with a named actor'
-        self.description = 'Gets the actors who share an event with a named actor, counts the number of such events and displays in descending order'
-        self.url = 'actors_sharing_event_with_an_actor'
-        self.example = 'actors_sharing_event_with_an_actor?uris.0=dbpedia:David_Beckham'
+        self.query_title = 'People who share an event with a named person'
+        self.description = 'Gets the people who share an event with a named person, counts the number of such events and displays in descending order'
+        self.url = 'people_sharing_event_with_a_person'
+        self.example = 'people_sharing_event_with_a_person?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""
 SELECT DISTINCT ?actor ?actor2 (COUNT(?evt) as ?numEvent) ?comment
 WHERE {{
