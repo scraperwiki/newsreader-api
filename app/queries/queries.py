@@ -48,6 +48,7 @@ class SparqlQuery(object):
         self._process_input_uris(uris)
         self._make_date_filter_block()
         self._make_filter_block()
+        self._make_uri_filter_block()
 
         self.query_title = None
         self.description = ""
