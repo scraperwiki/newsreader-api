@@ -16,43 +16,55 @@ class summary_of_events_with_framenet(SparqlQuery):
         self.url = 'summary_of_events_with_framenet'
         self.example = 'summary_of_events_with_framenet?uris.0=framenet:Change_of_leadership'
         self.query_template = ("""
-SELECT
-?event ?datetime
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
-?event a sem:Event .
-?event a {uri_0} .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
+  {{
+    SELECT DISTINCT ?event ?datetime ?event_label
+    WHERE {{
+      ?event a sem:Event .
+      ?event rdfs:label ?event_label .
+      ?event rdf:type {uri_0} .
+      ?event sem:hasTime ?t . 
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?p ?o .
 }}
-GROUP BY ?event ?datetime
+GROUP BY ?event ?datetime ?event_label
 ORDER BY ?datetime
-OFFSET {offset}
-LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(*) as ?count) {{
-SELECT
-DISTINCT ?event ?datetime
+SELECT (COUNT(DISTINCT ?event) as ?count)
 WHERE {{
-?event a sem:Event .
-?event a {uri_0} .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
+  {{
+    SELECT DISTINCT ?event ?datetime
+    WHERE {{
+      ?event a sem:Event .
+      ?event rdfs:label ?event_label .
+      ?event rdf:type {uri_0} .
+      ?event sem:hasTime ?t . 
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+  }}
+  ?event ?p ?o .
 }}
                                """)
 
         self.jinja_template = 'table.html'
-        self.headers = ['event', 'datetime']
+        self.headers = ['event', 'datetime', 'event_label']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit", "datefilter"]

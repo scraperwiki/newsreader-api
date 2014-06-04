@@ -18,31 +18,34 @@ class framenet_frequency_count(SparqlQuery):
         self.url = 'framenet_frequency_count'
         self.example = 'framenet_frequency_count'
         self.query_template = ("""
-SELECT
-?frame (count (?frame) AS ?count)
+SELECT (?filterfield AS ?frame) (COUNT(DISTINCT ?event) AS ?count) ?comment
 WHERE {{
-?event a sem:Event .
-?event ?parameter ?filterfield . 
-FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
-{filter_block}
-BIND (?filterfield AS ?frame) .
+  ?event rdf:type ?filterfield  .
+  ?g dct:source <http://www.newsreader-project.eu/framenet> .
+  GRAPH ?g {{
+    ?filterfield a {uri_0} .
+    {uri_filter_block}
+    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
+  }}
 }}
-GROUP BY ?frame
-ORDER by desc(?count)
+GROUP BY ?filterfield ?comment
+ORDER BY desc(?count)
 OFFSET {offset}
 LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT
-(COUNT (DISTINCT (?frame)) AS ?count)
+SELECT (COUNT(DISTINCT ?filterfield) AS ?count) ?comment
 WHERE {{
-?event a sem:Event .
-?event ?parameter ?filterfield . 
-FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
-{filter_block}
-BIND (?filterfield AS ?frame) .
+  ?event rdf:type ?filterfield  .
+  ?g dct:source <http://www.newsreader-project.eu/> .
+  GRAPH ?g {{
+    ?filterfield a {uri_0} .
+    {uri_filter_block}
+    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
+  }}
 }}
+GROUP BY ?filterfield ?comment
                                """)
 
         self.jinja_template = 'table.html'
