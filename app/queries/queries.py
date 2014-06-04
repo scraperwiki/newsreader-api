@@ -42,6 +42,7 @@ class SparqlQuery(object):
         self.datefilter = str(datefilter)
         self.date_filter_block = None
         self.filter_block = None
+        self.uri_filter_block = None
         self.original_uris = uris
 
         self._process_input_uris(uris)
@@ -66,19 +67,21 @@ class SparqlQuery(object):
 
         self.prefix_block = """
 # Query from Newsreader Simple API
-PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX framenet: <http://www.newsreader-project.eu/framenet/>
 PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX dbpedia: <http://dbpedia.org/resource/>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX framenet: <http://www.newsreader-project.eu/framenet/>
 PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                             """
         self.allowed_parameters_block = """
 # All allowed parameters:
 # output: {output}, offset: {offset}, limit: {limit}, 
 # uri.0: {uri_0}, uri.1: {uri_1}
 # filter_block: {filter_block}, date_filter_block: {date_filter_block}
+# uri_filter_block: {uri_filter_block}
                                         """
 
     def _process_input_uris(self, uris):
@@ -116,6 +119,13 @@ PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
         else:
             self.filter_block = ''    
 
+    def _make_uri_filter_block(self):
+        if self.filter != 'none':
+            #self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+            self.uri_filter_block = """ ?filterfield rdfs:label ?_label . ?_label bif:contains "{filter}" .""".format(filter=self.filter)
+        else:
+            self.uri_filter_block = '' 
+
     def _check_parameters(self):
         if self.original_uris is None:
             len_uris = 0
@@ -140,6 +150,7 @@ PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
                                       output=self.output,
                                       filter_block=self.filter_block,
                                       date_filter_block=self.date_filter_block,
+                                      uri_filter_block=self.uri_filter_block,
                                       uri_0=self.uris[0],
                                       uri_1=self.uris[1]
                                       )
@@ -157,6 +168,7 @@ PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
                                  output=self.output,
                                  filter_block=self.filter_block,
                                  date_filter_block=self.date_filter_block,
+                                 uri_filter_block=self.uri_filter_block,
                                  uri_0=self.uris[0],
                                  uri_1=self.uris[1])
 
