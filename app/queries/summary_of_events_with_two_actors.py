@@ -20,45 +20,50 @@ class summary_of_events_with_two_actors(SparqlQuery):
         self.url = 'summary_of_events_with_two_actors'
         self.example = 'summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter'
         self.query_template = ("""
-SELECT 
-?event (COUNT (?event) AS ?event_size) ?datetime
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
-?event ?p ?o .
-{{ 
-?event sem:hasActor {uri_0} .
-?event sem:hasActor {uri_1} .
+  {{
+    SELECT DISTINCT ?event ?datetime ?event_label
+    WHERE {{
+      ?event sem:hasActor {uri_0} , {uri_1} ;
+             sem:hasTime ?t ;
+             rdfs:label ?event_label .
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?p ?o
 }}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
-GROUP BY ?event ?datetime
+GROUP BY ?event ?datetime ?event_label
 ORDER BY ?datetime
-OFFSET {offset}
-LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(*) as ?count) {{
-SELECT
-DISTINCT ?event ?datetime
+SELECT (COUNT(?event) AS ?count)
 WHERE {{
-?event ?p ?o .
-{{ 
-?event sem:hasActor {uri_0} .
-?event sem:hasActor {uri_1} .
+  {{
+    SELECT DISTINCT ?event ?datetime ?event_label
+    WHERE {{
+      ?event sem:hasActor {uri_0} , {uri_1} ;
+             sem:hasTime ?t ;
+             rdfs:label ?event_label .
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+  }}
+  ?event ?p ?o
 }}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
-}}
+GROUP BY ?event ?datetime ?event_label
                                """)
 
         self.jinja_template = 'table.html'
