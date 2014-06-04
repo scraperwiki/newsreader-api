@@ -17,30 +17,26 @@ class people_sharing_event_with_a_person(SparqlQuery):
         self.url = 'people_sharing_event_with_a_person'
         self.example = 'people_sharing_event_with_a_person?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""
-SELECT DISTINCT ?actor ?actor2 (COUNT(?evt) as ?numEvent) ?comment
+SELECT ({uri_0} AS ?actor) ?actor2
+       (COUNT(DISTINCT ?evt) as ?numEvent) ?comment
 WHERE {{
-?evt a sem:Event .
-?evt sem:hasActor ?actor .
-?evt sem:hasActor ?actor2 .
-?actor2 a dbo:Person . 
-FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
-?actor2 rdfs:comment ?comment .
+  ?evt sem:hasActor {uri_0} , ?actor2 .
+  ?actor2 a dbo:Person .
+  FILTER(?actor2 != {uri_0})
+  OPTIONAL {{ ?actor2 rdfs:comment ?comment }}
 }}
-GROUP BY ?actor2 ?actor ?comment
+GROUP BY ?actor2 ?comment
 ORDER BY DESC(?numEvent)
 OFFSET {offset}
 LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT (DISTINCT ?actor2) as ?count)
+SELECT (COUNT(DISTINCT ?actor2) as ?count)
 WHERE {{
-?evt a sem:Event .
-?evt sem:hasActor ?actor .
-?evt sem:hasActor ?actor2 .
-?actor2 a dbo:Person . 
-FILTER(?actor = {uri_0} && ?actor2 != ?actor) . 
-?actor2 rdfs:comment ?comment .
+  ?evt sem:hasActor {uri_0} , ?actor2 .
+  ?actor2 a dbo:Person .
+  FILTER(?actor2 != {uri_0})
 }}
                                """)
 
