@@ -19,14 +19,13 @@ class event_label_frequency_count(SparqlQuery):
         self.example = 'event_label_frequency_count'
         self.query_template = ("""
 SELECT
-?event_label (count (?event_label) AS ?count)
+(?filterfield AS ?event_label) (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
 ?event a sem:Event .
 ?event rdfs:label ?filterfield . 
 {filter_block}
-BIND (?filterfield AS ?event_label) .
 }}
-GROUP BY ?event_label
+GROUP BY ?filterfield
 ORDER by desc(?count)
 OFFSET {offset}
 LIMIT {limit}
@@ -34,12 +33,11 @@ LIMIT {limit}
 
         self.count_template = ("""
 SELECT
-(COUNT (DISTINCT ?event_label) AS ?count)
+(COUNT (DISTINCT ?event) AS ?count)
 WHERE {{
 ?event a sem:Event .
 ?event rdfs:label ?filterfield . 
 {filter_block}
-BIND (?filterfield AS ?event_label) .
 }}
                                """)
 

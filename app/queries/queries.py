@@ -111,7 +111,8 @@ PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
     
     def _make_filter_block(self):
         if self.filter != 'none':
-            self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+            #self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+            self.filter_block = '?filterfield bif:contains "{filter}" .'.format(filter=self.filter)
         else:
             self.filter_block = ''    
 
