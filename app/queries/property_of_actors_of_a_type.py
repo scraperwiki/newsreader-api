@@ -19,33 +19,29 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.url = 'property_of_actors_of_a_type'
         self.example = 'property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height'
         self.query_template = ("""
-SELECT DISTINCT ?actor ?value where
-{{
-  ?event a sem:Event . 
-  {{?event sem:hasActor ?filterfield .}}
-  #UNION
-  #{{?event sem:hasPlace ?filterfield .}}
-  ?filterfield a {uri_0} .
-  {filter_block}
-  BIND (?filterfield as ?actor) . 
-  ?actor {uri_1} ?value . 
+SELECT DISTINCT (?filterfield AS ?actor) ?value
+WHERE {{
+  ?event sem:hasActor ?filterfield .
+  ?g dct:source <http://dbpedia.org/>
+  GRAPH ?g {{
+    ?filterfield a {uri_0} ; {uri_1} ?value .
+    {uri_filter_block}
+  }}
 }}
-order by desc(?value)
-LIMIT {limit}
+ORDER BY DESC(?value)
 OFFSET {offset}
+LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (count (DISTINCT ?actor) as ?count) where
-{{
-  ?event a sem:Event . 
-  {{?event sem:hasActor ?filterfield .}}
-  #UNION
-  #{{?event sem:hasPlace ?filterfield .}}
-  ?filterfield a {uri_0} .
-  {filter_block}
-  BIND (?filterfield as ?actor) . 
-  ?actor {uri_1} ?value .
+SELECT (COUNT (DISTINCT(?filterfield)) AS ?count)
+WHERE {{
+  ?event sem:hasActor ?filterfield .
+  ?g dct:source <http://dbpedia.org/>
+  GRAPH ?g {{
+    ?filterfield a {uri_0} ; {uri_1} ?value .
+    {uri_filter_block}
+  }}
 }}
                                """)
 
