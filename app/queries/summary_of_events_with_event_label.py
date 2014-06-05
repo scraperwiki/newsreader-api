@@ -16,42 +16,46 @@ class summary_of_events_with_event_label(SparqlQuery):
         self.url = 'summary_of_events_with_event_label'
         self.example = 'summary_of_events_with_event_label?filter=bribe'
         self.query_template = ("""
-SELECT
-?event ?datetime ?event_label
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
-?event a sem:Event .
-?event rdfs:label ?filterfield .
-{filter_block}
-BIND (?filterfield as ?event_label) .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
+  {{
+    SELECT DISTINCT ?event ?datetime (?filterfield AS ?event_label)
+    WHERE {{
+      ?event sem:hasTime ?t ; rdfs:label ?filterfield .
+      {filter_block}
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?p ?o
 }}
 GROUP BY ?event ?datetime ?event_label
 ORDER BY ?datetime
-OFFSET {offset}
-LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(*) as ?count) {{
-SELECT
-DISTINCT ?event
+SELECT (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
-?event a sem:Event .
-?event rdfs:label ?filterfield .
-{filter_block}
-BIND (?filterfield as ?event_label) .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
+  {{
+    SELECT DISTINCT ?event ?datetime (?filterfield AS ?event_label)
+    WHERE {{
+      ?event sem:hasTime ?t ; rdfs:label ?filterfield .
+      {filter_block}
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+  }}
+  ?event ?p ?o
 }}
                                """)
 

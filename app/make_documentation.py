@@ -14,7 +14,7 @@ def make_documentation(root_url):
                      "parameters":["output = {json|html|csv}",
                                    "limit = a number of results to return",
                                    "offset = an offset into the returned results",
-                                   "filter = a character string on which to filter",
+                                   "filter = a character string on which to filter, it can take combinations such as bribery+OR+bribe",
                                    "uris.[n] = a URI to a thing, e.g. dbpedia:David_Beckham",
                                    "timefilter = YYYY, YYYY-MM or YYYY-MM-DD, filter to a year, month or day"],
                      "prefixes":["dbo - types of things - i.e. dbo:SoccerPlayer", 

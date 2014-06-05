@@ -19,40 +19,49 @@ class event_details_filtered_by_actor(SparqlQuery):
                            ' The number of entries describing an event varies, so the result count is not very meaningful.')
         self.url = 'event_details_filtered_by_actor'
         self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham'
-        self.headers = ['event', 'property', 'value']
+        self.headers = ['event', 'predicate', 'object', "object_type"]
         self.query_template = ("""
-SELECT ?event ?property ?value  
-WHERE {{ 
-?event ?property ?value . 
-{{ 
-SELECT ?event 
-WHERE {{ 
-?event a sem:Event .
-{{?event sem:hasActor {uri_0} .}}
-UNION
-{{?event sem:hasPlace {uri_0} .}}
-}} 
-LIMIT {limit} 
-OFFSET {offset} 
-}} }} 
-ORDER BY DESC(?event) 
+SELECT ?event ?predicate ?object (SAMPLE(?type) AS ?object_type)
+WHERE {{
+  {{
+    SELECT DISTINCT ?event
+    WHERE {{
+      ?event sem:hasActor {uri_0} .
+    }}
+    ORDER BY DESC(?event)
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?predicate ?object .
+  OPTIONAL {{
+    ?object a ?type .
+    FILTER ( ?type = sem:Actor || ?type = sem:Place ||
+             ?type = sem:Time  || ?type = sem:Event )
+  }}
+}}
+GROUP BY ?event ?predicate ?object
+ORDER BY DESC(?event) ?predicate ?object 
                                """)
 
         self.count_template = ("""
-SELECT (count(*) as ?count) 
-WHERE {{ 
-?event ?property ?value . 
-{{ 
-SELECT ?event 
-WHERE {{ 
-?event a sem:Event .
-{{?event sem:hasActor {uri_0} .}}
-UNION
-{{?event sem:hasPlace {uri_0} .}}
-}} 
-LIMIT 100 
-OFFSET 0 
-}} }}
+SELECT (COUNT (?event) AS ?count)
+WHERE {{
+  {{
+    SELECT DISTINCT ?event
+    WHERE {{
+      ?event sem:hasActor {uri_0} .
+    }}
+    ORDER BY DESC(?event)
+  }}
+  ?event ?predicate ?object .
+  OPTIONAL {{
+    ?object a ?type .
+    FILTER ( ?type = sem:Actor || ?type = sem:Place ||
+             ?type = sem:Time  || ?type = sem:Event )
+  }}
+}}
+GROUP BY ?event ?predicate ?object
+ORDER BY DESC(?event) ?predicate ?object 
                                """)
 
         self.jinja_template = 'table.html'

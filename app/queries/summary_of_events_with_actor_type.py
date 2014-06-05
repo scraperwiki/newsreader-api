@@ -41,7 +41,7 @@ LIMIT {limit}
 
 
         self.count_template = ("""
-SELECT (COUNT(*) as ?count) {{
+SELECT (COUNT(DISTINCT ?event) as ?count) {{
 SELECT
 DISTINCT ?event
 WHERE {{

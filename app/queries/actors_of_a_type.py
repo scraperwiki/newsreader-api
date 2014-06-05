@@ -18,34 +18,32 @@ class actors_of_a_type(SparqlQuery):
         self.url = 'actors_of_a_type'
         self.example = 'actors_of_a_type?uris.0=dbo:Person&filter=david'
         self.query_template = ("""
-SELECT ?actor (count(?actor) as ?count) ?comment
-WHERE {{ 
-?event rdf:type sem:Event . 
-{{?event sem:hasActor ?filterfield .}}
-UNION
-{{?event sem:hasPlace ?filterfield .}}
-?filterfield rdf:type {uri_0} .
-OPTIONAL {{?filterfield rdfs:comment ?comment .}}
-{filter_block}
-BIND (?filterfield as ?actor) .
+SELECT (?filterfield AS ?actor) (COUNT(DISTINCT ?event) AS ?count) ?comment
+WHERE {{
+  ?event sem:hasActor ?filterfield  .
+  ?g dct:source <http://dbpedia.org/> .
+  GRAPH ?g {{
+    ?filterfield a {uri_0} .
+    {uri_filter_block}
+    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
+  }}
 }}
-GROUP BY ?actor ?comment
+GROUP BY ?filterfield ?comment
 ORDER BY desc(?count)
 OFFSET {offset}
 LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (count(DISTINCT ?actor) as ?count)
-WHERE {{ 
-?event rdf:type sem:Event . 
-{{?event sem:hasActor ?filterfield .}}
-UNION
-{{?event sem:hasPlace ?filterfield .}}
-?filterfield rdf:type {uri_0} .
-OPTIONAL {{?filterfield rdfs:comment ?comment .}}
-{filter_block}
-BIND (?filterfield as ?actor) .
+SELECT (COUNT(DISTINCT ?filterfield) AS ?count)
+WHERE {{
+  ?event sem:hasActor ?filterfield  .
+  ?g dct:source <http://dbpedia.org/> .
+  GRAPH ?g {{
+    ?filterfield a {uri_0} .
+    {uri_filter_block}
+    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
+  }}
 }}
                                """)
 
@@ -56,4 +54,5 @@ BIND (?filterfield as ?actor) .
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 1
 
+        self._make_uri_filter_block()
         self.query = self._build_query()

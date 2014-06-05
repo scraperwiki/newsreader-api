@@ -20,42 +20,46 @@ class summary_of_events_with_actor(SparqlQuery):
         self.url = 'summary_of_events_with_actor'
         self.example = 'summary_of_events_with_actor?uris.0=dbpedia:David_Beckham'
         self.query_template = ("""
-SELECT 
-?event (COUNT (?event) AS ?event_size) ?datetime
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor {uri_0} .}}
-UNION
-{{ ?event sem:hasPlace {uri_0} .}}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
+  {{
+    SELECT DISTINCT ?event ?datetime ?event_label
+    WHERE {{
+      {{ ?event sem:hasActor {uri_0} }} UNION {{ ?event sem:hasPlace {uri_0} }}
+      ?event sem:hasTime ?t ; rdfs:label ?event_label .
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?p ?o .
 }}
-GROUP BY ?event ?datetime
+GROUP BY ?event ?datetime ?event_label
 ORDER BY ?datetime
-OFFSET {offset}
-LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(*) as ?count) {{
-SELECT
-DISTINCT ?event ?datetime
+SELECT (COUNT(DISTINCT ?event) as ?count)
 WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor {uri_0} .}}
-UNION
-{{ ?event sem:hasPlace {uri_0} .}}
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
+  {{
+    SELECT DISTINCT ?event ?datetime
+    WHERE {{
+      {{ ?event sem:hasActor {uri_0} }} UNION {{ ?event sem:hasPlace {uri_0} }}
+      ?event sem:hasTime ?t ; rdfs:label ?event_label .
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?t rdfs:label ?datetimetmp .
+      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
+      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+    }}
+    ORDER BY ?datetime
+  }}
+  ?event ?p ?o .
 }}
                                """)
 

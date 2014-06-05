@@ -21,28 +21,28 @@ class framenet_frequency_count(SparqlQuery):
 SELECT
 ?frame (count (?frame) AS ?count)
 WHERE {{
-?event a sem:Event .
-?event ?parameter ?filterfield . 
+?event a sem:Event . 
+?event a ?filterfield . 
 FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
-{filter_block}
 BIND (?filterfield AS ?frame) .
 }}
 GROUP BY ?frame
 ORDER by desc(?count)
-OFFSET {offset}
 LIMIT {limit}
+OFFSET {offset}
                                """)
 
         self.count_template = ("""
 SELECT
-(COUNT (DISTINCT (?frame)) AS ?count)
+(COUNT (?frame) AS ?count)
 WHERE {{
-?event a sem:Event .
-?event ?parameter ?filterfield . 
+?event a sem:Event . 
+?event a ?filterfield . 
 FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
-{filter_block}
 BIND (?filterfield AS ?frame) .
 }}
+GROUP BY ?frame
+ORDER by desc(?count)
                                """)
 
         self.jinja_template = 'table.html'

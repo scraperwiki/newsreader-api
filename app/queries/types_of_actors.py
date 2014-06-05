@@ -19,34 +19,46 @@ class types_of_actors(SparqlQuery):
         self.url = 'types_of_actors'
         self.example = 'types_of_actors?filter=player'
         self.query_template = ("""
-SELECT ?type (COUNT (*) as ?count) 
+SELECT ?type (COUNT(DISTINCT ?a) AS ?count)
 WHERE {{
-{{?a rdf:type sem:Actor . }}
-UNION
-{{?a rdf:type sem:Place . }}
-?a rdf:type ?filterfield . 
-FILTER (?filterfield != sem:Actor && ?filterfield != sem:Place) . 
-FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
-{filter_block}
-BIND (?filterfield as ?type) . 
+  {{
+    SELECT DISTINCT (?filterfield AS ?type)
+    WHERE {{
+      ?g dct:source <http://dbpedia.org/> .
+      GRAPH ?g {{
+        ?filterfield a owl:Class .
+        FILTER (?filterfield != sem:Actor)
+        FILTER (STRSTARTS(STR(?filterfield),
+                "http://dbpedia.org/ontology/"))
+        {uri_filter_block}
+      }}
+    }}
+  }}
+  ?a a sem:Actor , ?type .
 }}
-GROUP BY ?type 
-ORDER BY DESC(?count) 
-OFFSET {offset} 
+GROUP BY ?type
+ORDER BY DESC(?count)
+OFFSET {offset}
 LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT (distinct ?type) as ?count) 
-WHERE {{ 
-{{?a rdf:type sem:Actor . }}
-UNION
-{{?a rdf:type sem:Place . }}
-?a rdf:type ?filterfield . 
-FILTER (?filterfield != sem:Actor && ?filterfield != sem:Place) . 
-FILTER (STRSTARTS(STR(?filterfield),"http://dbpedia.org/ontology/")) . 
-{filter_block}
-BIND (?filterfield as ?type) . 
+SELECT (COUNT(DISTINCT ?type) AS ?count)
+WHERE {{
+  {{
+    SELECT DISTINCT (?filterfield AS ?type)
+    WHERE {{
+      ?g dct:source <http://dbpedia.org/> .
+      GRAPH ?g {{
+        ?filterfield a owl:Class .
+        FILTER (?filterfield != sem:Actor)
+        FILTER (STRSTARTS(STR(?filterfield),
+                "http://dbpedia.org/ontology/"))
+        {uri_filter_block}
+      }}
+    }}
+  }}
+  ?a a sem:Actor , ?type .
 }}
                                 """)
 
