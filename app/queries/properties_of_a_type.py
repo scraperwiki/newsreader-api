@@ -16,29 +16,32 @@ class properties_of_a_type(SparqlQuery):
         self.query_title = 'Get the properties of a type'
         self.description = ('Lists all the available properties of a type of '
             'actor, e.g. dbo:SoccerPlayer have properties like height, birthdays,'
-            'positions, teams, nationality and so forth')
+            'positions, teams, nationality and so forth. The type_count is the number of such actors'
+            ', the value_count is the number of instances of the property')
         self.url = 'properties_of_a_type'
         self.example = 'properties_of_a_type?uris.0=dbo:SoccerPlayer'
         self.query_template = ("""
-SELECT DISTINCT ?property
+SELECT ?property (COUNT(DISTINCT ?pl) AS ?type_count) (COUNT(DISTINCT ?o) AS ?value_count)
 WHERE {{
-?pl ?property ?o .
-?pl a {uri_0} .
+  ?pl a {uri_0} .
+  ?pl ?property ?o .
 }}
+GROUP BY ?property
+ORDER BY DESC(?type_count)
 LIMIT {limit}
 OFFSET {offset}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT (DISTINCT ?property) as ?count)
+SELECT (COUNT(DISTINCT ?property) AS ?count) 
 WHERE {{
-?pl ?property ?o .
-?pl a {uri_0} .
+  ?pl a {uri_0} .
+  ?pl ?property ?o .
 }}
                                """)
 
         self.jinja_template = 'table.html'
-        self.headers = ['property']
+        self.headers = ['property', 'type_count', 'value_count']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit"]
