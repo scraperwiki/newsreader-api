@@ -47,7 +47,7 @@ WHERE {{
   {{
     SELECT DISTINCT ?event ?datetime
     WHERE {{
-      ?event a sem:Event .
+      cd ?event a sem:Event .
       ?event rdfs:label ?event_label .
       ?event rdf:type {uri_0} .
       ?event sem:hasTime ?t . 
