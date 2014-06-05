@@ -33,7 +33,7 @@ LIMIT {limit}
 
         self.count_template = ("""
 SELECT
-(COUNT (DISTINCT ?event) AS ?count)
+(COUNT (DISTINCT ?filterfield) AS ?count)
 WHERE {{
 ?event a sem:Event .
 ?event rdfs:label ?filterfield . 
