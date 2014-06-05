@@ -42,12 +42,12 @@ ORDER BY ?datetime
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(DISTINCT ?event) as ?count)
+SELECT (COUNT(?event) AS ?count)
 WHERE {{
   {{
     SELECT DISTINCT ?event ?datetime
     WHERE {{
-      cd ?event a sem:Event .
+      ?event a sem:Event .
       ?event rdfs:label ?event_label .
       ?event rdf:type {uri_0} .
       ?event sem:hasTime ?t . 

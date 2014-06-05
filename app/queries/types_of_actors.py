@@ -60,7 +60,6 @@ WHERE {{
   }}
   ?a a sem:Actor , ?type .
 }}
-GROUP BY ?type
                                 """)
 
         self.jinja_template = 'table.html'
