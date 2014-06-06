@@ -57,14 +57,13 @@ WHERE {{
       FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
       BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
     }}
-    ORDER BY ?datetime
   }}
   ?event ?p ?o .
 }}
                                """)
 
         self.jinja_template = 'table.html'
-        self.headers = ['event', 'event_size', 'datetime']
+        self.headers = ['event', 'event_size', 'datetime', 'event_label']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit", "datefilter"]
