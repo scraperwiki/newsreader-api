@@ -44,24 +44,10 @@ ORDER BY DESC(?event) ?predicate ?object
                                """)
 
         self.count_template = ("""
-SELECT (COUNT (?event) AS ?count)
-WHERE {{
-  {{
-    SELECT DISTINCT ?event
+SELECT (COUNT(DISTINCT ?event) AS ?count)
     WHERE {{
       ?event sem:hasActor {uri_0} .
     }}
-    ORDER BY DESC(?event)
-  }}
-  ?event ?predicate ?object .
-  OPTIONAL {{
-    ?object a ?type .
-    FILTER ( ?type = sem:Actor || ?type = sem:Place ||
-             ?type = sem:Time  || ?type = sem:Event )
-  }}
-}}
-GROUP BY ?event ?predicate ?object
-ORDER BY DESC(?event) ?predicate ?object 
                                """)
 
         self.jinja_template = 'table.html'
