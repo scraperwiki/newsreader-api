@@ -42,7 +42,7 @@ ORDER BY ?datetime
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(?event) AS ?count)
+SELECT (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
   {{
     SELECT DISTINCT ?event ?datetime

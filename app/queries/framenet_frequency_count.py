@@ -42,7 +42,6 @@ FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/"
 BIND (?filterfield AS ?frame) .
 }}
 GROUP BY ?frame
-ORDER by desc(?count)
                                """)
 
         self.jinja_template = 'table.html'

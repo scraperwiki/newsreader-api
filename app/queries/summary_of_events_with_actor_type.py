@@ -14,12 +14,14 @@ class summary_of_events_with_actor_type(SparqlQuery):
         super(summary_of_events_with_actor_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a type of actor'
         self.description = ('A list of events mentioning a specified type of actor'
-          ', providing a link to the event and some summary information.')
+          ', providing a link to the event and some summary information.'
+          '** This query currently times out with more common actors, i.e. dbo:SoccerPlayer but'
+          ' dbo:GolfPlayer is OK**')
         self.url = 'summary_of_events_with_actor_type'
         self.example = 'summary_of_events_with_actor_type?uris.0=dbo:SoccerPlayer'
         self.query_template = ("""
 SELECT 
-?event (COUNT (?event) AS ?event_size) ?datetime ?event_label ?actor
+?event (COUNT (?event) AS ?event_size) ?datetime ?actor
 WHERE {{
 ?event ?p ?o .
 {{ ?event sem:hasActor ?actor .}}
@@ -33,7 +35,7 @@ UNION
   FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
   BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
 }}
-GROUP BY ?event ?datetime ?event_label ?actor
+GROUP BY ?event ?datetime ?actor
 ORDER BY ?datetime
 OFFSET {offset}
 LIMIT {limit}
@@ -41,7 +43,7 @@ LIMIT {limit}
 
 
         self.count_template = ("""
-SELECT (COUNT(DISTINCT ?event) as ?count) {{
+SELECT (COUNT(?event) as ?count) {{
 SELECT
 DISTINCT ?event
 WHERE {{
