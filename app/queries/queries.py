@@ -38,6 +38,7 @@ class SparqlQuery(object):
 
         self.offset = offset
         self.limit = limit
+        self.timings = None
         self.filter = str(filter).lower()
         self.datefilter = str(datefilter)
         self.date_filter_block = None
@@ -192,10 +193,12 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
             self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
+            self.timings = '{0:.2f}'.format(total)
             print "Time to return from query: {0:.2f} seconds".format(total)
         else:
             t1 = time.time()
             total = t1-t0
+            self.timings = '{0:.2f}'.format(total)
             print "Time to return from query: {0:.2f} seconds".format(total)
             print "Response code: {0}".format(response.status_code)
             print "From cache: {0}".format(response.from_cache)

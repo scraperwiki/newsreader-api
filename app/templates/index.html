@@ -28,7 +28,14 @@
         </ul>
       <h3>Queries</h3>
       {% for query in help['queries'] %}
-      <h3>{{ query['title'] }}</h3>
+      <ul>
+        <a href="#{{loop.index}}">{{loop.index}}. {{query['title']}}</a>
+      </ul>
+      {% endfor %}
+
+      {% for query in help['queries'] %}
+      <a name="{{loop.index}}"></a>
+      <h3>{{loop.index}}. {{ query['title'] }}</h3>
       <p>{{query['description']}}</p>
       <p><strong>url: </strong>{{query['url']}}</p>
       <p><strong>Required parameters: </strong>

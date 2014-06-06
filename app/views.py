@@ -129,6 +129,7 @@ def produce_response(query, page_number, offset):
                                results=result, 
                                offset=offset+1,
                                filter=query.filter,
+                               query_time=query.timings,
                                datefilter=query.datefilter,
                                uris=query.uris)
 
