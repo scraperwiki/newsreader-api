@@ -14,7 +14,8 @@ class framenet_frequency_count(SparqlQuery):
         super(framenet_frequency_count, self).__init__(*args, **kwargs)
         self.query_title = 'Frequency of Framenet types in events'
         self.description = ("FrameNet provides an indication of the character of"
-            " an event, as determined by semantic 'frames'") 
+            " an event, as determined by semantic 'frames'.**This query is very slow"
+            " and will timeout the server, contents are available as a file**") 
         self.url = 'framenet_frequency_count'
         self.example = 'framenet_frequency_count'
         self.query_template = ("""

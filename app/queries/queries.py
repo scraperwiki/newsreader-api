@@ -209,6 +209,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
             else:
                 self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
+                self.error_message.append({"error":"Response code not OK: {0}".format(response.content)})
             #print "From cache: {0}".format(response.from_cache)
         
 
@@ -311,7 +312,6 @@ class CRUDQuery(SparqlQuery):
             print "Query raised an exception"
             print type(e)
             self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
-            self.error_message.append({"error":"Message: {0}".format(e)})
             t1 = time.time()
             total = t1-t0
         else:
