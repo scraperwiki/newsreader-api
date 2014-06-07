@@ -17,7 +17,7 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.description = ('Lists the values of a named property of a type,'
           'such as the height of dbo:SoccerPlayer')
         self.url = 'property_of_actors_of_a_type'
-        self.example = 'property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height'
+        self.example = 'property_of_actors_of_a_type/page/1?uris.1=dbo:height&filter=david&uris.0=dbo:SoccerPlayer'
         self.query_template = ("""
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
