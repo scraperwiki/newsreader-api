@@ -184,6 +184,10 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
         payload = {'query': self.query}
         print "\n\n**New query**"
         print self.query
+        print self.limit, type(self.limit)
+        if self.offset > 10000:
+            self.error_message.append({"error":"OFFSET exceeds 10000, add filter or datefilter to narrow results"})
+            return
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),
