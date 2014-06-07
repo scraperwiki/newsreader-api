@@ -18,7 +18,7 @@ class summary_of_events_with_actor_type(SparqlQuery):
           '** This query currently times out with more common actors, i.e. dbo:SoccerPlayer but'
           ' dbo:GolfPlayer is OK**')
         self.url = 'summary_of_events_with_actor_type'
-        self.example = 'summary_of_events_with_actor_type?uris.0=dbo:SoccerPlayer'
+        self.example = 'summary_of_events_with_actor_type?uris.0=dbo:GolfPlayer&datefilter=2010'
         self.query_template = ("""
 SELECT 
 ?event (COUNT (?event) AS ?event_size) ?datetime ?actor

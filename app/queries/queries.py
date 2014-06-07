@@ -311,6 +311,7 @@ class CRUDQuery(SparqlQuery):
             print "Query raised an exception"
             print type(e)
             self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
+            self.error_message.append({"error":"Message: {0}".format(e)})
             t1 = time.time()
             total = t1-t0
         else:
