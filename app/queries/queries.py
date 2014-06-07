@@ -184,6 +184,10 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
         payload = {'query': self.query}
         print "\n\n**New query**"
         print self.query
+        print self.limit, type(self.limit)
+        if self.offset >= 10000:
+            self.error_message.append({"error":"OFFSET exceeds 10000, add filter or datefilter to narrow results"})
+            return
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),
@@ -209,6 +213,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
             else:
                 self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
+                self.error_message.append({"error":"Response code not OK: {0}".format(response.content)})
             #print "From cache: {0}".format(response.from_cache)
         
 

@@ -18,7 +18,7 @@ class summary_of_events_with_actor_type(SparqlQuery):
           '** This query currently times out with more common actors, i.e. dbo:SoccerPlayer but'
           ' dbo:GolfPlayer is OK**')
         self.url = 'summary_of_events_with_actor_type'
-        self.example = 'summary_of_events_with_actor_type?uris.0=dbo:SoccerPlayer'
+        self.example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:GolfPlayer'
         self.query_template = ("""
 SELECT 
 ?event (COUNT (?event) AS ?event_size) ?datetime ?actor
@@ -43,9 +43,8 @@ LIMIT {limit}
 
 
         self.count_template = ("""
-SELECT (COUNT(?event) as ?count) {{
-SELECT
-DISTINCT ?event
+SELECT 
+(COUNT (DISTINCT ?event) AS ?count)
 WHERE {{
 ?event ?p ?o .
 {{ ?event sem:hasActor ?actor .}}
@@ -58,7 +57,6 @@ UNION
 ?t rdfs:label ?datetimetmp .
   FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
   BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
-}}
 }}
                                """)
 

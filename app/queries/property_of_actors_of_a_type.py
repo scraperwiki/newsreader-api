@@ -15,9 +15,9 @@ class property_of_actors_of_a_type(SparqlQuery):
         super(property_of_actors_of_a_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get a property of actors of a type mentioned in the news'
         self.description = ('Lists the values of a named property of a type,'
-          'such as the height of dbo:SoccerPlayer')
+          'such as the height of dbo:SoccerPlayer.')
         self.url = 'property_of_actors_of_a_type'
-        self.example = 'property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height'
+        self.example = 'property_of_actors_of_a_type/page/1?uris.1=dbo:height&filter=david&uris.0=dbo:SoccerPlayer'
         self.query_template = ("""
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
@@ -34,7 +34,8 @@ LIMIT {limit}
                                """)
 
         self.count_template = ("""
-SELECT (COUNT (DISTINCT(?filterfield)) AS ?count)
+SELECT (COUNT(*) as ?count){{
+SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
   ?event sem:hasActor ?filterfield .
   ?g dct:source <http://dbpedia.org/>
@@ -42,6 +43,7 @@ WHERE {{
     ?filterfield a {uri_0} ; {uri_1} ?value .
     {uri_filter_block}
   }}
+}}
 }}
                                """)
 

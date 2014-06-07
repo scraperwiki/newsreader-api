@@ -18,7 +18,7 @@ class summary_of_events_with_actor(SparqlQuery):
         self.description = ('A list of events mentioning a specified actor'
           ', providing a link to the event and some summary information.')
         self.url = 'summary_of_events_with_actor'
-        self.example = 'summary_of_events_with_actor?uris.0=dbpedia:David_Beckham'
+        self.example = 'summary_of_events_with_actor?uris.0=dbpedia:Thierry_Henry'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{

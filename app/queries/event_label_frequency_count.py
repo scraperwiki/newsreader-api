@@ -16,7 +16,7 @@ class event_label_frequency_count(SparqlQuery):
         self.description = ("The event label provides an indication of the character of"
             " an event") 
         self.url = 'event_label_frequency_count'
-        self.example = 'event_label_frequency_count'
+        self.example = 'event_label_frequency_count?filter=bribe+OR+bribery'
         self.query_template = ("""
 SELECT
 (?filterfield AS ?event_label) (COUNT(DISTINCT ?event) AS ?count)

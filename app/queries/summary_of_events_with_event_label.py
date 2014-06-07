@@ -14,7 +14,7 @@ class summary_of_events_with_event_label(SparqlQuery):
         self.query_title = 'Search for events with a specified label'
         self.description = 'The event label gives an indication as to the character of an event'
         self.url = 'summary_of_events_with_event_label'
-        self.example = 'summary_of_events_with_event_label?filter=bribe'
+        self.example = 'summary_of_events_with_event_label?filter=bribe&datefilter=2010'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
@@ -40,7 +40,8 @@ ORDER BY ?datetime
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(?event) AS ?count)
+SELECT (COUNT(*) as ?count){{
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
   {{
     SELECT DISTINCT ?event ?datetime (?filterfield AS ?event_label)
@@ -53,9 +54,10 @@ WHERE {{
       FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
       BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
     }}
-    ORDER BY ?datetime
   }}
   ?event ?p ?o
+}}
+GROUP BY ?event ?datetime ?event_label
 }}
                                """)
 
