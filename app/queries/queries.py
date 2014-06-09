@@ -34,7 +34,7 @@ class SparqlQuery(object):
 
     def __init__(self, offset=0, limit=100, uris=None, output='html',
                  datefilter=None,
-                 filter=None):
+                 filter=None, **kwargs):
 
         self.offset = offset
         self.limit = limit
