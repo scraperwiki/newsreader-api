@@ -12,7 +12,7 @@ import requests_cache
 
 import time
 
-requests_cache.install_cache('requests_cache', expire_after=3600)
+requests_cache.install_cache('requests_cache', expire_after=172800 )
 
 def convert_raw_json_to_clean(SPARQL_json):
     clean_json = []
@@ -34,7 +34,7 @@ class SparqlQuery(object):
 
     def __init__(self, offset=0, limit=100, uris=None, output='html',
                  datefilter=None,
-                 filter=None):
+                 filter=None, **kwargs):
 
         self.offset = offset
         self.limit = limit
