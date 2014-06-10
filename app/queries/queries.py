@@ -95,8 +95,9 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
             # PREFIXES
             self.uris = []
             for item in uris:
-                if "http" in item:
-                    self.uris.append('<' + item + '>')
+                print item
+                if "http" in item.decode('UTF-8'):
+                    self.uris.append('<' + item.decode('UTF-8') + '>')
                 else:
                     self.uris.append(item)
             if len(self.uris) == 1:
