@@ -263,7 +263,10 @@ class CountQuery(SparqlQuery):
         """ Parses and returns result from a count query. """
         self.submit_query()
         if len(self.error_message) == 0 :
-            return int(self.json_result['results']['bindings'][0]['count']['value'])
+            if self.json_result['results']['bindings'] == []:
+                return 0
+            else:
+                return int(self.json_result['results']['bindings'][0]['count']['value'])
         else:
             pass
 
