@@ -69,7 +69,6 @@ class SparqlQuery(object):
         self.number_of_uris_required = 0
 
         self.prefix_block = """
-# Query from Newsreader Simple API
 PREFIX dbo: <http://dbpedia.org/ontology/>
 PREFIX dbpedia: <http://dbpedia.org/resource/>
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -145,7 +144,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
         self._check_parameters()
 
         if len(self.error_message) == 0:
-            full_query = ("#Query " + self.url + "\n" +
+            full_query = ("#NewsReader Simple API Query: " + self.url + "\n" +
                           self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.query_template)
@@ -164,7 +163,7 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        full_query = ("#Counting query for " + self.url + "\n" +
+        full_query = ("#NewsReader Simple API Counting Query: " + self.url + "\n" +
                           self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.count_template)
@@ -186,7 +185,6 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
         payload = {'query': self.query}
         print "\n\n**New query**"
         print self.query
-        print self.limit, type(self.limit)
         if self.offset >= 10000:
             self.error_message.append({"error":"OFFSET exceeds 10000, add filter or datefilter to narrow results"})
             return
