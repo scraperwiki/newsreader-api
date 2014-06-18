@@ -95,7 +95,6 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
             # PREFIXES
             self.uris = []
             for item in uris:
-                print item
                 if "http" in item.decode('UTF-8'):
                     self.uris.append('<' + item.decode('UTF-8') + '>')
                 else:
@@ -146,7 +145,8 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
         self._check_parameters()
 
         if len(self.error_message) == 0:
-            full_query = (self.prefix_block + 
+            full_query = ("#Query " + self.url + "\n" +
+                          self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.query_template)
             query = full_query.format(offset=self.offset,
@@ -164,7 +164,8 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 
     def _build_count_query(self):
         """ Returns a count query string. """
-        full_query = ("#Counting query\n" + self.prefix_block + 
+        full_query = ("#Counting query for " + self.url + "\n" +
+                          self.prefix_block + 
                           self.allowed_parameters_block + 
                           self.count_template)
         return full_query.format(offset=self.offset,
