@@ -62,9 +62,7 @@ def run_query(page, query_to_use):
     if "error" in query_args.keys():
         return json.dumps(query_args)
 
-    print query_args
     query_args = add_offset_and_limit(query_args, page)
-    print query_args
 
     current_query = query_name(**query_args)
 
