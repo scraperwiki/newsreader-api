@@ -36,6 +36,27 @@ class SparqlQuery(object):
                  datefilter=None,
                  filter=None, **kwargs):
 
+        self.prefix_dict = {
+                "dbo": "http://dbpedia.org/ontology/",
+                "dbpedia": "http://dbpedia.org/resource/",
+                "dct": "http://purl.org/dc/terms/",
+                "framenet": "http://www.newsreader-project.eu/framenet/",
+                "gaf": "http://groundedannotationframework.org/files/2014/01/",
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/"
+        }
+
+        self._make_prefix_block()
+        
+        self.allowed_parameters_block = """
+# All allowed parameters:
+# output: {output}, offset: {offset}, limit: {limit}, 
+# uri.0: {uri_0}, uri.1: {uri_1}
+# filter_block: {filter_block}, date_filter_block: {date_filter_block}
+# uri_filter_block: {uri_filter_block}
+                                        """
+
         self.offset = offset
         self.limit = limit
         self.query_time = None
@@ -69,26 +90,7 @@ class SparqlQuery(object):
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 0
 
-        self.prefix_dict = {
-                "dbo": "http://dbpedia.org/ontology/",
-                "dbpedia": "http://dbpedia.org/resource/",
-                "dct": "http://purl.org/dc/terms/",
-                "framenet": "http://www.newsreader-project.eu/framenet/",
-                "gaf": "http://groundedannotationframework.org/files/2014/01/",
-                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-                "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/"
-        }
-
-        self._make_prefix_block()
         
-        self.allowed_parameters_block = """
-# All allowed parameters:
-# output: {output}, offset: {offset}, limit: {limit}, 
-# uri.0: {uri_0}, uri.1: {uri_1}
-# filter_block: {filter_block}, date_filter_block: {date_filter_block}
-# uri_filter_block: {uri_filter_block}
-                                        """
 
     def _make_prefix_block(self):
         prefixes = []
@@ -114,6 +116,9 @@ class SparqlQuery(object):
             #self.uris = ['<' + item + '>' for item in uris if "http" in item]
 
     def expand_prefix(self,item):
+        # This catches the documentation {uri_0} and {uri_1}
+        if item.startswith('{'):
+            return item
         parts = item.decode('UTF-8').split(':')
         assert len(parts) == 2
         prefix = parts[0]
