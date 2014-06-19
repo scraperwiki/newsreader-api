@@ -56,14 +56,15 @@ def run_query(page, query_to_use):
         missing_query_response.append({"message":["For available queries, see here:",
                                         get_root_url()]})
         return json.dumps(missing_query_response, sort_keys=True)
-    print request.query_string
+
     query_args = parse_query_string(request.query_string)
 
     if "error" in query_args.keys():
         return json.dumps(query_args)
 
-    offset = PER_PAGE * (page - 1)
-    current_query = query_name(offset=offset, limit=PER_PAGE, **query_args)
+    query_args = add_offset_and_limit(query_args, page)
+
+    current_query = query_name(**query_args)
 
     if len(current_query.error_message) != 0:
         error_message_json = json.dumps(current_query.error_message)
@@ -79,8 +80,15 @@ def run_query(page, query_to_use):
         error_message_json = json.dumps({"error":"No results, probably a request for an invalid page number"})
         return error_message_json
 
-    return produce_response(current_query, page, offset)
+    return produce_response(current_query, page, query_args['offset'])
 
+def add_offset_and_limit(query_args, page):
+    if 'offset' not in query_args.keys():
+        query_args['offset'] = PER_PAGE * (page - 1)
+    if 'limit' not in query_args.keys():
+        query_args['limit'] = PER_PAGE 
+
+    return query_args
 
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """

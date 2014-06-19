@@ -99,7 +99,6 @@ class SparqlQuery(object):
         self.prefix_block = "\n".join(prefixes)
 
     def _process_input_uris(self, uris):
-        print uris
         if uris is None:
             self.uris = [None, None]
         else:
