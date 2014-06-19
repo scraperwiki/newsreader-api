@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import json
 import unittest
 
-import dshelpers
 import mock
 import queries
 
@@ -36,30 +35,30 @@ class SparqlQuerySetupTestCase(unittest.TestCase):
         assert_equal(None, self.query.json_result)
 
 
-class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
-    @mock.patch('app.queries.request_url')
-    def setUp(self, mock_request_url):
-        fake_response = mock.Mock()
-        fake_response.content = '{"test": "ok"}'
-        mock_request_url.return_value = fake_response
-        self.mock_request_url = mock_request_url
-        self.username = 'username'
-        self.password = 'password'
+# class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
+#     @mock.patch('app.queries.request_url')
+#     def setUp(self, mock_request_url):
+#         fake_response = mock.Mock()
+#         fake_response.content = '{"test": "ok"}'
+#         mock_request_url.return_value = fake_response
+#         self.mock_request_url = mock_request_url
+#         self.username = 'username'
+#         self.password = 'password'
 
-        self.query = queries.SparqlQuery()
-        self.query.submit_query(self.username, self.password)
+#         self.query = queries.SparqlQuery()
+#         self.query.submit_query(self.username, self.password)
 
-    def test_result_from_submit_query(self):
-        expected_json_result = {u'test': u'ok'}
-        assert_equal(expected_json_result, self.query.json_result)
+#     def test_result_from_submit_query(self):
+#         expected_json_result = {u'test': u'ok'}
+#         assert_equal(expected_json_result, self.query.json_result)
 
-    def test_request_url_call_from_submit_query(self):
-        endpoint_url = ('https://knowledgestore.fbk.eu/nwr/'
-                        'worldcup-hackathon/sparql')
-        payload = {'query': self.query.query}
-        auth = (self.username, self.password)
-        self.mock_request_url.assert_called_with(endpoint_url, params=payload,
-                                                 auth=auth)
+#     def test_request_url_call_from_submit_query(self):
+#         endpoint_url = ('https://knowledgestore.fbk.eu/nwr/'
+#                         'worldcup-hackathon/sparql')
+#         payload = {'query': self.query.query}
+#         auth = (self.username, self.password)
+#         self.mock_request_url.assert_called_with(endpoint_url, params=payload,
+#                                                  auth=auth)
 
 
 class CountQueryTestCase(unittest.TestCase):
