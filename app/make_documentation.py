@@ -28,7 +28,7 @@ def make_documentation(root_url):
 
     query_long_list = dir(queries)
     reject_list = ['__all__', '__builtins__', '__doc__', '__file__', '__name__',
-                   '__package__', '__path__', 'queries']
+                   '__package__', '__path__', 'queries', 'SparqlQuery']
 
     for query in query_long_list:
         if query in reject_list:

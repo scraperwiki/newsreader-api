@@ -46,6 +46,7 @@ class SparqlQuery(object):
         self.filter_block = None
         self.uri_filter_block = None
         self.original_uris = uris
+        self.uris = []
 
         self._process_input_uris(uris)
         self._make_date_filter_block()
@@ -68,16 +69,19 @@ class SparqlQuery(object):
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 0
 
-        self.prefix_block = """
-PREFIX dbo: <http://dbpedia.org/ontology/>
-PREFIX dbpedia: <http://dbpedia.org/resource/>
-PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX framenet: <http://www.newsreader-project.eu/framenet/>
-PREFIX gaf: <http://groundedannotationframework.org/files/2014/01/>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
-                            """
+        self.prefix_dict = {
+                "dbo": "http://dbpedia.org/ontology/",
+                "dbpedia": "http://dbpedia.org/resource/",
+                "dct": "http://purl.org/dc/terms/",
+                "framenet": "http://www.newsreader-project.eu/framenet/",
+                "gaf": "http://groundedannotationframework.org/files/2014/01/",
+                "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+                "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/"
+        }
+
+        self._make_prefix_block()
+        
         self.allowed_parameters_block = """
 # All allowed parameters:
 # output: {output}, offset: {offset}, limit: {limit}, 
@@ -86,7 +90,14 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
 # uri_filter_block: {uri_filter_block}
                                         """
 
+    def _make_prefix_block(self):
+        prefixes = []
+        for k,v in self.prefix_dict.iteritems():
+            prefixes.append("PREFIX {k}: <{v}>".format(k=k, v=v))
+        self.prefix_block = "\n".join(prefixes)
+
     def _process_input_uris(self, uris):
+        print uris
         if uris is None:
             self.uris = [None, None]
         else:
@@ -97,10 +108,22 @@ PREFIX sem: <http://semanticweb.cs.vu.nl/2009/11/sem/>
                 if "http" in item.decode('UTF-8'):
                     self.uris.append('<' + item.decode('UTF-8') + '>')
                 else:
-                    self.uris.append(item)
+                    self.uris.append(self.expand_prefix(item))
             if len(self.uris) == 1:
                 self.uris.append(None)
             #self.uris = ['<' + item + '>' for item in uris if "http" in item]
+
+    def expand_prefix(self,item):
+        parts = item.decode('UTF-8').split(':')
+        assert len(parts) == 2
+        prefix = parts[0]
+        postfix = parts[1]
+        try:
+            expanded_prefix =self.prefix_dict[prefix]
+        except KeyError:
+            pass
+        expanded_item = '<' + expanded_prefix + postfix + '>'
+        return expanded_item
 
     def _make_date_filter_block(self):
         if self.datefilter != 'None':

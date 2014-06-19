@@ -34,6 +34,13 @@ class SparqlQuerySetupTestCase(unittest.TestCase):
     def test_query_default_json_result(self):
         assert_equal(None, self.query.json_result)
 
+    def test_uri_expander(self):
+        input_uris = ['dbo:Person', 'dbpedia:Guangzhou_Evergrande_F.C.']
+        expected_output = ['<http://dbpedia.org/ontology/Person>',
+                           '<http://dbpedia.org/resource/Guangzhou_Evergrande_F.C.>']
+        self.query._process_input_uris(input_uris)
+        assert_equal(self.query.uris,expected_output)
+
 
 # class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
 #     @mock.patch('app.queries.request_url')
