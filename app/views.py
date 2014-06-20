@@ -48,6 +48,7 @@ def parse_query_string(query_string):
 @app.route('/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
+    # Try to make the query object
     try:
         query_name = getattr(queries, query_to_use)
     except AttributeError:
@@ -55,23 +56,28 @@ def run_query(page, query_to_use):
         missing_query_response.append({"error":"Query '{0}' does not exist".format(query_to_use)})
         missing_query_response.append({"message":["For available queries, see here:",
                                         get_root_url()]})
-        return json.dumps(missing_query_response, sort_keys=True)
-
+        error_message_json = json.dumps(missing_query_response) 
+        return error_message_json
+    # Process the other arguments
     query_args = parse_query_string(request.query_string)
 
     if "error" in query_args.keys():
-        return json.dumps(query_args)
+        error_message_json = json.dumps(query_args)
+        return error_message_json
 
     query_args = add_offset_and_limit(query_args, page)
 
+    #Add the arguments to the query
     current_query = query_name(**query_args)
 
     if len(current_query.error_message) != 0:
         error_message_json = json.dumps(current_query.error_message)
         return error_message_json
-    #else:
+
+    #Make the query
     current_query.submit_query()
 
+    #Check the query response for error states
     if len(current_query.error_message) != 0:
         error_message_json = json.dumps(current_query.error_message)
         return error_message_json               
@@ -79,7 +85,7 @@ def run_query(page, query_to_use):
     if not current_query.parse_query_results() and page != 1:
         error_message_json = json.dumps({"error":"No results, probably a request for an invalid page number"})
         return error_message_json
-
+    #Return query response if all is well
     return produce_response(current_query, page, query_args['offset'])
 
 def add_offset_and_limit(query_args, page):
@@ -93,56 +99,70 @@ def add_offset_and_limit(query_args, page):
 def produce_response(query, page_number, offset):
     """ Get desired result output from completed query; create a response. """
     # TODO: avoid calling count more than once, expensive (though OK if cached)
-    root_url = get_root_url()
+
+    try:
+        count = query.get_total_result_count()
+    except:
+        error_message_json = json.dumps(query.error_message)
+        return error_message_json
+        
 
     if query.output == 'json':
-        count = query.get_total_result_count()
-        pagination = Pagination(page_number, PER_PAGE, int(count))
-        output = {}
-        output['payload'] = query.clean_json
-        output['count'] = count
-        output['page number'] = page_number
-        output['next page'] = root_url + url_for_other_page(pagination.page + 1)
-        response = make_response(json.dumps(output, sort_keys=True))
-        response.headers[str('Content-type')]=str('application/json; charset=utf-8')
-        return response
-    elif query.output == 'csv':
-        if query.result_is_tabular:
-            output = StringIO.StringIO()
-            fieldnames = OrderedDict(zip(query.headers, 
-                                    [None]*len(query.headers)))
-            dw = csv.DictWriter(output, fieldnames=fieldnames)
-            dw.writeheader()
-            for row in query.clean_json:
-                dw.writerow(row)
+        response = produce_json_response(query, page_number, count)   
+    elif query.output == 'csv' and query.result_is_tabular:
+        response = produce_csv_response(query, page_number, count)
+    elif query.output == 'html':
+        response = produce_html_response(query, page_number, count, offset)
+    else: 
+        response = json.dumps({"error":"query result cannot be written as csv"})
+    return response
 
-            filename = 'results-page-{0}.csv'.format(page_number)
-            response = make_response(output.getvalue())
-            response.headers[str('Content-type')]=str('text/csv; charset=utf-8')
-            response.headers[str('Content-disposition')]=str('attachment;filename='+filename)
-            return response
-            #return Response(output.getvalue(), 
-            #  content_type='text/csv; charset=utf-8',
-            #  content_disposition='attachment;filename=results.csv')
-        else:
-            return json.dumps({"error":"query result cannot be written as csv"})
-    else:
-        count = query.get_total_result_count()
-        pagination = Pagination(page_number, PER_PAGE, int(count))
-        result = query.parse_query_results()
-        return render_template(query.jinja_template,
-                               title=query.query_title,
-                               pagination=pagination,
-                               query=query.query,
-                               count=count,
-                               headers=query.headers,
-                               results=result, 
-                               offset=offset+1,
-                               filter=query.filter,
-                               query_time=query.query_time,
-                               count_time=query.count_time,
-                               datefilter=query.datefilter,
-                               uris=query.uris)
+def produce_json_response(query, page_number, count):
+    root_url = get_root_url()
+    pagination = Pagination(page_number, PER_PAGE, int(count))
+    output = {}
+    output['payload'] = query.clean_json
+    output['count'] = count
+    output['page number'] = page_number
+    output['next page'] = root_url + url_for_other_page(pagination.page + 1)
+    response = make_response(json.dumps(output, sort_keys=True))
+    response.headers[str('Content-type')]=str('application/json; charset=utf-8')
+    return response
+
+def produce_csv_response(query, page_number, count):
+    output = StringIO.StringIO()
+    fieldnames = OrderedDict(zip(query.headers, 
+                            [None]*len(query.headers)))
+    dw = csv.DictWriter(output, fieldnames=fieldnames)
+    dw.writeheader()
+    for row in query.clean_json:
+        dw.writerow(row)
+
+    filename = 'results-page-{0}.csv'.format(page_number)
+    response = make_response(output.getvalue())
+    response.headers[str('Content-type')]=str('text/csv; charset=utf-8')
+    response.headers[str('Content-disposition')]=str('attachment;filename='+filename)
+    return response
+
+def produce_html_response(query, page_number, count, offset):
+    pagination = Pagination(page_number, PER_PAGE, int(count))
+    result = query.parse_query_results()
+    return render_template(query.jinja_template,
+                           title=query.query_title,
+                           pagination=pagination,
+                           query=query.query,
+                           count=count,
+                           headers=query.headers,
+                           results=result, 
+                           offset=offset+1,
+                           filter=query.filter,
+                           query_time=query.query_time,
+                           count_time=query.count_time,
+                           datefilter=query.datefilter,
+                           uris=query.uris)
+
+def produce_jsonp_response():
+    pass
 
 def url_for_other_page(page):
     args = dict(request.view_args.items() + request.args.to_dict().items())
