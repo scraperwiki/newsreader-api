@@ -76,6 +76,7 @@ def run_query(page, query_to_use):
 
     #Make the query
     current_query.submit_query()
+    count = current_query.get_total_result_count()
 
     #Check the query response for error states
     if len(current_query.error_message) != 0:
@@ -86,7 +87,7 @@ def run_query(page, query_to_use):
         error_message_json = json.dumps({"error":"No results, probably a request for an invalid page number"})
         return error_message_json
     #Return query response if all is well
-    return produce_response(current_query, page, query_args['offset'])
+    return produce_response(current_query, page, query_args['offset'], count)
 
 def add_offset_and_limit(query_args, page):
     if 'offset' not in query_args.keys():
@@ -96,16 +97,8 @@ def add_offset_and_limit(query_args, page):
 
     return query_args
 
-def produce_response(query, page_number, offset):
+def produce_response(query, page_number, offset, count):
     """ Get desired result output from completed query; create a response. """
-    # TODO: avoid calling count more than once, expensive (though OK if cached)
-
-    try:
-        count = query.get_total_result_count()
-    except:
-        error_message_json = json.dumps(query.error_message)
-        return error_message_json
-        
 
     if query.output == 'json':
         response = produce_json_response(query, page_number, count)   
