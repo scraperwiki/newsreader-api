@@ -64,7 +64,7 @@ WHERE {{
                                """)
 
         self.jinja_template = 'table.html'
-        self.headers = ['event', 'datetime', 'event_label']
+        self.headers = ['event', 'datetime', 'event_label', 'event_size']
 
         self.required_parameters = ["uris"]
         self.optional_parameters = ["output", "offset", "limit", "datefilter"]
