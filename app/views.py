@@ -67,6 +67,7 @@ def run_query(page, query_to_use):
 
     query_args = add_offset_and_limit(query_args, page)
 
+
     #Add the arguments to the query
     current_query = query_name(**query_args)
 
@@ -93,15 +94,22 @@ def add_offset_and_limit(query_args, page):
     if 'offset' not in query_args.keys():
         query_args['offset'] = PER_PAGE * (page - 1)
     if 'limit' not in query_args.keys():
-        query_args['limit'] = PER_PAGE 
+        query_args['limit'] = PER_PAGE
+    if 'callback' in query_args.keys():
+        query_args['output'] = 'jsonp'
+    if 'callback' not in query_args.keys():
+        query_args['callback'] = None
 
     return query_args
 
 def produce_response(query, page_number, offset, count):
     """ Get desired result output from completed query; create a response. """
 
+    print query.output
     if query.output == 'json':
-        response = produce_json_response(query, page_number, count)   
+        response = produce_json_response(query, page_number, count)
+    elif query.output == 'jsonp':
+        response = produce_jsonp_response(query, page_number, count)    
     elif query.output == 'csv' and query.result_is_tabular:
         response = produce_csv_response(query, page_number, count)
     elif query.output == 'html':
@@ -154,8 +162,10 @@ def produce_html_response(query, page_number, count, offset):
                            datefilter=query.datefilter,
                            uris=query.uris)
 
-def produce_jsonp_response():
-    pass
+def produce_jsonp_response(query, page_number, count):
+    response = produce_json_response(query, page_number, count)
+    response.data = query.callback + '(' + response.data + ');'
+    return response
 
 def url_for_other_page(page):
     args = dict(request.view_args.items() + request.args.to_dict().items())

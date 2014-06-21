@@ -33,7 +33,7 @@ class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
 
     def __init__(self, offset=0, limit=100, uris=None, output='html',
-                 datefilter=None,
+                 datefilter=None, callback=None,
                  filter=None, **kwargs):
 
         self.prefix_dict = {
@@ -81,6 +81,7 @@ class SparqlQuery(object):
         self.json_result = None
         self.clean_json = None
         self.output = output
+        self.callback = callback
         self.headers = []
         self.result_is_tabular = True
         self.jinja_template = "default.html"

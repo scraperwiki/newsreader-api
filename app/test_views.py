@@ -10,7 +10,25 @@ from nose.tools import assert_equal, assert_is_instance
 
 from app import app
 
-class SimpleAPITestCase(unittest.TestCase):
+class SimpleAPIGenericTests(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        cls.app = app.test_client()
+
+    def test_visit_a_non_existent_page(self):
+        rv = self.app.get('/properties_of_a_type/page/3?uris.0=dbo%3AStadium')
+        assert_equal(rv.data, '{"error": "No results, probably a request for an invalid page number"}')
+
+    def test_visit_a_page_beyond_the_offset_limit(self):
+        rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia:David_Beckham')
+        assert_equal(rv.data, '[{"error": "OFFSET exceeds 10000, add filter or datefilter to narrow results"}]')
+
+    def test_produce_jsonp_output(self):
+        rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
+        assert_equal(rv.data[0:11], "mycallback(")
+        assert_equal(rv.data[-2:],");")
+
+class SimpleAPIQueryTests(unittest.TestCase):
     @classmethod
     def setUp(cls):
         cls.app = app.test_client()
@@ -84,10 +102,4 @@ class SimpleAPITestCase(unittest.TestCase):
         rv = self.app.get('/types_of_actors?filter=player')
         assert 'http://dbpedia.org/ontology/GridironFootballPlayer' in rv.data.decode('UTF-8')
 
-    def test_visit_a_non_existent_page(self):
-        rv = self.app.get('/properties_of_a_type/page/3?uris.0=dbo%3AStadium')
-        assert_equal(rv.data, '{"error": "No results, probably a request for an invalid page number"}')
-
-    def test_visit_a_page_beyond_the_offset_limit(self):
-        rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia:David_Beckham')
-        assert_equal(rv.data, '[{"error": "OFFSET exceeds 10000, add filter or datefilter to narrow results"}]')
+   
