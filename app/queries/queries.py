@@ -33,7 +33,7 @@ class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
 
     def __init__(self, offset=0, limit=100, uris=None, output='html',
-                 datefilter=None, callback=None,
+                 datefilter=None, callback=None, id=None,
                  filter=None, **kwargs):
 
         self.prefix_dict = {
@@ -307,11 +307,15 @@ class CRUDQuery(SparqlQuery):
     """
     # TODO: is *args, **kwargs really needed here?
 
-    def __init__(self, offset=0, limit=100, uris=None, output='html', *args, **kwargs):
-        super(CRUDQuery, self).__init__(*args, **kwargs)
+    def __init__(self, offset=0, limit=100, uris=None, output='json',
+                 datefilter=None, callback=None, id=None,
+                 filter=None, **kwargs):
+        super(CRUDQuery, self).__init__(**kwargs)
         self.query_title = 'CRUD query'
         self.query_template = "{uri_0}"
         self.original_uris = uris
+        self.output = output
+        self.callback = callback
 
         self._process_input_uris(uris)
         self.query = self._build_query()
