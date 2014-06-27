@@ -6,7 +6,11 @@ import unittest
 
 import json
 
-from nose.tools import assert_equal, assert_is_instance
+from nose.tools import assert_equal, assert_is_instance, assert_raises
+
+from mock import patch
+import requests
+from requests import ConnectionError, RequestException
 
 from app import app
 
@@ -27,6 +31,13 @@ class SimpleAPIGenericTests(unittest.TestCase):
         rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
         assert_equal(rv.data[0:11], "mycallback(")
         assert_equal(rv.data[-2:],");")
+
+    def test_handles_connection_error(self):
+        with patch.object(requests, 'get') as mock_method:
+            mock_method.side_effect = ConnectionError
+            rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
+            print rv.data
+            #print rv.error_message
 
 class SimpleAPIQueryTests(unittest.TestCase):
     @classmethod

@@ -5,10 +5,12 @@ from __future__ import unicode_literals
 import json
 import unittest
 
-import mock
+from mock import patch
+import requests
+from requests import ConnectionError, RequestException
 import queries
 
-from nose.tools import assert_equal, assert_is_instance
+from nose.tools import assert_equal, assert_is_instance, assert_raises
 
 
 class SparqlQuerySetupTestCase(unittest.TestCase):
@@ -41,23 +43,25 @@ class SparqlQuerySetupTestCase(unittest.TestCase):
         self.query._process_input_uris(input_uris)
         assert_equal(self.query.uris,expected_output)
 
+class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
+    # @mock.patch('app.queries.request_url')
+    # def setUp(self, mock_request_url):
+    #     fake_response = mock.Mock()
+    #     fake_response.content = '{"test": "ok"}'
+    #     mock_request_url.return_value = fake_response
+    #     self.mock_request_url = mock_request_url
+    #     self.username = 'username'
+    #     self.password = 'password'
 
-# class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
-#     @mock.patch('app.queries.request_url')
-#     def setUp(self, mock_request_url):
-#         fake_response = mock.Mock()
-#         fake_response.content = '{"test": "ok"}'
-#         mock_request_url.return_value = fake_response
-#         self.mock_request_url = mock_request_url
-#         self.username = 'username'
-#         self.password = 'password'
+    #     self.query = queries.SparqlQuery()
+    #     self.query.submit_query(self.username, self.password)
 
-#         self.query = queries.SparqlQuery()
-#         self.query.submit_query(self.username, self.password)
-
-#     def test_result_from_submit_query(self):
-#         expected_json_result = {u'test': u'ok'}
-#         assert_equal(expected_json_result, self.query.json_result)
+    def test_response_to_connection_error(self):
+        with patch.object(requests, 'get') as mock_method:
+            with assert_raises(ConnectionError):
+                mock_method.side_effect = ConnectionError
+                self.query = queries.SparqlQuery()
+                self.query.submit_query()
 
 #     def test_request_url_call_from_submit_query(self):
 #         endpoint_url = ('https://knowledgestore.fbk.eu/nwr/'
