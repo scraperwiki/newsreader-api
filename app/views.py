@@ -16,9 +16,15 @@ import unicodecsv as csv
 import logging
 from app import make_documentation
 
+# TODO:
+# 1. Add custom exception classes to queries and views
+# 2. Handle errors properly via these custome exceptions 
 logging.basicConfig()
 
 PER_PAGE = 20
+
+class ViewerException(Exception):
+    pass
 
 @app.route('/')
 def index():
@@ -50,45 +56,25 @@ def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     # Try to make the query object
     try:
-        query_name = getattr(queries, query_to_use)
-    except AttributeError:
-        missing_query_response = []
-        missing_query_response.append({"error":"Query '{0}' does not exist".format(query_to_use)})
-        missing_query_response.append({"message":["For available queries, see here:",
-                                        get_root_url()]})
-        error_message_json = json.dumps(missing_query_response) 
-        return error_message_json
-    # Process the other arguments
-    query_args = parse_query_string(request.query_string)
+        #Assemble the query
+        query_args = parse_query_string(request.query_string)
+        current_query = assemble_query(query_to_use, query_args, page)
+        current_query.submit_query()
+        count = current_query.get_total_result_count()
+    except queries.QueryException as e:
+        return produce_error_response(e)
 
-    if "error" in query_args.keys():
-        error_message_json = json.dumps(query_args)
-        return error_message_json
-
-    query_args = add_offset_and_limit(query_args, page)
-
-
-    #Add the arguments to the query
-    current_query = query_name(**query_args)
-
-    if len(current_query.error_message) != 0:
-        error_message_json = json.dumps(current_query.error_message)
-        return error_message_json
-
-    #Make the query
-    current_query.submit_query()
-    count = current_query.get_total_result_count()
-
-    #Check the query response for error states
-    if len(current_query.error_message) != 0:
-        error_message_json = json.dumps(current_query.error_message)
-        return error_message_json               
-    
-    if not current_query.parse_query_results() and page != 1:
-        error_message_json = json.dumps({"error":"No results, probably a request for an invalid page number"})
-        return error_message_json
-    #Return query response if all is well
     return produce_response(current_query, page, query_args['offset'], count)
+
+def assemble_query(query_to_use, query_args, page):
+    try:
+        query_name = getattr(queries, query_to_use)
+        query_args = add_offset_and_limit(query_args, page)
+        current_query = query_name(**query_args)
+    except Exception as e:
+        raise e
+
+    return current_query
 
 def add_offset_and_limit(query_args, page):
     if 'offset' not in query_args.keys():
@@ -101,6 +87,9 @@ def add_offset_and_limit(query_args, page):
         query_args['callback'] = None
 
     return query_args
+
+def produce_error_response(e):
+    return e.message
 
 def produce_response(query, page_number, offset, count):
     """ Get desired result output from completed query; create a response. """

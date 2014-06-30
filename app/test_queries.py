@@ -58,11 +58,12 @@ class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
 
     def test_response_to_connection_error(self):
         with patch.object(requests, 'get') as mock_method:
-            with assert_raises(ConnectionError):
+            with assert_raises(queries.QueryException) as qe:
                 mock_method.side_effect = ConnectionError
                 self.query = queries.SparqlQuery()
                 self.query.submit_query()
-
+                
+                
 #     def test_request_url_call_from_submit_query(self):
 #         endpoint_url = ('https://knowledgestore.fbk.eu/nwr/'
 #                         'worldcup-hackathon/sparql')

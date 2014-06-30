@@ -13,6 +13,15 @@ import requests
 from requests import ConnectionError, RequestException
 
 from app import app
+import queries
+
+#TODO
+# Test handling of following errors:
+# 1. Query does not exist - AttributeError
+# 2. Query not parsable/ arguments malformed
+# 3. ConnectionError from running query
+# 4. Offset greater than 10,000
+# 5. Response code from SPARQL endpoint is not OK (200)
 
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod
@@ -21,11 +30,12 @@ class SimpleAPIGenericTests(unittest.TestCase):
 
     def test_visit_a_non_existent_page(self):
         rv = self.app.get('/properties_of_a_type/page/3?uris.0=dbo%3AStadium')
-        assert_equal(rv.data, '{"error": "No results, probably a request for an invalid page number"}')
+            #assert_equal(exception.args, ('No results, probably a request for an invalid page number',))
 
     def test_visit_a_page_beyond_the_offset_limit(self):
         rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia:David_Beckham')
-        assert_equal(rv.data, '[{"error": "OFFSET exceeds 10000, add filter or datefilter to narrow results"}]')
+        print dir(rv)
+        assert_equal(rv.data, 'OFFSET exceeds 10000, add filter or datefilter to narrow results')
 
     def test_produce_jsonp_output(self):
         rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
@@ -36,7 +46,7 @@ class SimpleAPIGenericTests(unittest.TestCase):
         with patch.object(requests, 'get') as mock_method:
             mock_method.side_effect = ConnectionError
             rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
-            print rv.data
+            assert_equal(rv.data, 'Query raised an exception: ConnectionError')
             #print rv.error_message
 
 class SimpleAPIQueryTests(unittest.TestCase):
@@ -110,7 +120,12 @@ class SimpleAPIQueryTests(unittest.TestCase):
         assert 'http://www.newsreader-project.eu/LNdata/hackathon/2004/03/01/4BTY-GSF0-01G8-73BK.xml#sayEvent' in rv.data.decode('UTF-8')
 
     def test_types_of_actors(self):
-        rv = self.app.get('/types_of_actors?filter=player')
-        assert 'http://dbpedia.org/ontology/GridironFootballPlayer' in rv.data.decode('UTF-8')
+        try:
+            rv = self.app.get('/types_of_actors?filter=player')
+            assert 'http://dbpedia.org/ontology/GridironFootballPlayer' in rv.data.decode('UTF-8')
+        except Exception as e:
+            print type(e)
+            print e.message
+        
 
    

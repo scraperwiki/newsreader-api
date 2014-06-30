@@ -28,11 +28,12 @@ def make_documentation(root_url):
 
     query_long_list = dir(queries)
     reject_list = ['__all__', '__builtins__', '__doc__', '__file__', '__name__',
-                   '__package__', '__path__', 'queries', 'SparqlQuery']
+                   '__package__', '__path__', 'queries', 'SparqlQuery', 'QueryException']
 
     for query in query_long_list:
         if query in reject_list:
             continue
+        print query
         query_name = getattr(queries, query)
         query_object = query_name(offset=0, limit=100, uris=["{uri_0}", "{uri_1}"], filter='{string}', datefilter='{datefilter}', output='html')
         function_list['queries'].append({

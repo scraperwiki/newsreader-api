@@ -2,8 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 
-from queries import CRUDQuery
-
+from queries import CRUDQuery, QueryException
 import os
 import time
 
@@ -68,9 +67,9 @@ class get_document(CRUDQuery):
         except Exception as e:
             print "Query raised an exception"
             print type(e)
-            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
+            raise QueryException("Query raised an exception: {0}".format(type(e).__name__))
         else:
             t1 = time.time()
             total = t1-t0
@@ -84,6 +83,6 @@ class get_document(CRUDQuery):
                 self.json_result = {"content":response.content}
                 self.clean_json = self.json_result
             else:
-                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
+                raise QueryException("Response code not OK: {0}".format(response.status_code))
 
     
