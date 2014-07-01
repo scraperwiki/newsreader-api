@@ -8,6 +8,7 @@ import json
 
 from nose.tools import assert_equal, assert_is_instance, assert_raises
 
+import mock
 from mock import patch
 import requests
 from requests import ConnectionError, RequestException
@@ -19,8 +20,7 @@ import queries
 # Test handling of following errors:
 # 1. Query does not exist - AttributeError
 # 2. Query not parsable/ arguments malformed
-# 5. Response code from SPARQL endpoint is not OK (200)
-# 6. Visit to a non-existent page
+
 
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod
@@ -46,6 +46,14 @@ class SimpleAPIGenericTests(unittest.TestCase):
             rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
             assert_equal(rv.data, 'Query raised an exception: ConnectionError')
             #print rv.error_message
+
+    def test_handles_not_ok_response(self):
+        with patch.object(requests, 'get') as mock_method:
+            fake_response = mock.Mock()
+            fake_response.status_code = 404
+            mock_method.return_value = fake_response
+            rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
+            assert_equal(rv.data, 'Response code not OK: 404')
 
 class SimpleAPIQueryTests(unittest.TestCase):
     @classmethod
