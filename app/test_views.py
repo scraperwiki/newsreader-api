@@ -47,6 +47,10 @@ class SimpleAPIGenericTests(unittest.TestCase):
             assert_equal(rv.data, 'Query raised an exception: ConnectionError')
             #print rv.error_message
 
+    def test_query_does_not_exist(self):
+        rv = self.app.get('/bogus_query?uris.0=dbo:Person&filter=david&callback=mycallback')
+        assert_equal(rv.data, 'Query "bogus_query" does not exist')        
+
     def test_handles_not_ok_response(self):
         with patch.object(requests, 'get') as mock_method:
             fake_response = mock.Mock()

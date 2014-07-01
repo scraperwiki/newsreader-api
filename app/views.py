@@ -61,6 +61,8 @@ def run_query(page, query_to_use):
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()
+    except ViewerException as e:
+        return produce_error_response(e)
     except queries.QueryException as e:
         return produce_error_response(e)
 
@@ -71,8 +73,8 @@ def assemble_query(query_to_use, query_args, page):
         query_name = getattr(queries, query_to_use)
         query_args = add_offset_and_limit(query_args, page)
         current_query = query_name(**query_args)
-    except Exception as e:
-        raise e
+    except AttributeError:
+        raise ViewerException('Query "{0}" does not exist'.format(query_to_use))
 
     return current_query
 
