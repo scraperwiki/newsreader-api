@@ -45,9 +45,10 @@ def parse_query_string(query_string):
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
     try:
-        return jsonurl.parse_query(query_string)
+        parsed_query = jsonurl.parse_query(query_string) 
+        return parsed_query
     except ValueError:
-        return {"error":"Malformed query URL"}
+        raise ViewerException("Query URL is malformed")
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})
@@ -57,7 +58,9 @@ def run_query(page, query_to_use):
     # Try to make the query object
     try:
         #Assemble the query
+        print "**parse_query_string"
         query_args = parse_query_string(request.query_string)
+        print "**assemble_query"
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()

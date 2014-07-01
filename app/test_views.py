@@ -17,9 +17,7 @@ from app import app
 import queries
 
 #TODO
-# Test handling of following errors:
-# 1. Query does not exist - AttributeError
-# 2. Query not parsable/ arguments malformed
+
 
 
 class SimpleAPIGenericTests(unittest.TestCase):
@@ -58,6 +56,10 @@ class SimpleAPIGenericTests(unittest.TestCase):
             mock_method.return_value = fake_response
             rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
             assert_equal(rv.data, 'Response code not OK: 404')
+
+    def test_handles_malformed_url(self):
+        rv = self.app.get('/event_details_filtered_by_actor?uris.0=&!')
+        assert_equal(rv.data, 'Query URL is malformed')        
 
 class SimpleAPIQueryTests(unittest.TestCase):
     @classmethod
