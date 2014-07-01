@@ -19,9 +19,8 @@ import queries
 # Test handling of following errors:
 # 1. Query does not exist - AttributeError
 # 2. Query not parsable/ arguments malformed
-# 3. ConnectionError from running query
-# 4. Offset greater than 10,000
 # 5. Response code from SPARQL endpoint is not OK (200)
+# 6. Visit to a non-existent page
 
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod
@@ -30,11 +29,10 @@ class SimpleAPIGenericTests(unittest.TestCase):
 
     def test_visit_a_non_existent_page(self):
         rv = self.app.get('/properties_of_a_type/page/3?uris.0=dbo%3AStadium')
-            #assert_equal(exception.args, ('No results, probably a request for an invalid page number',))
+        assert_equal(rv.data, 'Result empty, possibly as a result of paging beyond results')
 
     def test_visit_a_page_beyond_the_offset_limit(self):
         rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia:David_Beckham')
-        print dir(rv)
         assert_equal(rv.data, 'OFFSET exceeds 10000, add filter or datefilter to narrow results')
 
     def test_produce_jsonp_output(self):

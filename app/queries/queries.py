@@ -238,6 +238,8 @@ class SparqlQuery(object):
             if response and (response.status_code == requests.codes.ok):
                 self.json_result = json.loads(response.content)
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
+                if len(self.clean_json)==0:
+                    raise QueryException("Result empty, possibly as a result of paging beyond results")    
             else:
                 raise QueryException("Response code not OK: {0}".format(response.status_code))
         
