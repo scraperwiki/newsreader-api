@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import json
 
-from flask import (abort, render_template, request, url_for, Response, 
+from flask import (render_template, request, url_for, Response, 
                    make_response)
 from app import app
 from pagination import Pagination
@@ -17,8 +17,10 @@ import logging
 from app import make_documentation
 
 # TODO:
-# 1. Add custom exception classes to queries and views
-# 2. Handle errors properly via these custome exceptions 
+# 1. Wrap error responses in the appropriate manner (HTML, JSON, JSONP)
+# 2. Test count queries automatically?
+# 3. 
+ 
 logging.basicConfig()
 
 PER_PAGE = 20
@@ -58,9 +60,7 @@ def run_query(page, query_to_use):
     # Try to make the query object
     try:
         #Assemble the query
-        print "**parse_query_string"
         query_args = parse_query_string(request.query_string)
-        print "**assemble_query"
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()

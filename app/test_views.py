@@ -6,19 +6,16 @@ import unittest
 
 import json
 
-from nose.tools import assert_equal, assert_is_instance, assert_raises
+from nose.tools import assert_equal
 
 import mock
 from mock import patch
 import requests
-from requests import ConnectionError, RequestException
+from requests import ConnectionError
 
 from app import app
-import queries
 
 #TODO
-
-
 
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod

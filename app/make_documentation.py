@@ -11,7 +11,8 @@ def make_documentation(root_url):
                                     "",
                                     ""
                         ],
-                     "parameters":["output = {json|html|csv}",
+                     "parameters":["callback = function with which to wrap response to make JSONP",
+                                   "output = {json|html|csv}",
                                    "limit = a number of results to return",
                                    "offset = an offset into the returned results",
                                    "filter = a character string on which to filter, it can take combinations such as bribery+OR+bribe",
