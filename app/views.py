@@ -19,7 +19,8 @@ from app import make_documentation
 # TODO:
 # 1. Wrap error responses in the appropriate manner (HTML, JSON, JSONP)
 # 2. Test count queries automatically?
-# 3. 
+# 3. Generate integration tests from example URLs
+# 4. Use logging instead of print statements
  
 logging.basicConfig()
 
