@@ -6,11 +6,12 @@ import os
 import json
 
 from collections import namedtuple
-
+import logging
 import requests
 import requests_cache
 
 import time
+
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
@@ -210,8 +211,8 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        print "\n\n**New query**"
-        print self.query
+        logging.debug("\n\n**New query**")
+        logging.debug(self.query)
         if self.offset >= 10000:
             raise QueryException("OFFSET exceeds 10000, add filter or datefilter to narrow results")
             
