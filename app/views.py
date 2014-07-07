@@ -66,9 +66,9 @@ def run_query(page, query_to_use):
         current_query.submit_query()
         count = current_query.get_total_result_count()
     except ViewerException as e:
-        return produce_error_response(e)
+        return produce_error_response(e, query_args)
     except queries.QueryException as e:
-        return produce_error_response(e)
+        return produce_error_response(e, query_args)
 
     return produce_response(current_query, page, query_args['offset'], count)
 
@@ -94,13 +94,30 @@ def add_offset_and_limit(query_args, page):
 
     return query_args
 
-def produce_error_response(e):
-    return e.message
+def produce_error_response(e, query_args):
+    print "** Reached produce_error_response(e)"
+    print query_args
+    try:
+        tmp = query_args['output']
+    except KeyError:
+        query_args['output'] = 'json'
+
+    if query_args['output'] == 'json':
+        response = {"error":e.message}
+    elif query_args['output'] == 'jsonp':
+        response = query_args['callback'] + '(' + e.message + ');'    
+    elif query_args['output'] == 'csv':
+        response = {"error":e.message}
+    elif query_args['html'] == 'html':
+        response = render_template('error.html', error_message=e.message)
+    else: 
+        response = {"error":e.message}
+    return response
+
 
 def produce_response(query, page_number, offset, count):
     """ Get desired result output from completed query; create a response. """
 
-    print query.output
     if query.output == 'json':
         response = produce_json_response(query, page_number, count)
     elif query.output == 'jsonp':
