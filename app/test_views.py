@@ -24,11 +24,11 @@ class SimpleAPIGenericTests(unittest.TestCase):
 
     def test_visit_a_non_existent_page(self):
         rv = self.app.get('/properties_of_a_type/page/3?uris.0=dbo%3AStadium')
-        assert_equal(rv.data, 'Result empty, possibly as a result of paging beyond results')
+        assert 'Result empty, possibly as a result of paging beyond results' in rv.data.decode('UTF-8')
 
     def test_visit_a_page_beyond_the_offset_limit(self):
         rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia:David_Beckham')
-        assert_equal(rv.data, 'OFFSET exceeds 10000, add filter or datefilter to narrow results')
+        assert 'OFFSET exceeds 10000, add filter or datefilter to narrow results' in rv.data.decode('UTF-8')
 
     def test_produce_jsonp_output(self):
         rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
@@ -43,8 +43,8 @@ class SimpleAPIGenericTests(unittest.TestCase):
             #print rv.error_message
 
     def test_query_does_not_exist(self):
-        rv = self.app.get('/bogus_query?uris.0=dbo:Person&filter=david&callback=mycallback')
-        assert_equal(rv.data, 'Query "bogus_query" does not exist')        
+        rv = self.app.get('/bogus_query?uris.0=dbo:Person&filter=david&output=json')
+        assert_equal(rv.data, '{"error": "Query **bogus_query** does not exist"}')
 
     def test_handles_not_ok_response(self):
         with patch.object(requests, 'get') as mock_method:

@@ -48,7 +48,9 @@ def parse_query_string(query_string):
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
     try:
-        parsed_query = jsonurl.parse_query(query_string) 
+        parsed_query = jsonurl.parse_query(query_string)
+        if "output" not in parsed_query.keys():
+            parsed_query['output'] = 'html'
         return parsed_query
     except ValueError:
         raise ViewerException("Query URL is malformed")
@@ -67,6 +69,8 @@ def run_query(page, query_to_use):
         current_query.submit_query()
         count = current_query.get_total_result_count()
     except ViewerException as e:
+        print "**ViewerException"
+        print e
         return produce_error_response(e, query_args)
     except queries.QueryException as e:
         return produce_error_response(e, query_args)
@@ -79,7 +83,7 @@ def assemble_query(query_to_use, query_args, page):
         query_args = add_offset_and_limit(query_args, page)
         current_query = query_name(**query_args)
     except AttributeError:
-        raise ViewerException('Query "{0}" does not exist'.format(query_to_use))
+        raise ViewerException('Query **{0}** does not exist'.format(query_to_use))
 
     return current_query
 
@@ -96,8 +100,6 @@ def add_offset_and_limit(query_args, page):
     return query_args
 
 def produce_error_response(e, query_args):
-    print "** Reached produce_error_response(e)"
-    print query_args
     try:
         tmp = query_args['output']
     except KeyError:
@@ -105,15 +107,15 @@ def produce_error_response(e, query_args):
 
     try:
         if query_args['output'] == 'json':
-            response = {"error":e.message}
+            response = json.dumps({"error":e.message})
         elif query_args['output'] == 'jsonp':
             response = query_args['callback'] + '(' + e.message + ');'    
         elif query_args['output'] == 'csv':
-            response = {"error":e.message}
+            response = json.dumps({"error":e.message})
         elif query_args['output'] == 'html':
             response = render_template('error.html', error_message=e.message)
         else: 
-            response = {"error":e.message}
+            response = json.dumps({"error":e.message})
     except Exception as err:
         print "**Failed to make a proper error response"
         print type(err)
