@@ -59,6 +59,7 @@ def parse_query_string(query_string):
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     # Try to make the query object
+    query_args = {'output':'html'}
     try:
         #Assemble the query
         query_args = parse_query_string(request.query_string)
@@ -102,16 +103,21 @@ def produce_error_response(e, query_args):
     except KeyError:
         query_args['output'] = 'json'
 
-    if query_args['output'] == 'json':
-        response = {"error":e.message}
-    elif query_args['output'] == 'jsonp':
-        response = query_args['callback'] + '(' + e.message + ');'    
-    elif query_args['output'] == 'csv':
-        response = {"error":e.message}
-    elif query_args['html'] == 'html':
-        response = render_template('error.html', error_message=e.message)
-    else: 
-        response = {"error":e.message}
+    try:
+        if query_args['output'] == 'json':
+            response = {"error":e.message}
+        elif query_args['output'] == 'jsonp':
+            response = query_args['callback'] + '(' + e.message + ');'    
+        elif query_args['output'] == 'csv':
+            response = {"error":e.message}
+        elif query_args['output'] == 'html':
+            response = render_template('error.html', error_message=e.message)
+        else: 
+            response = {"error":e.message}
+    except Exception as err:
+        print "**Failed to make a proper error response"
+        print type(err)
+        response = ''
     return response
 
 

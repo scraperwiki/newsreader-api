@@ -52,11 +52,11 @@ class SimpleAPIGenericTests(unittest.TestCase):
             fake_response.status_code = 404
             mock_method.return_value = fake_response
             rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=david&callback=mycallback')
-            assert_equal(rv.data, 'Response code not OK: 404')
+            assert_equal(rv.data, 'mycallback(Response code not OK: 404);')
 
     def test_handles_malformed_url(self):
         rv = self.app.get('/event_details_filtered_by_actor?uris.0=&!')
-        assert_equal(rv.data, 'Query URL is malformed')        
+        assert 'Query URL is malformed' in rv.data.decode('UTF-8')        
 
 class SimpleAPIQueryTests(unittest.TestCase):
     @classmethod
