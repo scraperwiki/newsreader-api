@@ -22,6 +22,7 @@ class get_document_metadata(CRUDQuery):
         self.example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
+        self.output = 'json'
         self.result_is_tabular = False
         self.action = "resources"
         

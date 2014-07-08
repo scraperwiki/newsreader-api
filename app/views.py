@@ -61,7 +61,7 @@ def parse_query_string(query_string):
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     # Try to make the query object
-    query_args = {'output':'html'}
+    query_args = {'output':'json'}
     try:
         #Assemble the query
         query_args = parse_query_string(request.query_string)

@@ -26,7 +26,7 @@ class get_document(CRUDQuery):
         self.example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
-        #self.output = output
+        self.output = 'json'
         self.result_is_tabular = False
         self.action = "files"
         
