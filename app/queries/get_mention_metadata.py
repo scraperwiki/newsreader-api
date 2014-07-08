@@ -23,6 +23,7 @@ class get_mention_metadata(CRUDQuery):
         self.example = 'get_mention_metadata?uris.0=http%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
+        self.output = 'json'
         self.result_is_tabular = False
         self.action = "mentions"
         

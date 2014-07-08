@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 import json
 
-from flask import (abort, render_template, request, url_for, Response, 
+from flask import (render_template, request, url_for, Response, 
                    make_response)
 from app import app
 from pagination import Pagination
@@ -16,9 +16,18 @@ import unicodecsv as csv
 import logging
 from app import make_documentation
 
+# TODO:
+# 1. Wrap error responses in the appropriate manner (HTML, JSON, JSONP)
+# 2. Test count queries automatically?
+# 3. Generate integration tests from example URLs
+# 4. Use logging instead of print statements
+ 
 logging.basicConfig()
 
 PER_PAGE = 20
+
+class ViewerException(Exception):
+    pass
 
 @app.route('/')
 def index():
@@ -39,9 +48,12 @@ def parse_query_string(query_string):
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
     try:
-        return jsonurl.parse_query(query_string)
+        parsed_query = jsonurl.parse_query(query_string)
+        if "output" not in parsed_query.keys():
+            parsed_query['output'] = 'html'
+        return parsed_query
     except ValueError:
-        return {"error":"Malformed query URL"}
+        raise ViewerException("Query URL is malformed")
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})
@@ -49,46 +61,31 @@ def parse_query_string(query_string):
 def run_query(page, query_to_use):
     """ Return response of selected query using query string values. """
     # Try to make the query object
+    query_args = {'output':'json'}
+    try:
+        #Assemble the query
+        query_args = parse_query_string(request.query_string)
+        current_query = assemble_query(query_to_use, query_args, page)
+        current_query.submit_query()
+        count = current_query.get_total_result_count()
+    except ViewerException as e:
+        print "**ViewerException"
+        print e
+        return produce_error_response(e, query_args)
+    except queries.QueryException as e:
+        return produce_error_response(e, query_args)
+
+    return produce_response(current_query, page, query_args['offset'], count)
+
+def assemble_query(query_to_use, query_args, page):
     try:
         query_name = getattr(queries, query_to_use)
+        query_args = add_offset_and_limit(query_args, page)
+        current_query = query_name(**query_args)
     except AttributeError:
-        missing_query_response = []
-        missing_query_response.append({"error":"Query '{0}' does not exist".format(query_to_use)})
-        missing_query_response.append({"message":["For available queries, see here:",
-                                        get_root_url()]})
-        error_message_json = json.dumps(missing_query_response) 
-        return error_message_json
-    # Process the other arguments
-    query_args = parse_query_string(request.query_string)
+        raise ViewerException('Query **{0}** does not exist'.format(query_to_use))
 
-    if "error" in query_args.keys():
-        error_message_json = json.dumps(query_args)
-        return error_message_json
-
-    query_args = add_offset_and_limit(query_args, page)
-
-
-    #Add the arguments to the query
-    current_query = query_name(**query_args)
-
-    if len(current_query.error_message) != 0:
-        error_message_json = json.dumps(current_query.error_message)
-        return error_message_json
-
-    #Make the query
-    current_query.submit_query()
-    count = current_query.get_total_result_count()
-
-    #Check the query response for error states
-    if len(current_query.error_message) != 0:
-        error_message_json = json.dumps(current_query.error_message)
-        return error_message_json               
-    
-    if not current_query.parse_query_results() and page != 1:
-        error_message_json = json.dumps({"error":"No results, probably a request for an invalid page number"})
-        return error_message_json
-    #Return query response if all is well
-    return produce_response(current_query, page, query_args['offset'], count)
+    return current_query
 
 def add_offset_and_limit(query_args, page):
     if 'offset' not in query_args.keys():
@@ -102,10 +99,33 @@ def add_offset_and_limit(query_args, page):
 
     return query_args
 
+def produce_error_response(e, query_args):
+    try:
+        tmp = query_args['output']
+    except KeyError:
+        query_args['output'] = 'json'
+
+    try:
+        if query_args['output'] == 'json':
+            response = json.dumps({"error":e.message})
+        elif query_args['output'] == 'jsonp':
+            response = query_args['callback'] + '(' + e.message + ');'    
+        elif query_args['output'] == 'csv':
+            response = json.dumps({"error":e.message})
+        elif query_args['output'] == 'html':
+            response = render_template('error.html', error_message=e.message)
+        else: 
+            response = json.dumps({"error":e.message})
+    except Exception as err:
+        print "**Failed to make a proper error response"
+        print type(err)
+        response = ''
+    return response
+
+
 def produce_response(query, page_number, offset, count):
     """ Get desired result output from completed query; create a response. """
 
-    print query.output
     if query.output == 'json':
         response = produce_json_response(query, page_number, count)
     elif query.output == 'jsonp':

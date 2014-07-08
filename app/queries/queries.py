@@ -6,13 +6,17 @@ import os
 import json
 
 from collections import namedtuple
-
+import logging
 import requests
 import requests_cache
 
 import time
 
+
 requests_cache.install_cache('requests_cache', expire_after=172800)
+
+class QueryException(Exception):
+    pass
 
 def convert_raw_json_to_clean(SPARQL_json):
     clean_json = []
@@ -86,7 +90,6 @@ class SparqlQuery(object):
         self.result_is_tabular = True
         self.jinja_template = "default.html"
 
-        self.error_message = []
         self.required_parameters = []
         self.optional_parameters = ["output", "offset", "limit"]
         self.number_of_uris_required = 0
@@ -165,29 +168,26 @@ class SparqlQuery(object):
         if len_uris < self.number_of_uris_required:
             message = "{0} required, {1} supplied".format(
                 self.number_of_uris_required, len_uris)
-            self.error_message.append({"error":"Insufficient_uris_supplied: {0}".format(message)})
+            raise QueryException({"error":"Insufficient_uris_supplied: {0}".format(message)})
 
     def _build_query(self):
         """ Returns a query string. """
         self._check_parameters()
 
-        if len(self.error_message) == 0:
-            full_query = ("#NewsReader Simple API Query: " + self.url + "\n" +
-                          self.prefix_block + 
-                          self.allowed_parameters_block + 
-                          self.query_template)
-            query = full_query.format(offset=self.offset,
-                                      limit=self.limit,
-                                      output=self.output,
-                                      filter_block=self.filter_block,
-                                      date_filter_block=self.date_filter_block,
-                                      uri_filter_block=self.uri_filter_block,
-                                      uri_0=self.uris[0],
-                                      uri_1=self.uris[1]
-                                      )
-            return query
-        else:
-            return None
+        full_query = ("#NewsReader Simple API Query: " + self.url + "\n" +
+                      self.prefix_block + 
+                      self.allowed_parameters_block + 
+                      self.query_template)
+        query = full_query.format(offset=self.offset,
+                                  limit=self.limit,
+                                  output=self.output,
+                                  filter_block=self.filter_block,
+                                  date_filter_block=self.date_filter_block,
+                                  uri_filter_block=self.uri_filter_block,
+                                  uri_0=self.uris[0],
+                                  uri_1=self.uris[1]
+                                  )
+        return query
 
     def _build_count_query(self):
         """ Returns a count query string. """
@@ -211,11 +211,11 @@ class SparqlQuery(object):
                                   '/nwr/worldcup-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
-        print "\n\n**New query**"
-        print self.query
+        logging.debug("\n\n**New query**")
+        logging.debug(self.query)
         if self.offset >= 10000:
-            self.error_message.append({"error":"OFFSET exceeds 10000, add filter or datefilter to narrow results"})
-            return
+            raise QueryException("OFFSET exceeds 10000, add filter or datefilter to narrow results")
+            
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),
@@ -223,11 +223,11 @@ class SparqlQuery(object):
         except Exception as e:
             print "Query raised an exception"
             print type(e)
-            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
             self.query_time = '{0:.2f}'.format(total)
             print "Time to return from query: {0:.2f} seconds".format(total)
+            raise QueryException("Query raised an exception: {0}".format(type(e).__name__))
         else:
             t1 = time.time()
             total = t1-t0
@@ -239,10 +239,10 @@ class SparqlQuery(object):
             if response and (response.status_code == requests.codes.ok):
                 self.json_result = json.loads(response.content)
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
+                if len(self.clean_json)==0:
+                    raise QueryException("Result empty, possibly as a result of paging beyond results")    
             else:
-                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
-                self.error_message.append({"error":"Response code not OK: {0}".format(response.content)})
-            #print "From cache: {0}".format(response.from_cache)
+                raise QueryException("Response code not OK: {0}".format(response.status_code))
         
 
     def get_total_result_count(self):
@@ -289,14 +289,15 @@ class CountQuery(SparqlQuery):
     # TODO: Should get_count() be the more general parse_query_results()?
     def get_count(self):
         """ Parses and returns result from a count query. """
-        self.submit_query()
-        if len(self.error_message) == 0 :
-            if self.json_result['results']['bindings'] == []:
-                return 0
-            else:
-                return int(self.json_result['results']['bindings'][0]['count']['value'])
+        try:
+            self.submit_query()
+        except Exception as e:
+            raise QueryException("Count query failed with exception: {0}".format(type(e).__name__))
+        
+        if self.json_result['results']['bindings'] == []:
+            return 0
         else:
-            pass
+            return int(self.json_result['results']['bindings'][0]['count']['value'])
 
 class CRUDQuery(SparqlQuery):
 
@@ -350,9 +351,9 @@ class CRUDQuery(SparqlQuery):
         except Exception as e:
             print "Query raised an exception"
             print type(e)
-            self.error_message.append({"error":"Query raised an exception: {0}".format(type(e).__name__)})
             t1 = time.time()
             total = t1-t0
+            raise QueryException("Query raised an exception: {0}".format(type(e).__name__))
         else:
             t1 = time.time()
             total = t1-t0
@@ -366,7 +367,7 @@ class CRUDQuery(SparqlQuery):
                 self.json_result = json.loads(response.content)
                 self.clean_json = convert_raw_json_to_clean(self.json_result)
             else:
-                self.error_message.append({"error":"Response code not OK: {0}".format(response.status_code)})
+                raise QueryException("Response code not OK: {0}".format(response.status_code))
 
     def _clean_resource_identifier(resource_identifier):
         """Ensure that the resource identifier starts with a <, ends with a > 

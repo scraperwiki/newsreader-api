@@ -22,6 +22,7 @@ DESCRIBE {uri_0}
                                """)
 
         self.count_template = ("")
+        self.output = 'json'
         self.result_is_tabular = False
         self.jinja_template = 'default.html'
 
