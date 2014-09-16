@@ -147,7 +147,8 @@ def produce_json_response(query, page_number, count):
     output['page number'] = page_number
     output['next page'] = root_url + url_for_other_page(pagination.page + 1)
     response = make_response(json.dumps(output, sort_keys=True))
-    response.headers[str('Content-type')]=str('application/json; charset=utf-8')
+    response.headers[str('Content-type')] = str('application/json; charset=utf-8')
+    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def produce_csv_response(query, page_number, count):
@@ -163,6 +164,7 @@ def produce_csv_response(query, page_number, count):
     response = make_response(output.getvalue())
     response.headers[str('Content-type')]=str('text/csv; charset=utf-8')
     response.headers[str('Content-disposition')]=str('attachment;filename='+filename)
+    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def produce_html_response(query, page_number, count, offset):
@@ -185,6 +187,7 @@ def produce_html_response(query, page_number, count, offset):
 def produce_jsonp_response(query, page_number, count):
     response = produce_json_response(query, page_number, count)
     response.data = query.callback + '(' + response.data + ');'
+    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def url_for_other_page(page):
