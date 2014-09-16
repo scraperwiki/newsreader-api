@@ -46,6 +46,10 @@ class SimpleAPIGenericTests(unittest.TestCase):
         rv = self.app.get('/bogus_query?uris.0=dbo:Person&filter=david&output=json')
         assert_equal(rv.data, '{"error": "Query **bogus_query** does not exist"}')
 
+    def test_cors_header(self):
+        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json')
+        assert_equal(rv.headers['Access-Control-Allow-Origin'], '*')
+
     def test_handles_not_ok_response(self):
         with patch.object(requests, 'get') as mock_method:
             fake_response = mock.Mock()
