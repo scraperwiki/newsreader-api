@@ -38,8 +38,10 @@ def index():
     if "output" not in output.keys():
         output['output'] = 'html'
     if output['output'] == 'json':
-        help = json.dumps(function_list, ensure_ascii=False, sort_keys=True)
-        return Response(help, content_type=str('application/json; charset=utf-8'))
+        response = make_response(json.dumps(function_list, ensure_ascii=False, sort_keys=True))
+        response.headers[str('Content-type')] = str('application/json; charset=utf-8')
+        response.headers[str('Access-Control-Allow-Origin')] = str('*')
+        return response
     elif output['output'] == 'html':
         return render_template('index.html', help=function_list, root_url=root_url)
 
