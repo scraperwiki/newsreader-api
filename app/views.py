@@ -138,6 +138,7 @@ def produce_response(query, page_number, offset, count):
         response = produce_html_response(query, page_number, count, offset)
     else: 
         response = json.dumps({"error":"query result cannot be written as csv"})
+    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def produce_json_response(query, page_number, count):
@@ -150,7 +151,6 @@ def produce_json_response(query, page_number, count):
     output['next page'] = root_url + url_for_other_page(pagination.page + 1)
     response = make_response(json.dumps(output, sort_keys=True))
     response.headers[str('Content-type')] = str('application/json; charset=utf-8')
-    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def produce_csv_response(query, page_number, count):
@@ -166,13 +166,12 @@ def produce_csv_response(query, page_number, count):
     response = make_response(output.getvalue())
     response.headers[str('Content-type')]=str('text/csv; charset=utf-8')
     response.headers[str('Content-disposition')]=str('attachment;filename='+filename)
-    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def produce_html_response(query, page_number, count, offset):
     pagination = Pagination(page_number, PER_PAGE, int(count))
     result = query.parse_query_results()
-    return render_template(query.jinja_template,
+    response =  make_response(render_template(query.jinja_template,
                            title=query.query_title,
                            pagination=pagination,
                            query=query.query,
@@ -184,12 +183,12 @@ def produce_html_response(query, page_number, count, offset):
                            query_time=query.query_time,
                            count_time=query.count_time,
                            datefilter=query.datefilter,
-                           uris=query.uris)
+                           uris=query.uris))
+    return response
 
 def produce_jsonp_response(query, page_number, count):
     response = produce_json_response(query, page_number, count)
     response.data = query.callback + '(' + response.data + ');'
-    response.headers[str('Access-Control-Allow-Origin')] = str('*')
     return response
 
 def url_for_other_page(page):
