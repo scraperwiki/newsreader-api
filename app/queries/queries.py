@@ -208,7 +208,7 @@ class SparqlQuery(object):
                      username=os.environ['NEWSREADER_USERNAME'],
                      password=os.environ['NEWSREADER_PASSWORD'],
                      endpoint_url='https://knowledgestore.fbk.eu'
-                                  '/nwr/worldcup-hackathon/sparql'):
+                                  '/nwr/cars-hackathon/sparql'):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         logging.debug("\n\n**New query**")
