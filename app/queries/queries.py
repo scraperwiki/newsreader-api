@@ -15,6 +15,9 @@ import time
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
+SPARQL_URL = 'https://knowledgestore.fbk.eu/nwr/cars-hackathon/sparql'
+CRUD_URL = 'https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/{action}'
+
 class QueryException(Exception):
     pass
 
@@ -207,8 +210,7 @@ class SparqlQuery(object):
     def submit_query(self,
                      username=os.environ['NEWSREADER_USERNAME'],
                      password=os.environ['NEWSREADER_PASSWORD'],
-                     endpoint_url='https://knowledgestore.fbk.eu'
-                                  '/nwr/cars-hackathon/sparql'):
+                     endpoint_url=SPARQL_URL):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         logging.debug("\n\n**New query**")
@@ -334,8 +336,7 @@ class CRUDQuery(SparqlQuery):
         """ Parses and returns result from a count query. """
         return 0
 
-    def submit_query(self, endpoint_url_stub='https://knowledgestore.fbk.eu'
-                                        '/nwr/worldcup-hackathon/{action}'):
+    def submit_query(self, endpoint_url_stub=CRUD_URL):
         """ Submit query to endpoint; return result. """
 
         username = os.environ['NEWSREADER_USERNAME']
