@@ -25,11 +25,11 @@ WHERE {{
     SELECT DISTINCT (?filterfield AS ?type)
     WHERE {{
       ?g dct:source <http://dbpedia.org/> .
-      GRAPH ?g {{
-        ?filterfield a owl:Class .
+       ?filterfield a owl:Class .
         FILTER (?filterfield != sem:Actor)
         FILTER (STRSTARTS(STR(?filterfield),
                 "http://dbpedia.org/ontology/"))
+      GRAPH ?g {{
         {uri_filter_block}
       }}
     }}
@@ -49,11 +49,11 @@ WHERE {{
     SELECT DISTINCT (?filterfield AS ?type)
     WHERE {{
       ?g dct:source <http://dbpedia.org/> .
-      GRAPH ?g {{
-        ?filterfield a owl:Class .
+      ?filterfield a owl:Class .
         FILTER (?filterfield != sem:Actor)
         FILTER (STRSTARTS(STR(?filterfield),
                 "http://dbpedia.org/ontology/"))
+      GRAPH ?g {{
         {uri_filter_block}
       }}
     }}

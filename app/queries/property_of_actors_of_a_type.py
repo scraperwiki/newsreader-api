@@ -22,9 +22,9 @@ class property_of_actors_of_a_type(SparqlQuery):
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
   ?event sem:hasActor ?filterfield .
-  ?g dct:source <http://dbpedia.org/>
+  ?g dct:source <http://dbpedia.org/> .
+  ?filterfield a {uri_0} ; {uri_1} ?value .
   GRAPH ?g {{
-    ?filterfield a {uri_0} ; {uri_1} ?value .
     {uri_filter_block}
   }}
 }}
@@ -38,9 +38,9 @@ SELECT (COUNT(*) as ?count){{
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
   ?event sem:hasActor ?filterfield .
-  ?g dct:source <http://dbpedia.org/>
+  ?g dct:source <http://dbpedia.org/> .
+  ?filterfield a {uri_0} ; {uri_1} ?value .
   GRAPH ?g {{
-    ?filterfield a {uri_0} ; {uri_1} ?value .
     {uri_filter_block}
   }}
 }}
