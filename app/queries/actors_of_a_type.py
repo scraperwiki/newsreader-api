@@ -22,13 +22,13 @@ SELECT (?filterfield AS ?actor) (COUNT(DISTINCT ?event) AS ?count) ?comment
 WHERE {{
   ?event sem:hasActor ?filterfield  .
   ?g dct:source <http://dbpedia.org/> .
+  ?filterfield a {uri_0} .
   GRAPH ?g {{
-    ?filterfield a {uri_0} .
     {uri_filter_block}
-    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
   }}
+  OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
 }}
-GROUP BY ?filterfield ?comment
+GROUP BY ?filterfield ?comment ?g
 ORDER BY desc(?count)
 OFFSET {offset}
 LIMIT {limit}
@@ -39,11 +39,11 @@ SELECT (COUNT(DISTINCT ?filterfield) AS ?count)
 WHERE {{
   ?event sem:hasActor ?filterfield  .
   ?g dct:source <http://dbpedia.org/> .
+  ?filterfield a {uri_0} .
   GRAPH ?g {{
-    ?filterfield a {uri_0} .
     {uri_filter_block}
-    OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
   }}
+  OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
 }}
                                """)
 
