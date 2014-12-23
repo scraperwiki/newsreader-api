@@ -21,14 +21,17 @@ class actors_of_a_type(SparqlQuery):
 SELECT (?filterfield AS ?actor) (COUNT(DISTINCT ?event) AS ?count) ?comment
 WHERE {{
   ?event sem:hasActor ?filterfield  .
-  ?g dct:source <http://dbpedia.org/> .
-  ?filterfield a {uri_0} .
-  GRAPH ?g {{
+  ?g1 dct:source <http://dbpedia.org/> .
+  ?g2 dct:source <http://dbpedia.org/> .
+  GRAPH ?g1 {{
+    ?filterfield a {uri_0} .
+  }}
+  GRAPH ?g2 {{
     {uri_filter_block}
   }}
   OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
 }}
-GROUP BY ?filterfield ?comment ?g
+GROUP BY ?filterfield ?comment ?g2
 ORDER BY desc(?count)
 OFFSET {offset}
 LIMIT {limit}
@@ -38,9 +41,12 @@ LIMIT {limit}
 SELECT (COUNT(DISTINCT ?filterfield) AS ?count)
 WHERE {{
   ?event sem:hasActor ?filterfield  .
-  ?g dct:source <http://dbpedia.org/> .
-  ?filterfield a {uri_0} .
-  GRAPH ?g {{
+  ?g1 dct:source <http://dbpedia.org/> .
+  ?g2 dct:source <http://dbpedia.org/> .
+  GRAPH ?g1 {{
+    ?filterfield a {uri_0} .
+  }}
+  GRAPH ?g2 {{
     {uri_filter_block}
   }}
   OPTIONAL {{ ?filterfield rdfs:comment ?comment }}
