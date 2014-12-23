@@ -15,8 +15,8 @@ import time
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
-SPARQL_URL = 'https://knowledgestore.fbk.eu/nwr/cars-hackathon/sparql'
-CRUD_URL = 'https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/{action}'
+SPARQL_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/sparql'
+CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
 
 class QueryException(Exception):
     pass
