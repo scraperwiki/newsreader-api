@@ -34,7 +34,8 @@ WHERE {{
       }}
     }}
   }}
-  ?a a sem:Actor , ?type .
+  ?a a ?type .
+  ?e sem:hasActor ?a .
 }}
 GROUP BY ?type
 ORDER BY DESC(?count)
@@ -58,7 +59,8 @@ WHERE {{
       }}
     }}
   }}
-  ?a a sem:Actor , ?type .
+  ?a a ?type .
+  ?e sem:hasActor ?a .
 }}
                                 """)
 
