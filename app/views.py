@@ -51,6 +51,17 @@ def index():
                                root_url=root_url)
 
 
+# TODO: make_documentation and queries need to know which endpoint we're using.
+@app.route('/worldcup-hackathon')
+def worldcup_index():
+    return index()
+
+
+@app.route('/cars-hackathon')
+def cars_index():
+    return "Cars hackathon placeholder."
+
+
 def parse_query_string(query_string):
     """ Return dict containing query string values.
 
