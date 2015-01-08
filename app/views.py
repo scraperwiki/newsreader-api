@@ -13,6 +13,7 @@ import jsonurl
 import cStringIO as StringIO
 import unicodecsv as csv
 import logging
+import urllib
 from app import make_documentation
 
 # TODO:
@@ -54,6 +55,7 @@ def parse_query_string(query_string):
     """ Return dict containing query string values.
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
+    query_string = urllib.unquote(query_string).decode('utf-8')
     try:
         parsed_query = jsonurl.parse_query(query_string)
         if "output" not in parsed_query.keys():

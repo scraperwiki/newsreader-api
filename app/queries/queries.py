@@ -68,8 +68,8 @@ class SparqlQuery(object):
         self.limit = limit
         self.query_time = None
         self.count_time = None
-        self.filter = str(filter).lower()
-        self.datefilter = str(datefilter)
+        self.filter = unicode(filter).lower()
+        self.datefilter = unicode(datefilter)
         self.date_filter_block = None
         self.filter_block = None
         self.uri_filter_block = None
@@ -111,8 +111,8 @@ class SparqlQuery(object):
             # PREFIXES
             self.uris = []
             for item in uris:
-                if "http" in item.decode('UTF-8'):
-                    self.uris.append('<' + item.decode('UTF-8') + '>')
+                if "http" in item:
+                    self.uris.append('<' + item + '>')
                 else:
                     self.uris.append(self.expand_prefix(item))
             if len(self.uris) == 1:
@@ -123,7 +123,7 @@ class SparqlQuery(object):
         # This catches the documentation {uri_0} and {uri_1}
         if item.startswith('{'):
             return item
-        parts = item.decode('UTF-8').split(':')
+        parts = item.split(':')
         assert len(parts) == 2
         prefix = parts[0]
         postfix = parts[1]
