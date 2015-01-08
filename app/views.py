@@ -60,6 +60,16 @@ def parse_query_string(query_string):
         parsed_query = jsonurl.parse_query(query_string)
         if "output" not in parsed_query.keys():
             parsed_query['output'] = 'html'
+        # Hack to escape words in Unicode strings for Virtuoso.
+        # Can't just escape the whole string as e.g. "bribe OR bribery" fails.
+        if "filter" in parsed_query.keys():
+            filter_words = []
+            for each in parsed_query['filter'].split():
+                try:
+                    filter_words.append(each.decode('ascii'))
+                except UnicodeEncodeError:
+                    filter_words.append("'" + each + "'")
+            parsed_query['filter'] = ' '.join(filter_words)
         return parsed_query
     except ValueError:
         raise ViewerException("Query URL is malformed")
