@@ -2,7 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 
-from queries import CRUDQuery, QueryException
+from queries import CRUDQuery, QueryException, CRUD_URL
 import os
 import time
 
@@ -49,8 +49,7 @@ class get_document(CRUDQuery):
         """ Returns nicely parsed result of query. """
         return self.json_result
 
-    def submit_query(self, endpoint_url_stub='https://knowledgestore.fbk.eu'
-                                        '/nwr/worldcup-hackathon/{action}'):
+    def submit_query(self, endpoint_url_stub=CRUD_URL):
         """ Submit query to endpoint; return result. """
 
         username = os.environ['NEWSREADER_USERNAME']
