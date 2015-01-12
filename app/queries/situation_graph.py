@@ -7,7 +7,7 @@ from queries import SparqlQuery
 
 class situation_graph(SparqlQuery):
 
-    """ Get situation graph for an event; before
+    """ Get situation graph for an event; before, during and after.
     """
 
     def __init__(self, *args, **kwargs):
