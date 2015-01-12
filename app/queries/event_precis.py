@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 
 from queries import SparqlQuery
 
-
 class event_precis(SparqlQuery):
 
     """ 
