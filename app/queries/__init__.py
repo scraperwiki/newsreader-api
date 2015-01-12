@@ -34,3 +34,4 @@ from .get_document_metadata import get_document_metadata
 from .get_mention_metadata import get_mention_metadata
 from .get_document import get_document
 from .situation_graph import situation_graph
+from .event_precis import event_precis
