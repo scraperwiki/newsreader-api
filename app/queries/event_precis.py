@@ -65,10 +65,55 @@ WHERE {{
 }}""")
 
         self.count_template = ("""
-SELECT ?count WHERE
-{{ BIND("1" AS ?count)
+SELECT (COUNT(*) as ?count)
+WHERE{{
+SELECT DISTINCT ?subject ?predicate ?object ?graph
+WHERE {{
+ VALUES ?event {{ {uri_0} }}
+ {{
+       GRAPH ?graph {{ ?event rdf:type ?object . }}
+       BIND (?event as ?subject)
+       BIND (rdf:type as ?predicate)
+       FILTER (STRSTARTS(STR(?object), "http://www.newsreader-project.eu/domain-ontology"))
+
+ }}
+ UNION
+ {{
+        GRAPH ?graph {{ ?event ?predicate ?object . }}
+        BIND (?event as ?subject)
+        FILTER (STRSTARTS(STR(?predicate), "http://www.newsreader-project.eu/domain-ontology"))
+ }}
+ UNION
+ {{
+        GRAPH ?graph {{ ?event sem:hasPlace ?object . }}
+        BIND (?event as ?subject)
+        BIND (sem:hasPlace as ?predicate)
+ }}
+ UNION
+ {{
+        GRAPH ?graph {{ ?event sem:hasTime ?t . }}
+        ?t  owltime:inDateTime ?d .
+        BIND (?event as ?subject)
+        BIND (nwr:cleanedTime as ?predicate)
+        BIND (?d as ?object)
+ }}
+ UNION
+ {{
+       ?event eso:hasPreSituation ?graph
+       GRAPH ?graph {{ ?subject ?predicate ?object . }}
+ }}
+ UNION
+ {{
+       ?event eso:hasPostSituation ?graph
+       GRAPH ?graph {{ ?subject ?predicate ?object . }}
+ }}
+ UNION
+ {{
+       ?event eso:hasDuringSituation ?graph
+       GRAPH ?graph {{ ?subject ?predicate ?object . }}
+ }}
 }}
-""")
+}}""")
         self.jinja_template = 'table.html'
         self.headers = ['subject', 'predicate', 'object', 'graph']
 
