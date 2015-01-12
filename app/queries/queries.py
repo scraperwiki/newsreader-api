@@ -124,7 +124,12 @@ class SparqlQuery(object):
         if item.startswith('{'):
             return item
         parts = item.split(':')
-        assert len(parts) == 2
+        try:
+            assert len(parts) == 2
+        except AssertionError as e:
+            raise QueryException("expand_prefix raised an exception, the URI has no prefix to expand: {0}"
+                                 .format(type(e).__name__))
+
         prefix = parts[0]
         postfix = parts[1]
         try:
