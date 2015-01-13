@@ -1,4 +1,9 @@
-# Local install:
+## Table of contents
+
+* [Local install](#markdown-header-Local-install)
+* [Adding a new query](#markdown-header-Adding-a-new-query)
+
+## Local install:
 * `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
 * Work on a virtualenv (optional)
 * `pip install -r requirements.txt`
@@ -13,7 +18,7 @@ NEWSREADER_PASSWORD. (The deployed version has these setup already.)
 
 `newsreader.fcgi` is a FastCGI server file for deployment.
 
-# Example query usage:
+## Example query usage:
 A few examples are here. A more comprehensive list can be found by
 visiting the root URL: `http://127.0.0.1:5000`
 
@@ -34,7 +39,7 @@ Use `output=json`
 
 `https://newsreader.scraperwiki.com/event_details_filtered_by_actor?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
 
-# Adding a new query:
+## Adding a new query:
 In the queries subdirectory specify a new subclass of `SparqlQuery` in a file of its own.
 The main action should be in adding the queries. { and } in the original need to be escaped to
 {{ and }}. Once the query has been created add a line like:
