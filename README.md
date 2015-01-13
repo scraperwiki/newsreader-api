@@ -1,7 +1,7 @@
 ## Table of contents
 
-* [Local install](#Local-install)
-* [Adding a new query](#Adding-a-new-query)
+* [Local install](#markdown-header-local-install)
+* [Adding a new query](#markdown-header-adding-a-new-query)
 
 ## Local install
 * `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
