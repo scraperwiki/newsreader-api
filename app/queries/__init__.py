@@ -28,6 +28,7 @@ from .summary_of_events_with_event_label import summary_of_events_with_event_lab
 from .event_label_frequency_count import event_label_frequency_count
 
 from .summary_of_events_with_framenet import summary_of_events_with_framenet
+from .summary_of_events_with_eso import summary_of_events_with_eso
 #from .framenet_frequency_count import framenet_frequency_count
 
 from .get_document_metadata import get_document_metadata
