@@ -3,7 +3,7 @@
 * [Local install](#Local-install)
 * [Adding a new query](#Adding-a-new-query)
 
-## Local install:
+## Local install
 * `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
 * Work on a virtualenv (optional)
 * `pip install -r requirements.txt`
@@ -39,7 +39,7 @@ Use `output=json`
 
 `https://newsreader.scraperwiki.com/event_details_filtered_by_actor?output=json&uris.0=http://dbpedia.org/resource/David_Beckham`
 
-## Adding a new query:
+## Adding a new quer
 In the queries subdirectory specify a new subclass of `SparqlQuery` in a file of its own.
 The main action should be in adding the queries. { and } in the original need to be escaped to
 {{ and }}. Once the query has been created add a line like:
