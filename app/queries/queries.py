@@ -269,10 +269,15 @@ class SparqlQuery(object):
         QueryResult = namedtuple('QueryResult', ' '.join(self.headers))
         # TODO: consider yielding results instead
         results = []
+
         for result in self.json_result['results']['bindings']:
             values = []
             for header in self.headers:
-                values.append(result.get(header, {}).get('value'))
+                value = result.get(header, {}).get('value')
+                if value.startswith(
+                        'http://www.newsreader-project.eu') and '#' in value:
+                    value = value.replace('#', '%23')
+                values.append(value)
             next_entry = QueryResult._make(values)
             results.append(next_entry)
         return results
