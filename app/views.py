@@ -31,11 +31,8 @@ class ViewerException(Exception):
     pass
 
 
-@app.route('/')
-def index():
+def index(function_list):
     """ Provide documentation when accessing the root page """
-    root_url = get_root_url()
-    function_list = make_documentation.make_documentation(root_url)
     output = parse_query_string(request.query_string)
     if "output" not in output.keys():
         output['output'] = 'html'
@@ -47,19 +44,26 @@ def index():
         response.headers[str('Access-Control-Allow-Origin')] = str('*')
         return response
     elif output['output'] == 'html':
-        return render_template('index.html', help=function_list,
-                               root_url=root_url)
+        return render_template('index.html', help=function_list)
 
 
 # TODO: make_documentation and queries need to know which endpoint we're using.
+# TODO: wrap these into a single function which takes DocsCreator() object
+@app.route('/')
 @app.route('/worldcup-hackathon')
 def worldcup_index():
-    return index()
+    root_url = get_root_url()
+    endpoint_path = '/worldcup-hackathon'
+    function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
+    return index(function_list)
 
 
 @app.route('/cars-hackathon')
 def cars_index():
-    return "Cars hackathon placeholder."
+    root_url = get_root_url()
+    endpoint_path = '/cars-hackathon'
+    function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
+    return index(function_list)
 
 
 def parse_query_string(query_string):
