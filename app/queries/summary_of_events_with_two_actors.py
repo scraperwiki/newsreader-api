@@ -8,9 +8,7 @@ class summary_of_events_with_two_actors(SparqlQuery):
 
     """ Get events mentioning a named actor, summarise with count of entries for
         event and date
-
-    http://127.0.0.1:5000/summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter
-    """
+   """
 
     def __init__(self, *args, **kwargs):
         super(summary_of_events_with_two_actors, self).__init__(*args, **kwargs)
@@ -18,7 +16,7 @@ class summary_of_events_with_two_actors(SparqlQuery):
         self.description = ('List of events containing two named actors,'
           ' including a link to the article and some summary information')
         self.url = 'summary_of_events_with_two_actors'
-        self.example = 'summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter'
+        self.example = 'summary_of_events_with_two_actors?uris.0=dbpedia:Alan_Mulally&uris.1=dbpedia:William_Clay_Ford,_Jr.'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{

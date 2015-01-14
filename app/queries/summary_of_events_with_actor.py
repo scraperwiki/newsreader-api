@@ -8,8 +8,6 @@ class summary_of_events_with_actor(SparqlQuery):
 
     """ Get events mentioning a named actor, summarise with count of entries for
         event and date
-
-    http://127.0.0.1:5000/summary_of_events_with_actor?uris.0=dbpedia:David_Beckham
     """
 
     def __init__(self, *args, **kwargs):
@@ -18,7 +16,7 @@ class summary_of_events_with_actor(SparqlQuery):
         self.description = ('A list of events mentioning a specified actor'
           ', providing a link to the event and some summary information.')
         self.url = 'summary_of_events_with_actor'
-        self.example = 'summary_of_events_with_actor?uris.0=dbpedia:Thierry_Henry'
+        self.example = 'summary_of_events_with_actor?uris.0=dbpedia:Alan_Mulally'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{

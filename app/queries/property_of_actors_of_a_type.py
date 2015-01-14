@@ -7,8 +7,6 @@ from queries import SparqlQuery
 class property_of_actors_of_a_type(SparqlQuery):
 
     """ Get a property of actors of one type mentioned in the news
-
-    http://127.0.0.1:5000/property_of_actors_of_a_type?uris.0=dbo:SoccerPlayer&uris.1=dbo:height
     """
 
     def __init__(self, *args, **kwargs):
@@ -17,7 +15,7 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.description = ('Lists the values of a named property of a type,'
           'such as the height of dbo:SoccerPlayer.')
         self.url = 'property_of_actors_of_a_type'
-        self.example = 'property_of_actors_of_a_type/page/1?uris.1=dbo:height&filter=david&uris.0=dbo:SoccerPlayer'
+        self.example = 'property_of_actors_of_a_type?uris.1=dbo:foundedBy&filter=motor&uris.0=dbo:Company'
         self.query_template = ("""
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{

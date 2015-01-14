@@ -7,8 +7,6 @@ from queries import SparqlQuery
 class event_details_filtered_by_actor(SparqlQuery):
 
     """ Get event details involving a specified actor (limited to first 100)
-
-        http://127.0.0.1:5000/event_details_filtered_by_actor?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
 
     def __init__(self, *args, **kwargs):
@@ -18,7 +16,7 @@ class event_details_filtered_by_actor(SparqlQuery):
                            ' i.e. a list of events involving dbpedia:David_Beckham.'
                            ' The number of entries describing an event varies, so the result count is not very meaningful.')
         self.url = 'event_details_filtered_by_actor'
-        self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham'
+        self.example = 'event_details_filtered_by_actor?uris.0=dbpedia:Martin_Winterkorn'
         self.headers = ['event', 'predicate', 'object', "object_type"]
         self.query_template = ("""
 SELECT ?event ?predicate ?object (SAMPLE(?type) AS ?object_type)
