@@ -47,7 +47,6 @@ def index(function_list):
         return render_template('index.html', help=function_list)
 
 
-# TODO: make_documentation and queries need to know which endpoint we're using.
 # TODO: wrap these into a single function which takes DocsCreator() object
 @app.route('/')
 @app.route('/world_cup')
