@@ -18,7 +18,8 @@ class get_mention_metadata(CRUDQuery):
             ' Uses the SPARQL DESCRIBE keyword which returns a network'
             ' not compatible with HTML display')
         self.url = 'get_mention_metadata'
-        self.example = 'get_mention_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2005/05/16/4G6K-PCF0-TWSV-32NG.xml#char=1155,1172'
+
+        self.example = 'get_mention_metadata?uris.0=http%3A%2F%2Fwww.newsreader-project.eu%2Fdata%2Fcars%2F2003%2F01%2F04%2F47KW-0H00-01JV-737G.xml%23char%3D108%2C116'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'

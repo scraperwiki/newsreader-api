@@ -56,6 +56,9 @@ def parse_query_string(query_string):
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
     query_string = urllib.unquote(query_string).decode('utf-8')
+
+    print "**In parse_query_string"
+    print query_string
     try:
         parsed_query = jsonurl.parse_query(query_string)
         print parsed_query
@@ -84,7 +87,17 @@ def run_query(page, query_to_use):
     query_args = {'output': 'json'}
     try:
         #Assemble the query
-        query_args = parse_query_string(request.query_string)
+        print(type(query_to_use), type("get_mention_metadata"))
+        if query_to_use!="get_mention_metadata":
+            print "**The following line should not say get_mention_metadata"
+            print query_to_use
+            query_args = parse_query_string(request.query_string)
+            print query_args
+        else:
+            print "**we are doing a special parse for get_mention_metadata**"
+            query_args = parse_get_mention_metadata(request.query_string)
+            print query_args
+
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()
@@ -97,6 +110,10 @@ def run_query(page, query_to_use):
 
     return produce_response(current_query, page, query_args['offset'], count)
 
+def parse_get_mention_metadata(query_string):
+    parsed_query = {"output":"html", "uris":[query_string[7:]]}
+    print parsed_query
+    return parsed_query
 
 def assemble_query(query_to_use, query_args, page):
     try:

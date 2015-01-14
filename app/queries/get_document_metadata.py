@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 from __future__ import unicode_literals
-
 from queries import CRUDQuery
 
 class get_document_metadata(CRUDQuery):
     """ Get the metadata of a document
     """
-    # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
+    # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm
     def __init__(self, *args, **kwargs):
         super(get_document_metadata, self).__init__(*args, **kwargs)
         self.query_title = 'Get document metadata'
@@ -17,15 +16,16 @@ class get_document_metadata(CRUDQuery):
             ' It uses the SPARQL DESCRIBE keyword which returns'
             ' a network not compatible with HTML display.')
         self.url = 'get_document_metadata'
-        self.example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2005/05/16/4G6K-PCF0-TWSV-32NG.xml'
+
+        self.example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2003/01/04/47KW-0H00-01JV-737G.xml'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'
         self.result_is_tabular = False
         self.action = "resources"
-        
+
         self.jinja_template = 'table.html'
-        
+
         self.headers = ['**output is a graph**']
 
         self.required_parameters = ["uris"]
@@ -43,4 +43,4 @@ class get_document_metadata(CRUDQuery):
         """ Returns nicely parsed result of query. """
         return self.json_result
 
-    
+
