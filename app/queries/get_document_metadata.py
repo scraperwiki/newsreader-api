@@ -6,8 +6,6 @@ from queries import CRUDQuery
 
 class get_document_metadata(CRUDQuery):
     """ Get the metadata of a document
-
-    http://127.0.0.1:5000/get_document_metadata?uris.0=<uri>
     """
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
     def __init__(self, *args, **kwargs):
@@ -19,7 +17,7 @@ class get_document_metadata(CRUDQuery):
             ' It uses the SPARQL DESCRIBE keyword which returns'
             ' a network not compatible with HTML display.')
         self.url = 'get_document_metadata'
-        self.example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
+        self.example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2005/05/16/4G6K-PCF0-TWSV-32NG.xml'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'

@@ -14,11 +14,9 @@ class summary_of_events_with_actor_type(SparqlQuery):
         super(summary_of_events_with_actor_type, self).__init__(*args, **kwargs)
         self.query_title = 'Get events mentioning a type of actor'
         self.description = ('A list of events mentioning a specified type of actor'
-          ', providing a link to the event and some summary information.'
-          '** This query currently times out with more common actors, i.e. dbo:SoccerPlayer but'
-          ' dbo:GolfPlayer is OK**')
+          ', providing a link to the event and some summary information.')
         self.url = 'summary_of_events_with_actor_type'
-        self.example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:GolfPlayer'
+        self.example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:Company'
         self.query_template = ("""
 SELECT 
 ?event (COUNT (?event) AS ?event_size) ?datetime ?actor

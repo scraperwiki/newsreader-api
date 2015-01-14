@@ -58,6 +58,7 @@ def parse_query_string(query_string):
     query_string = urllib.unquote(query_string).decode('utf-8')
     try:
         parsed_query = jsonurl.parse_query(query_string)
+        print parsed_query
         if "output" not in parsed_query.keys():
             parsed_query['output'] = 'html'
         # Hack to escape words in Unicode strings for Virtuoso.
@@ -71,8 +72,8 @@ def parse_query_string(query_string):
                     filter_words.append("'" + each + "'")
             parsed_query['filter'] = ' '.join(filter_words)
         return parsed_query
-    except ValueError:
-        raise ViewerException("Query URL is malformed")
+    except ValueError as e:
+        raise ViewerException("Query URL is malformed: {}".format(e.message))
 
 
 @app.route('/<query_to_use>', defaults={'page': 1})

@@ -7,8 +7,6 @@ from queries import SparqlQuery
 class describe_uri(SparqlQuery):
 
     """ Details of a URI returned by the DESCRIBE query
-
-        http://127.0.0.1:5000/describe_uri?uris.0=http://dbpedia.org/resource/David_Beckham&output=json
     """
 
     def __init__(self, *args, **kwargs):
@@ -16,7 +14,7 @@ class describe_uri(SparqlQuery):
         self.query_title = 'Details of a URI returned by the DESCRIBE query'
         self.description = 'Uses the SPARQL DESCRIBE keyword which returns a network not compatible with HTML display'
         self.url = 'describe_uri'
-        self.example = 'describe_uri?uris.0=dbpedia:Thierry_Henry&output=json'
+        self.example = 'describe_uri?uris.0=dbpedia:Martin_Winterkorn&output=json'
         self.query_template = ("""
 DESCRIBE {uri_0}
                                """)

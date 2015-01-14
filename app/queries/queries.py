@@ -13,7 +13,7 @@ import requests_cache
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
 SPARQL_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/sparql'
 CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
@@ -48,7 +48,7 @@ class SparqlQuery(object):
             "dbpedia": "http://dbpedia.org/resource/",
             "dct": "http://purl.org/dc/terms/",
             "eso": "http://www.newsreader-project.eu/domain-ontology#",
-            "framenet": "http://www.newsreader-project.eu/framenet/",
+            "framenet": "http://www.newsreader-project.eu/ontologies/framenet/",
             "gaf": "http://groundedannotationframework.org/files/2014/01/",
             "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
