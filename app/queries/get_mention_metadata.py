@@ -6,8 +6,6 @@ from queries import CRUDQuery
 
 class get_mention_metadata(CRUDQuery):
     """ Get the metadata of a mention
-
-    http://127.0.0.1:5000/get_mention_metadata?uris.0=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E
     """
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/mentions?id=%3Chttp%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220%3E
     # https://knowledgestore.fbk.eu/nwr/worldcup-hackathon/resources?id=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm 
@@ -20,7 +18,7 @@ class get_mention_metadata(CRUDQuery):
             ' Uses the SPARQL DESCRIBE keyword which returns a network'
             ' not compatible with HTML display')
         self.url = 'get_mention_metadata'
-        self.example = 'get_mention_metadata?uris.0=http%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220'
+        self.example = 'get_mention_metadata?uris.0=http%3A%2F%2Fwww.newsreader-project.eu%2Fdata%2Fcars%2F2003%2F01%2F04%2F47KW-0H00-01JV-737G.xml%23char%3D108%2C116'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'

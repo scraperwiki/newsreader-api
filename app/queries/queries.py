@@ -13,10 +13,10 @@ import requests_cache
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 SPARQL_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/sparql'
-CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
+CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/{action}'
 
 
 class QueryException(Exception):
@@ -333,6 +333,7 @@ class CRUDQuery(SparqlQuery):
         self.callback = callback
 
         self._process_input_uris(uris)
+        #self.uris = uris
         self.query = self._build_query()
 
     def _build_query(self):
@@ -357,6 +358,8 @@ class CRUDQuery(SparqlQuery):
 
         endpoint_url = endpoint_url_stub.format(action=self.action)
         print "\n\n**New CRUD query**"
+        print endpoint_url
+        print payload
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),
