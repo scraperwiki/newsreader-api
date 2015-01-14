@@ -15,8 +15,7 @@ requests_cache.install_cache('requests_cache', expire_after=172800)
 
 # logging.basicConfig(level=logging.INFO)
 
-SPARQL_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/sparql'
-CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/{action}'
+#CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
 
 
 class QueryException(Exception):
@@ -40,7 +39,7 @@ def convert_raw_json_to_clean(SPARQL_json):
 class SparqlQuery(object):
     """ Represents a general SPARQL query for the KnowledgeStore. """
     def __init__(self, offset=0, limit=100, uris=None, output='html',
-                 datefilter=None, callback=None, id=None,
+                 endpoint_url=None, datefilter=None, callback=None, id=None,
                  filter=None, **kwargs):
 
         self.prefix_dict = {
@@ -76,6 +75,7 @@ class SparqlQuery(object):
         self.uri_filter_block = None
         self.original_uris = uris
         self.uris = []
+        self.endpoint_stub_url = endpoint_url
 
         self._process_input_uris(uris)
         self._make_date_filter_block()
@@ -212,10 +212,7 @@ class SparqlQuery(object):
                                  uri_0=self.uris[0],
                                  uri_1=self.uris[1])
 
-    def submit_query(self,
-                     username=os.environ['NEWSREADER_USERNAME'],
-                     password=os.environ['NEWSREADER_PASSWORD'],
-                     endpoint_url=SPARQL_URL):
+    def submit_query(self, username=os.environ['NEWSREADER_USERNAME'], password=os.environ['NEWSREADER_PASSWORD']):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         logging.debug("\n\n**New query**")
@@ -227,7 +224,8 @@ class SparqlQuery(object):
 
         t0 = time.time()
         try:
-            response = requests.get(endpoint_url, auth=(username, password),
+            response = requests.get(self.endpoint_stub_url.format(action='sparql'), 
+                                    auth=(username, password),
                                     params=payload)
         except Exception as e:
             print "Query raised an exception"
@@ -259,7 +257,7 @@ class SparqlQuery(object):
 
     def get_total_result_count(self):
         """ Returns result count for query. """
-        count_query = CountQuery(self._build_count_query())
+        count_query = CountQuery(self._build_count_query(), self.endpoint_stub_url)
         count = count_query.get_count()
         self.count_time = count_query.query_time
         return count
@@ -288,10 +286,11 @@ class CountQuery(SparqlQuery):
     """
     # TODO: is *args, **kwargs really needed here?
 
-    def __init__(self, count_query, *args, **kwargs):
+    def __init__(self, count_query, endpoint_url, *args, **kwargs):
         super(CountQuery, self).__init__(*args, **kwargs)
         self.query_title = 'Count query'
         self.query_template = count_query
+        self.endpoint_stub_url = endpoint_url
         self.query = self._build_query()
 
     def _build_query(self):
@@ -322,12 +321,13 @@ class CRUDQuery(SparqlQuery):
     """
     # TODO: is *args, **kwargs really needed here?
 
-    def __init__(self, offset=0, limit=100, uris=None, output='json',
-                 datefilter=None, callback=None, id=None,
+    def __init__(self, offset=0, limit=100, uris=None, output='json', 
+                 endpoint_url=None, datefilter=None, callback=None, id=None,
                  filter=None, **kwargs):
         super(CRUDQuery, self).__init__(**kwargs)
         self.query_title = 'CRUD query'
         self.query_template = "{uri_0}"
+        self.endpoint_stub_url = endpoint_url
         self.original_uris = uris
         self.output = output
         self.callback = callback
@@ -349,14 +349,14 @@ class CRUDQuery(SparqlQuery):
         """ Parses and returns result from a count query. """
         return 0
 
-    def submit_query(self, endpoint_url_stub=CRUD_URL):
+    def submit_query(self):
         """ Submit query to endpoint; return result. """
 
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
         payload = {'id': self.query}
 
-        endpoint_url = endpoint_url_stub.format(action=self.action)
+        endpoint_url = self.endpoint_stub_url.format(action=self.action)
         print "\n\n**New CRUD query**"
         print endpoint_url
         print payload

@@ -14,7 +14,8 @@ class summary_of_events_with_eso(SparqlQuery):
         self.query_title = 'Get events with a specific eso value'
         self.description = 'eso is an ontology which encompases various semantic frameing schemes which give an indication as to the character of an event'
         self.url = 'summary_of_events_with_eso'
-        self.example = 'summary_of_events_with_eso?uris.0=eso:Renting'
+        self.world_cup_example = 'summary_of_events_with_eso?uris.0=eso:Renting'
+        self.cars_example = 'summary_of_events_with_eso?uris.0=eso:Renting'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{

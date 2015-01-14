@@ -31,11 +31,8 @@ class ViewerException(Exception):
     pass
 
 
-@app.route('/')
-def index():
+def index(function_list):
     """ Provide documentation when accessing the root page """
-    root_url = get_root_url()
-    function_list = make_documentation.make_documentation(root_url)
     output = parse_query_string(request.query_string)
     if "output" not in output.keys():
         output['output'] = 'html'
@@ -47,8 +44,24 @@ def index():
         response.headers[str('Access-Control-Allow-Origin')] = str('*')
         return response
     elif output['output'] == 'html':
-        return render_template('index.html', help=function_list,
-                               root_url=root_url)
+        return render_template('index.html', help=function_list)
+
+
+# TODO: wrap these into a single function which takes DocsCreator() object
+@app.route('/')
+@app.route('/cars')
+def cars_index():
+    root_url = get_root_url()
+    endpoint_path = '/cars'
+    function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
+    return index(function_list)
+
+@app.route('/world_cup')
+def worldcup_index():
+    root_url = get_root_url()
+    endpoint_path = '/world_cup'
+    function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
+    return index(function_list)
 
 
 def parse_query_string(query_string):
@@ -79,25 +92,42 @@ def parse_query_string(query_string):
         raise ViewerException("Query URL is malformed: {}".format(e.message))
 
 
-@app.route('/<query_to_use>', defaults={'page': 1})
-@app.route('/<query_to_use>/page/<int:page>')
-def run_query(page, query_to_use):
+def get_endpoint_url(api_endpoint):
+    """ Take name of API endpoint as string; return KS SPARQL URL. """
+    if api_endpoint == 'cars':
+        knowledgestore_url = ('https://knowledgestore2.fbk.eu'
+                              '/nwr/cars-hackathon/{action}')
+    elif api_endpoint == 'world_cup':
+        # TODO: check if this URL is  correct (though a dead link now anyway).
+        knowledgestore_url = ('https://knowledgestore.fbk.eu'
+                              '/nwr/worldcup-hackathon/{action}')
+    return knowledgestore_url
+
+
+# TODO: consider getting rid of this first line. Get query exceptions
+# if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
+@app.route('/<query_to_use>',
+           defaults={'page': 1, 'api_endpoint': 'cars'})
+@app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
+@app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
+def run_query(page, query_to_use, api_endpoint):
     """ Return response of selected query using query string values. """
+    knowledgestore_url = get_endpoint_url(api_endpoint)
+    if knowledgestore_url is None:
+        return render_template('error.html',
+                               error_message='Endpoint not known.')
     # Try to make the query object
     query_args = {'output': 'json'}
     try:
         #Assemble the query
-        print(type(query_to_use), type("get_mention_metadata"))
         if query_to_use!="get_mention_metadata":
-            print "**The following line should not say get_mention_metadata"
-            print query_to_use
             query_args = parse_query_string(request.query_string)
-            print query_args
         else:
             print "**we are doing a special parse for get_mention_metadata**"
             query_args = parse_get_mention_metadata(request.query_string)
             print query_args
 
+        query_args['endpoint_url'] = knowledgestore_url
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()

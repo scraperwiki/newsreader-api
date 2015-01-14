@@ -17,7 +17,8 @@ class properties_of_a_type(SparqlQuery):
             'positions, teams, nationality and so forth. The type_count is the number of such actors'
             ', the value_count is the number of instances of the property')
         self.url = 'properties_of_a_type'
-        self.example = 'properties_of_a_type?uris.0=dbo:Company'
+        self.world_cup_example = 'properties_of_a_type?uris.0=dbo:Stadium'
+        self.cars_example = 'properties_of_a_type?uris.0=dbo:Company'
         self.query_template = ("""
 SELECT ?property (COUNT(DISTINCT ?pl) AS ?type_count) (COUNT(DISTINCT ?o) AS ?value_count)
 WHERE {{

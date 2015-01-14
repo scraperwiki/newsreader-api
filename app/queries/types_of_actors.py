@@ -17,7 +17,8 @@ class types_of_actors(SparqlQuery):
         self.dsecription = ('The types of actors, i.e. dbo:SoccerPlayer found' 
             ' in any event. The unfiltered list is precomputable.')
         self.url = 'types_of_actors'
-        self.example = 'types_of_actors?filter=player'
+        self.world_cup_example = 'types_of_actors?filter=player'
+        self.cars_example = 'types_of_actors?filter=player'
         self.query_template = ("""
 SELECT ?type (COUNT(DISTINCT ?a) AS ?count)
 WHERE {{

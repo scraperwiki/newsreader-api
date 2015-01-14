@@ -14,7 +14,8 @@ class actors_of_a_type(SparqlQuery):
         self.query_title = 'Actors of a specified type'
         self.description = 'Get actors of a specified type, i.e dbo:people with the option to filter the URI with a text string i.e. "David"'
         self.url = 'actors_of_a_type'
-        self.example = 'actors_of_a_type?uris.0=dbo:Company&filter=motor'
+        self.world_cup_example = 'actors_of_a_type?uris.0=dbo:Person&filter=david'
+        self.cars_example = 'actors_of_a_type?uris.0=dbo:Company&filter=motor'
         self.query_template = ("""
 SELECT (?filterfield AS ?actor) (COUNT(DISTINCT ?event) AS ?count) ?comment
 WHERE {{
