@@ -94,10 +94,30 @@ def parse_query_string(query_string):
         raise ViewerException("Query URL is malformed: {}".format(e.message))
 
 
-@app.route('/<query_to_use>', defaults={'page': 1})
-@app.route('/<query_to_use>/page/<int:page>')
-def run_query(page, query_to_use):
+def get_endpoint_url(api_endpoint):
+    """ Take name of API endpoint as string; return KS SPARQL URL. """
+    if api_endpoint == 'cars':
+        knowledgestore_url = ('https://knowledgestore2.fbk.eu'
+                              '/nwr/cars-hackathon/sparql')
+    elif api_endpoint == 'world_cup':
+        # TODO: check if this URL is  correct (though a dead link now anyway).
+        knowledgestore_url = ('https://knowledgestore.fbk.eu'
+                              '/nwr/worldcup-hackathon/sparql')
+    return knowledgestore_url
+
+
+# TODO: consider getting rid of this first line. Get query exceptions
+# if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
+@app.route('/<query_to_use>',
+           defaults={'page': 1, 'api_endpoint': 'world_cup'})
+@app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
+@app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
+def run_query(page, query_to_use, api_endpoint):
     """ Return response of selected query using query string values. """
+    knowledgestore_url = get_endpoint_url(api_endpoint)
+    if knowledgestore_url is None:
+        return render_template('error.html',
+                               error_message='Endpoint not known.')
     # Try to make the query object
     query_args = {'output': 'json'}
     try:
@@ -113,6 +133,8 @@ def run_query(page, query_to_use):
             query_args = parse_get_mention_metadata(request.query_string)
             print query_args
 
+        query_args = parse_query_string(request.query_string)
+        query_args['endpoint_url'] = knowledgestore_url
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()
