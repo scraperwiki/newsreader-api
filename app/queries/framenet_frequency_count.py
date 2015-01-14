@@ -17,7 +17,8 @@ class framenet_frequency_count(SparqlQuery):
             " an event, as determined by semantic 'frames'.**This query is very slow"
             " and will timeout the server, contents are available as a file**") 
         self.url = 'framenet_frequency_count'
-        self.example = 'framenet_frequency_count'
+        self.world_cup_example = 'framenet_frequency_count'
+        self.cars_example = 'framenet_frequency_count'
         self.query_template = ("""
 SELECT
 ?frame (count (?frame) AS ?count)

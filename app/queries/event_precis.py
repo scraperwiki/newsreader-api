@@ -14,7 +14,8 @@ class event_precis(SparqlQuery):
         self.query_title = 'Get event precis'
         self.description = 'Get precis for event which is a distillation of the event graph rather than verbatim report.'
         self.url = 'event_precis'
-        self.example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
+        self.world_cup_example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
+        self.cars_example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
         self.query_template = ("""
 SELECT DISTINCT ?subject ?predicate ?object ?graph
 WHERE {{

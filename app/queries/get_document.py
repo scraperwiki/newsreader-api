@@ -23,7 +23,8 @@ class get_document(CRUDQuery):
         self.description = ('Get the text of a document from the CRUD endpoint,'
             ' where it is available. This excludes LexisNexis material')
         self.url = 'get_document'
-        self.example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
+        self.world_cup_example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
+        self.cars_example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'

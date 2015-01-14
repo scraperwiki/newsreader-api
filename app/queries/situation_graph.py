@@ -15,7 +15,8 @@ class situation_graph(SparqlQuery):
         self.query_title = 'Get situation graph'
         self.description = 'Gets the situation graph for an event which tells us about changes of state during that event'
         self.url = 'situation_graph'
-        self.example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
+        self.world_cup_example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
+        self.cars_example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
         self.query_template = ("""
 SELECT ?timeline ?subject ?predicate ?object
 WHERE {{

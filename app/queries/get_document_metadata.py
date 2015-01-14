@@ -16,8 +16,8 @@ class get_document_metadata(CRUDQuery):
             ' It uses the SPARQL DESCRIBE keyword which returns'
             ' a network not compatible with HTML display.')
         self.url = 'get_document_metadata'
-
-        self.example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2003/01/04/47KW-0H00-01JV-737G.xml'
+        self.world_cup_example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
+        self.cars_example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2003/01/04/47KW-0H00-01JV-737G.xml'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'
@@ -42,5 +42,3 @@ class get_document_metadata(CRUDQuery):
         # TODO: nicely parsed needs defining; may depend on query
         """ Returns nicely parsed result of query. """
         return self.json_result
-
-

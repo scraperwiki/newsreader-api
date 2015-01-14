@@ -15,7 +15,8 @@ class people_sharing_event_with_a_person(SparqlQuery):
         self.query_title = 'People who share an event with a named person'
         self.description = 'Gets the people who share an event with a named person, counts the number of such events and displays in descending order'
         self.url = 'people_sharing_event_with_a_person'
-        self.example = 'people_sharing_event_with_a_person?uris.0=dbpedia:Alan_Mulally'
+        self.world_cup_example = 'people_sharing_event_with_a_person?uris.0=dbpedia:David_Beckham'
+        self.cars_example = 'people_sharing_event_with_a_person?uris.0=dbpedia:Alan_Mulally'
         self.query_template = ("""
 SELECT ({uri_0} AS ?actor) ?actor2
        (COUNT(DISTINCT ?evt) as ?numEvent) ?comment
