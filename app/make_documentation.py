@@ -56,16 +56,24 @@ class DocsCreator(object):
                 "required_parameters": query_object.required_parameters,
                 "optional_parameters": query_object.optional_parameters,
                 "output_columns": query_object.headers,
-                "example": self.root_url + '/' + query_object.example,
+                "example": self.root_url + '/' + self._get_example_from_query(query_object),
                 "sparql": query_object.query})
         return function_list
+
+    @staticmethod
+    def _get_example_from_query(query_object):
+        raise NotImplementedError
 
 
 class WorldCupDocsCreator(DocsCreator):
     # TODO: Set self.query_ignore_list if it needs to be different.
-    pass
+    @staticmethod
+    def _get_example_from_query(query_object):
+        return query_object.world_cup_example
 
 
 class CarsDocsCreator(DocsCreator):
     # TODO: Set self.query_ignore_list if it needs to be different.
-    pass
+    @staticmethod
+    def _get_example_from_query(query_object):
+        return query_object.cars_example
