@@ -13,7 +13,7 @@ import requests_cache
 
 requests_cache.install_cache('requests_cache', expire_after=172800)
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 
 SPARQL_URL = 'https://knowledgestore2.fbk.eu/nwr/cars-hackathon/sparql'
 CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
