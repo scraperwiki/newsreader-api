@@ -8,3 +8,4 @@
 *.sqlite
 *.sublime-project
 *.sublime-workspace
+.noseids
