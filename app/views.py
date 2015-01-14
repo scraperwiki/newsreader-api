@@ -50,18 +50,18 @@ def index(function_list):
 # TODO: make_documentation and queries need to know which endpoint we're using.
 # TODO: wrap these into a single function which takes DocsCreator() object
 @app.route('/')
-@app.route('/worldcup-hackathon')
+@app.route('/world_cup')
 def worldcup_index():
     root_url = get_root_url()
-    endpoint_path = '/worldcup-hackathon'
+    endpoint_path = '/world_cup'
     function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
     return index(function_list)
 
 
-@app.route('/cars-hackathon')
+@app.route('/cars')
 def cars_index():
     root_url = get_root_url()
-    endpoint_path = '/cars-hackathon'
+    endpoint_path = '/cars'
     function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
     return index(function_list)
 
