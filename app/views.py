@@ -49,19 +49,18 @@ def index(function_list):
 
 # TODO: wrap these into a single function which takes DocsCreator() object
 @app.route('/')
-@app.route('/world_cup')
-def worldcup_index():
-    root_url = get_root_url()
-    endpoint_path = '/world_cup'
-    function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
-    return index(function_list)
-
-
 @app.route('/cars')
 def cars_index():
     root_url = get_root_url()
     endpoint_path = '/cars'
     function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
+    return index(function_list)
+
+@app.route('/world_cup')
+def worldcup_index():
+    root_url = get_root_url()
+    endpoint_path = '/world_cup'
+    function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
     return index(function_list)
 
 
@@ -108,7 +107,7 @@ def get_endpoint_url(api_endpoint):
 # TODO: consider getting rid of this first line. Get query exceptions
 # if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
 @app.route('/<query_to_use>',
-           defaults={'page': 1, 'api_endpoint': 'world_cup'})
+           defaults={'page': 1, 'api_endpoint': 'cars'})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use, api_endpoint):
