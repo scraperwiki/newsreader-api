@@ -70,11 +70,8 @@ def parse_query_string(query_string):
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
     query_string = urllib.unquote(query_string).decode('utf-8')
 
-    print "**In parse_query_string"
-    print query_string
     try:
         parsed_query = jsonurl.parse_query(query_string)
-        print parsed_query
         if "output" not in parsed_query.keys():
             parsed_query['output'] = 'html'
         # Hack to escape words in Unicode strings for Virtuoso.
