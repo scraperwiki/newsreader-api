@@ -52,7 +52,7 @@
             <tr>
               {% for header in headers %}
                 {% if result[header] != None and result[header].startswith('http://dbpedia.org/ontology') %}
-              <td><a href="{{ result[header] }}">{{ result[header].replace('http://dbpedia.org/ontology/'), 'dbo:' }}</td>
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://dbpedia.org/ontology/', 'dbo:') }}</td>
                 {% elif result[header] != None and result[header].startswith('http://dbpedia.org/resource') %}
               <td><a href="{{ result[header] }}">{{ result[header].replace('http://dbpedia.org/resource/', 'dbpedia:') }}</td>
                 {% elif result[header] != None and result[header].startswith('http://purl.org/dc/terms') %}
