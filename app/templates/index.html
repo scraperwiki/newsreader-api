@@ -5,6 +5,14 @@
       <link rel="stylesheet" href="https://www.scraperwiki.com/vendor/style/bootstrap.min.css">
       <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
       <script src="//www.scraperwiki.com/vendor/js/bootstrap.min.js"></script>
+      <style>
+      .accordion-toggle.no-padding {
+        padding: 0;
+      }
+      .no-border {
+        border: none;
+      }
+      </style>
   </head>
   <body>
       <div class="container">
@@ -55,8 +63,19 @@
       </p>
       <p><strong>Example: </strong><a href="{{query['example']}}">{{query['example']}}</a></p>
       <p></p>
-      <p><strong>SPARQL query:</strong></p>
-      <pre>{{query['sparql']}}</pre>
+      <div class="accordion" id="accordion{{loop.index}}">
+        <div class="accordion-group no-border">
+          <div class="accordion-heading">
+              <a class="accordion-toggle no-padding" data-toggle="collapse" data-parent="#accordion{{loop.index}}" href="#collapseOne_{{loop.index}}">
+                <strong>SPARQL query</strong>
+              </a>
+          </div>
+        <div id="collapseOne_{{loop.index}}" class="accordion-body collapse">
+          <div class="accordion-inner">
+            <pre>{{query['sparql']}}</pre>
+          </div>
+        </div>
+      </div>
       {% endfor %}
       </div>
   </body>
