@@ -51,7 +51,23 @@
             {% for result in results %}
             <tr>
               {% for header in headers %}
-                {% if result[header] != None and result[header].startswith('http') %}
+                {% if result[header] != None and result[header].startswith('http://dbpedia.org/ontology') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://dbpedia.org/ontology/'), 'dbo:' }}</td>
+                {% elif result[header] != None and result[header].startswith('http://dbpedia.org/resource') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://dbpedia.org/resource/', 'dbpedia:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://purl.org/dc/terms') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://purl.org/dc/terms/', 'dct:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://www.newsreader-project.eu/domain-ontology') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.newsreader-project.eu/domain-ontology#', 'eso:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://www.newsreader-project.eu/framenet') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.newsreader-project.eu/framenet', 'framenet:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://groundedannotationframework.org/files/2014/01/') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://groundedannotationframework.org/files/2014/01/', 'gaf:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://www.w3.org/1999/02/22-rdf-syntax-ns#') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://www.w3.org/2000/01/rdf-schema#') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.w3.org/2000/01/rdf-schema#', 'sem:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http') %}
               <td><a href="{{ result[header] }}">{{ result[header] }}</td>
                 {% else %}
               <td>{{result[header]}}</td>
