@@ -48,6 +48,6 @@ class get_mention_metadata(CRUDQuery):
 
     def _process_input_uris(self, uris):
         if uris is not None:
-            self.uris = ['%3E'+uris[0]+'%3C', None]
+            self.uris = ['%3C'+uris[0]+'%3E', None]
         else:
             self.uris = [None, None]
