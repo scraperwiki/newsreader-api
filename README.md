@@ -1,7 +1,7 @@
 ## Table of contents
 
 * [For Simple API users](#markdown-header-simple-api-users)
-* [Local development](#markdown-header-local-development)
+* [Local install](#markdown-header-local-install)
 * [Adding a new query](#markdown-header-adding-a-new-query)
 * [Adding a new KnowledgeStore](#markdown-header-adding-a-new-knowledgestore)
 
@@ -27,8 +27,8 @@ these in the environment variables: NEWSREADER_USERNAME and
 NEWSREADER_PASSWORD. (The deployed version has these setup already.)
 This can be done by adding lines like:
 
-`export NEWSREADER_USERNAME=[username]`
-`export NEWSREADER_PASSWORD=[password]`
+* `export NEWSREADER_USERNAME=[username]`
+* `export NEWSREADER_PASSWORD=[password]`
 
 To your `.profile` file (in Linux).
 
