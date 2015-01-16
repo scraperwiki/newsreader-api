@@ -2,6 +2,7 @@
 
 * [For Simple API users](#markdown-header-simple-api-users)
 * [Local install](#markdown-header-local-install)
+* [Running tests](#markdown-header-running-tests)
 * [Adding a new query](#markdown-header-adding-a-new-query)
 * [Adding a new KnowledgeStore](#markdown-header-adding-a-new-knowledgestore)
 
@@ -33,6 +34,22 @@ This can be done by adding lines like:
 To your `.profile` file (in Linux).
 
 `newsreader.fcgi` is a FastCGI server file for deployment.
+
+## Running tests
+
+This will run all available tests, a number of which will fail because they are dependent on a particular KnowledgeStore containing World Cup data:
+
+`> nosetests -v`
+
+This will run tests of queries which are not dependent on a KnowledgeStore
+
+`>  nosetests -v app/test_queries.py`
+
+This will run generic tests of queries which are not strongly dependent on the underlying KnowledgeStore but may require tweaking:
+
+`> nosetests -v app/test_generics.py`
+
+Moving from World Cup to Cars datasets required modifications of `test_visit_a_non_existent_page()` and `test_visit_a_page_beyond_the_offset_limit()` only
 
 ## Adding a new query
 In the queries subdirectory specify a new subclass of `SparqlQuery` in a file of its own.
