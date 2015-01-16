@@ -354,16 +354,16 @@ class CRUDQuery(SparqlQuery):
 
         username = os.environ['NEWSREADER_USERNAME']
         password = os.environ['NEWSREADER_PASSWORD']
-        payload = {'id': self.query}
 
         endpoint_url = self.endpoint_stub_url.format(action=self.action)
         print "\n\n**New CRUD query**"
-        print endpoint_url
-        print payload
+        query_url = endpoint_url + "?id=" + self.query
+        print query_url
+
         t0 = time.time()
         try:
-            response = requests.get(endpoint_url, auth=(username, password),
-                                    params=payload)
+            response = requests.get(query_url, auth=(username, password))
+
         except Exception as e:
             print "Query raised an exception"
             print type(e)

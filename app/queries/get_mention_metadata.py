@@ -46,4 +46,8 @@ class get_mention_metadata(CRUDQuery):
         """ Returns nicely parsed result of query. """
         return self.json_result
 
-    
+    def _process_input_uris(self, uris):
+        if uris is not None:
+            self.uris = ['%3C'+uris[0]+'%3E', None]
+        else:
+            self.uris = [None, None]
