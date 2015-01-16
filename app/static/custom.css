@@ -1,0 +1,11 @@
+.accordion-toggle.no-padding {
+  padding: 0;
+}
+
+.accordion-inner {
+  border-top: none;
+}
+
+.no-border {
+  border: none;
+}
