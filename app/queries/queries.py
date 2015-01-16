@@ -359,7 +359,9 @@ class CRUDQuery(SparqlQuery):
         endpoint_url = self.endpoint_stub_url.format(action=self.action)
         print "\n\n**New CRUD query**"
         print endpoint_url
+        payload['id'] = str(payload['id'])
         print payload
+
         t0 = time.time()
         try:
             response = requests.get(endpoint_url, auth=(username, password),
