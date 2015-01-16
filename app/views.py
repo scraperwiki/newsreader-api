@@ -4,7 +4,8 @@ from __future__ import unicode_literals
 
 import json
 
-from flask import render_template, request, url_for, make_response
+from flask import (render_template, request, url_for, make_response,
+                    send_from_directory)
 from app import app
 from pagination import Pagination
 from collections import OrderedDict
@@ -13,6 +14,7 @@ import jsonurl
 import cStringIO as StringIO
 import unicodecsv as csv
 import logging
+import os
 import urllib
 from app import make_documentation
 
@@ -99,7 +101,6 @@ def get_endpoint_url(api_endpoint):
         knowledgestore_url = ('https://knowledgestore.fbk.eu'
                               '/nwr/worldcup-hackathon/{action}')
     return knowledgestore_url
-
 
 # TODO: consider getting rid of this first line. Get query exceptions
 # if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
