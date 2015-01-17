@@ -12,7 +12,7 @@ class summary_of_events_with_framenet(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(summary_of_events_with_framenet, self).__init__(*args, **kwargs)
         self.query_title = 'Get events with a specific framenet value'
-        self.description = 'FrameNet defines semantic frames which give an indicationas to the character of an event'
+        self.description = 'FrameNet defines semantic frames which give an indication as to the character of an event'
         self.url = 'summary_of_events_with_framenet'
         self.world_cup_example = 'summary_of_events_with_framenet?uris.0=framenet:Omen'
         self.cars_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving'
