@@ -63,3 +63,7 @@ class SimpleAPIGenericTests(unittest.TestCase):
     def test_handles_malformed_url(self):
         rv = self.app.get('/event_details_filtered_by_actor?uris.0=&!')
         assert 'Query URL is malformed' in rv.data.decode('UTF-8')
+
+    def test_handles_accents_in_urls(self):
+        rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=J%C3%BCrgen')
+        assert 'error' not in rv.data.decode('UTF-8')
