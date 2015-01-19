@@ -48,7 +48,7 @@ class SparqlQuery(object):
             "dct": "http://purl.org/dc/terms/",
             "eso": "http://www.newsreader-project.eu/domain-ontology#",
             "framenet": "http://www.newsreader-project.eu/ontologies/framenet/",
-            "gaf": "http://groundedannotationframework.org/files/2014/01/",
+            "gaf": "http://groundedannotationframework.org/gaf#",
             "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
             "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
             "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/"
