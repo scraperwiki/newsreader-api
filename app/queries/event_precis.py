@@ -62,6 +62,20 @@ WHERE {{
        ?event eso:hasDuringSituation ?graph
        GRAPH ?graph {{ ?subject ?predicate ?object . }}
  }}
+ UNION
+ {{
+    {{
+    SELECT ?event (COUNT(DISTINCT ?m) AS ?object)
+    WHERE {{
+      ?event gaf:denotedBy ?mention . 
+      BIND (STRBEFORE(STR(?mention), "#") as ?m)
+    }}
+    GROUP BY ?event
+  }}
+  BIND (?event AS ?subject)
+  BIND ("number of documents" AS ?predicate)
+  BIND ("graph" AS ?graph)
+ }}
 }}""")
 
         self.count_template = ("""
