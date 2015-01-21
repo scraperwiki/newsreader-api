@@ -256,7 +256,8 @@ def produce_html_response(query, page_number, count, offset):
                              query_time=query.query_time,
                              count_time=query.count_time,
                              datefilter=query.datefilter,
-                             uris=query.uris))
+                             uris=query.uris,
+                             root_url=get_root_url()))
     return response
 
 

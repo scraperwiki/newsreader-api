@@ -1,75 +1,62 @@
-<html>
-  <head>
-    <title>{{title}}</title>
-      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-      <link rel="stylesheet" href="https://www.scraperwiki.com/vendor/style/bootstrap.min.css">
-      <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
-      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-      <script src="//www.scraperwiki.com/vendor/js/bootstrap.min.js"></script>
-  </head>
-  <body>
-      <div class="container">
-      <a href="http://www.newsreader-project.eu/"><img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image"></a>
-      <p>Simple API by <a href="https://scraperwiki.com">ScraperWiki</a></p>
-      <h2>NewsReader Simple API: Endpoints available at this location</h2>
-      {%for sentence in help['description']%}
-        <p>{{sentence}}</p>
+{% extends "base.html" %}
+{% block content %}
+  <h2>NewsReader Simple API: Endpoints available at this location</h2>
+  {%for sentence in help['description']%}
+    <p>{{sentence}}</p>
+  {% endfor %}
+  <h3>Parameters</h3>
+    <ul>
+      {%for parameter in help['parameters']%}
+        <li>{{parameter}}</li> 
       {% endfor %}
-      <h3>Parameters</h3>
-        <ul>
-          {%for parameter in help['parameters']%}
-            <li>{{parameter}}</li> 
-          {% endfor %}
-        </ul>
-      <h3>Prefixes</h3>
-        <ul>
-          {%for prefix in help['prefixes']%}
-            <li>{{prefix}}</li> 
-          {% endfor %}
-        </ul>
-      <h3>Queries</h3>
-      {% for query in help['queries'] %}
-      <ul>
-        <a href="#{{loop.index}}">{{loop.index}}. {{query['title']}}</a>
-      </ul>
+    </ul>
+  <h3>Prefixes</h3>
+    <ul>
+      {%for prefix in help['prefixes']%}
+        <li>{{prefix}}</li> 
       {% endfor %}
+    </ul>
+  <h3>Queries</h3>
+  {% for query in help['queries'] %}
+  <ul>
+    <a href="#{{loop.index}}">{{loop.index}}. {{query['title']}}</a>
+  </ul>
+  {% endfor %}
 
-      {% for query in help['queries'] %}
-      <a name="{{loop.index}}"></a>
-      <h3>{{loop.index}}. {{ query['title'] }}</h3>
-      <p>{{query['description']}}</p>
-      <p><strong>url: </strong>{{query['url']}}</p>
-      <p><strong>Required parameters: </strong>
-        {%for parameter in query['required_parameters']%}
-          {{parameter}}, 
-        {% endfor %}
-      </p>
-      <p><strong>Optional parameters: </strong>
-        {%for parameter in query['optional_parameters']%}
-          {{parameter}}, 
-        {% endfor %}
-      </p>
-      <p><strong>Output headers: </strong>
-        {%for parameter in query['output_columns']%}
-          {{parameter}}, 
-        {% endfor %}
-      </p>
-      <p><strong>Example: </strong><a href="{{query['example']}}">{{query['example']}}</a></p>
-      <p></p>
-      <div class="accordion" id="accordion{{loop.index}}">
-        <div class="accordion-group no-border">
-          <div class="accordion-heading">
-              <a class="accordion-toggle no-padding" data-toggle="collapse" data-parent="#accordion{{loop.index}}" href="#collapseOne_{{loop.index}}">
-                <strong>SPARQL query</strong>
-              </a>
-          </div>
-        <div id="collapseOne_{{loop.index}}" class="accordion-body collapse">
-          <div class="accordion-inner">
-            <pre>{{query['sparql']}}</pre>
-          </div>
-        </div>
+  {% for query in help['queries'] %}
+  <a name="{{loop.index}}"></a>
+  <h3>{{loop.index}}. {{ query['title'] }}</h3>
+  <p>{{query['description']}}</p>
+  <p><strong>url: </strong>{{query['url']}}</p>
+  <p><strong>Required parameters: </strong>
+    {%for parameter in query['required_parameters']%}
+      {{parameter}}, 
+    {% endfor %}
+  </p>
+  <p><strong>Optional parameters: </strong>
+    {%for parameter in query['optional_parameters']%}
+      {{parameter}}, 
+    {% endfor %}
+  </p>
+  <p><strong>Output headers: </strong>
+    {%for parameter in query['output_columns']%}
+      {{parameter}}, 
+    {% endfor %}
+  </p>
+  <p><strong>Example: </strong><a href="{{query['example']}}">{{query['example']}}</a></p>
+  <p></p>
+  <div class="accordion" id="accordion{{loop.index}}">
+    <div class="accordion-group no-border">
+      <div class="accordion-heading">
+          <a class="accordion-toggle no-padding" data-toggle="collapse" data-parent="#accordion{{loop.index}}" href="#collapseOne_{{loop.index}}">
+            <strong>SPARQL query</strong>
+          </a>
       </div>
-      {% endfor %}
+    <div id="collapseOne_{{loop.index}}" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <pre>{{query['sparql']}}</pre>
       </div>
-  </body>
-</html>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock %}
