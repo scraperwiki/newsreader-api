@@ -113,7 +113,8 @@ def run_query(page, query_to_use, api_endpoint):
     knowledgestore_url = get_endpoint_url(api_endpoint)
     if knowledgestore_url is None:
         return render_template('error.html',
-                               error_message='Endpoint not known.')
+                               error_message='Endpoint not known.',
+                               root_url=get_root_url())
     # Try to make the query object
     query_args = {'output': 'json'}
     try:
@@ -182,7 +183,9 @@ def produce_error_response(e, query_args):
         elif query_args['output'] == 'csv':
             response = json.dumps({"error": e.message})
         elif query_args['output'] == 'html':
-            response = render_template('error.html', error_message=e.message)
+            response = render_template('error.html', 
+                                        error_message=e.message,
+                                        root_url=get_root_url())
         else:
             response = json.dumps({"error": e.message})
     except Exception as err:

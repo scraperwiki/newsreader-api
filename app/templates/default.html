@@ -1,14 +1,5 @@
-<html>
-  <head>
-    <title>{{title}}</title>
-      <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-      <link rel="stylesheet" href="https://www.scraperwiki.com/vendor/style/bootstrap.min.css">
-      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-      <script src="//www.scraperwiki.com/vendor/js/bootstrap.min.js"></script>
-  </head>
-  <div class="container">
-  <img src="{{ url_for('static', filename = 'NWR_logo_1920x200.png') }}" class="img-responsive" alt="Responsive image">
-  <body>
+{% extends "base.html" %}
+{% block content %}
       <h1 class="h1">{{title}}</h1>
       <p class="text-warning">
       Sorry, HTML output not yet implemented for this query. Use output=json at the end of your query to get JSON instead.
@@ -17,6 +8,4 @@
       Your request rendered as the SPARQL query:
       </p>
       <code>{{ query }}</code>
-  </body>
-  </div>
-</html>
+{% endblock %}
