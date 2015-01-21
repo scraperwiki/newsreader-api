@@ -217,7 +217,7 @@ class SparqlQuery(object):
         payload = {'query': self.query}
         logging.debug("\n\n**New query**")
         logging.debug(self.query)
-        if self.offset >= 10000:
+        if self.offset + self.limit >= 10000:
             raise QueryException(
                 "OFFSET exceeds 10000, add filter or datefilter "
                 "to narrow results")
