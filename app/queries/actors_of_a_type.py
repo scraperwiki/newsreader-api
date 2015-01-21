@@ -59,8 +59,6 @@ WHERE {{
     def _make_uri_filter_block(self):
             if self.filter != 'none':
                 #self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
-                self.uri_filter_block = """?g2 dct:source <http://dbpedia.org/> .
-                                           GRAPH ?g2 
-                    {{ ?filterfield rdfs:label ?_label . ?_label bif:contains "{filter}" . }}""".format(filter=self.filter)
+                self.uri_filter_block = """?g2 dct:source <http://dbpedia.org/> . GRAPH ?g2 {{ ?filterfield rdfs:label ?_label . ?_label bif:contains "{filter}" . }}""".format(filter=self.filter)
             else:
                 self.uri_filter_block = ''
