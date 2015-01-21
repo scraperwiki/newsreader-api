@@ -35,6 +35,12 @@ WHERE {{
  }}
  UNION
  {{
+        GRAPH ?graph {{ ?event sem:hasActor ?object . }}
+        BIND (?event as ?subject)
+        BIND (sem:hasActor as ?predicate)
+ }}
+ UNION
+ {{
         GRAPH ?graph {{ ?event sem:hasPlace ?object . }}
         BIND (?event as ?subject)
         BIND (sem:hasPlace as ?predicate)
@@ -96,6 +102,12 @@ WHERE {{
         GRAPH ?graph {{ ?event ?predicate ?object . }}
         BIND (?event as ?subject)
         FILTER (STRSTARTS(STR(?predicate), "http://www.newsreader-project.eu/domain-ontology"))
+ }}
+ UNION
+ {{
+        GRAPH ?graph {{ ?event sem:hasActor ?object . }}
+        BIND (?event as ?subject)
+        BIND (sem:hasActor as ?predicate)
  }}
  UNION
  {{
