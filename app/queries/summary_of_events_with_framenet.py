@@ -15,7 +15,7 @@ class summary_of_events_with_framenet(SparqlQuery):
         self.description = 'FrameNet defines semantic frames which give an indication as to the character of an event'
         self.url = 'summary_of_events_with_framenet'
         self.world_cup_example = 'summary_of_events_with_framenet?uris.0=framenet:Omen'
-        self.cars_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving'
+        self.cars_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving&datefilter=2005-01'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
