@@ -17,13 +17,16 @@ logging.basicConfig(level=logging.DEBUG)
 
 #CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
 
+# WARNING: This prefix library is used in constructing queries and documentation
+# to add a new prefix you must also modify templates/table.html if you 
+# want prefixes to be substituted in the HTML output 
 PREFIX_LIBRARY = {
             "dbo": {"stub":"http://dbpedia.org/ontology/",
                     "help":"types of things - i.e. dbo:SoccerPlayer"},
             "dbpedia": {"stub":"http://dbpedia.org/resource/",
                     "help":"instances of things - i.e. dbpedia:David_Beckham"},
             "dct": {"stub":"http://purl.org/dc/terms/",
-                    "help":""},
+                    "help":"Dublin Core metadata terms for media - i.e. author, title"},
             "eso": {"stub":"http://www.newsreader-project.eu/domain-ontology#",
                     "help":"Events and situations ontology"},
             "framenet": {"stub":"http://www.newsreader-project.eu/ontologies/framenet/",

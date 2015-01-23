@@ -2,7 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 import queries
-#from queries import PREFIX_LIBRARY
+from queries import PREFIX_LIBRARY
 
 class DocsCreator(object):
     """ Creates documentation for a particular Newsreader SPARQL endpoint. """
@@ -10,7 +10,7 @@ class DocsCreator(object):
         self.query_ignore_list = ['__all__', '__builtins__', '__doc__',
                                   '__file__', '__name__', '__package__',
                                   '__path__', 'queries', 'SparqlQuery',
-                                  'QueryException']
+                                  'QueryException', 'PREFIX_LIBRARY']
         self.root_url = root_url
         self.endpoint_path = endpoint_path
 
@@ -38,12 +38,13 @@ class DocsCreator(object):
         for query in query_long_list:
             if query in self.query_ignore_list:
                 continue
-            print query
             query_name = getattr(queries, query)
+
             query_object = query_name(offset=0, limit=100,
                                       uris=["{uri_0}", "{uri_1}"],
                                       filter='{string}',
                                       datefilter='{datefilter}', output='html')
+
             function_list['queries'].append({
                 "title": query_object.query_title,
                 "description": query_object.description,
@@ -60,13 +61,11 @@ class DocsCreator(object):
         raise NotImplementedError
 
     def _make_prefixes_from_library(self):
-        prefixes = ["dbo - types of things - i.e. dbo:SoccerPlayer",
-                                      "dbpedia - instances of things - i.e. dbpedia:David_Beckham",
-                                      "framenet - NewsReader link to FrameNet semantic frames",
-                                      "gaf - Grounded Annotation Framework, just contains gaf:denotedBy which references mentions",
-                                      "rdf - Resource Description Framework",
-                                      "rdfs - RDF Schema",
-                                      "sem - semanticweb, key to the NewsReader technology"]
+        prefixes = []
+        for k, v in PREFIX_LIBRARY.iteritems():
+            prefixes.append("{k}:   {v}".format(k=k, v=v['help']))
+
+        prefixes.sort()
         return prefixes
 
 class WorldCupDocsCreator(DocsCreator):
