@@ -34,8 +34,8 @@ PREFIX_LIBRARY = {
                     "help":"Resource Description Framework"},
             "rdfs": {"stub":"http://www.w3.org/2000/01/rdf-schema#",
                     "help":"RDF Schema"},
-            "sem": {"stub":"http://semanticweb.cs.vu.nl/2009/11/sem/"
-                    "help":"semanticweb, key to the NewsReader technology"},
+            "sem": {"stub":"http://semanticweb.cs.vu.nl/2009/11/sem/",
+                    "help":"semanticweb, key to the NewsReader technology"}
         }
 
 class QueryException(Exception):

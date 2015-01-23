@@ -20,7 +20,7 @@ class summary_of_events_with_eso(SparqlQuery):
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime (?filterfield as ?event_label)
 WHERE {{
   {{
-    SELECT DISTINCT ?event ?datetime
+    SELECT DISTINCT ?event ?datetime ?filterfield
     WHERE {{
       ?event a sem:Event .
       ?event rdfs:label ?filterfield .
@@ -39,7 +39,7 @@ WHERE {{
   }}
   ?event ?p ?o .
 }}
-GROUP BY ?event ?datetime ?event_label
+GROUP BY ?event ?datetime ?filterfield
 ORDER BY ?datetime
                                """)
 
@@ -70,7 +70,14 @@ WHERE {{
         self.headers = ['event', 'datetime', 'event_label', 'event_size']
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit", "datefilter"]
+        self.optional_parameters = ["output", "offset", "limit", "datefilter", "filter"]
         self.number_of_uris_required = 1
 
         self.query = self._build_query()
+
+    def _make_uri_filter_block(self):
+        if self.filter != 'none':
+            #self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+            self.uri_filter_block = """ ?filterfield bif:contains "{filter}" .""".format(filter=self.filter)
+        else:
+            self.uri_filter_block = ''
