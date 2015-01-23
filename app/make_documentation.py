@@ -2,7 +2,7 @@
 # encoding: utf-8
 from __future__ import unicode_literals
 import queries
-from queries import PREFIX_LIBRARY
+#from queries import PREFIX_LIBRARY
 
 class DocsCreator(object):
     """ Creates documentation for a particular Newsreader SPARQL endpoint. """
@@ -16,7 +16,7 @@ class DocsCreator(object):
 
     # TODO: modify somewhere to include endpoint path
     def make_docs(self):
-        prefixes = _make_prefixes_from_library()
+        prefixes = self._make_prefixes_from_library()
         function_list = {"description": ["",
                                          "Queries are of the form:",
                                          self.root_url + self.endpoint_path + "/query_name/{page/[n]/}?param1=[string]&param2=[string]",
