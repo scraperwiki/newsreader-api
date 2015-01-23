@@ -17,14 +17,15 @@ class summary_of_events_with_framenet(SparqlQuery):
         self.world_cup_example = 'summary_of_events_with_framenet?uris.0=framenet:Omen'
         self.cars_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving&datefilter=2005-01'
         self.query_template = ("""
-SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
+SELECT ?event (COUNT(*) AS ?event_size) ?datetime (?filterfield as ?event_label)
 WHERE {{
   {{
-    SELECT DISTINCT ?event ?datetime ?event_label
+    SELECT DISTINCT ?event ?datetime ?filterfield
     WHERE {{
       ?event a sem:Event .
-      ?event rdfs:label ?event_label .
+      ?event rdfs:label ?filterfield .
       ?event rdf:type {uri_0} .
+      {uri_filter_block}
       ?event sem:hasTime ?t . 
       ?t owltime:inDateTime ?d .
       {date_filter_block}
@@ -49,8 +50,9 @@ WHERE {{
     SELECT DISTINCT ?event ?datetime
     WHERE {{
       ?event a sem:Event .
-      ?event rdfs:label ?event_label .
+      ?event rdfs:label ?filterfield .
       ?event rdf:type {uri_0} .
+      {uri_filter_block}
       ?event sem:hasTime ?t . 
       ?t owltime:inDateTime ?d .
       {date_filter_block}
