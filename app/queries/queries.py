@@ -17,6 +17,26 @@ logging.basicConfig(level=logging.DEBUG)
 
 #CRUD_URL = 'https://knowledgestore2.fbk.eu/nwr/worldcup-hackathon/{action}'
 
+PREFIX_LIBRARY = {
+            "dbo": {"stub":"http://dbpedia.org/ontology/",
+                    "help":"types of things - i.e. dbo:SoccerPlayer"},
+            "dbpedia": {"stub":"http://dbpedia.org/resource/",
+                    "help":"instances of things - i.e. dbpedia:David_Beckham"},
+            "dct": {"stub":"http://purl.org/dc/terms/",
+                    "help":""},
+            "eso": {"stub":"http://www.newsreader-project.eu/domain-ontology#",
+                    "help":"Events and situations ontology"},
+            "framenet": {"stub":"http://www.newsreader-project.eu/ontologies/framenet/",
+                    "help":"NewsReader link to FrameNet semantic frames"},
+            "gaf": {"stub":"http://groundedannotationframework.org/gaf#",
+                    "help":"Grounded Annotation Framework, just contains gaf:denotedBy which references mentions"},
+            "rdf": {"stub":"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                    "help":"Resource Description Framework"},
+            "rdfs": {"stub":"http://www.w3.org/2000/01/rdf-schema#",
+                    "help":"RDF Schema"},
+            "sem": {"stub":"http://semanticweb.cs.vu.nl/2009/11/sem/"
+                    "help":"semanticweb, key to the NewsReader technology"},
+        }
 
 class QueryException(Exception):
     pass
@@ -42,18 +62,7 @@ class SparqlQuery(object):
                  endpoint_url=None, datefilter=None, callback=None, id=None,
                  filter=None, **kwargs):
 
-        self.prefix_dict = {
-            "dbo": "http://dbpedia.org/ontology/",
-            "dbpedia": "http://dbpedia.org/resource/",
-            "dct": "http://purl.org/dc/terms/",
-            "eso": "http://www.newsreader-project.eu/domain-ontology#",
-            "framenet": "http://www.newsreader-project.eu/ontologies/framenet/",
-            "gaf": "http://groundedannotationframework.org/gaf#",
-            "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
-            "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/"
-        }
-
+        self.prefix_dict = PREFIX_LIBRARY
         self._make_prefix_block()
 
         self.allowed_parameters_block = """
@@ -101,7 +110,7 @@ class SparqlQuery(object):
     def _make_prefix_block(self):
         prefixes = []
         for k, v in self.prefix_dict.iteritems():
-            prefixes.append("PREFIX {k}: <{v}>".format(k=k, v=v))
+            prefixes.append("PREFIX {k}: <{v}>".format(k=k, v=v['stub']))
         self.prefix_block = "\n".join(prefixes)
 
     def _process_input_uris(self, uris):
@@ -134,7 +143,7 @@ class SparqlQuery(object):
         prefix = parts[0]
         postfix = parts[1]
         try:
-            expanded_prefix = self.prefix_dict[prefix]
+            expanded_prefix = self.prefix_dict[prefix]['stub']
         except KeyError:
             pass
         expanded_item = '<' + expanded_prefix + postfix + '>'
