@@ -10,6 +10,7 @@ from .properties_of_a_type import properties_of_a_type
 from .types_of_actors import types_of_actors
 from .queries import SparqlQuery
 from .queries import QueryException
+from .queries import PREFIX_LIBRARY
 
 
 from .actors_of_a_type import actors_of_a_type
