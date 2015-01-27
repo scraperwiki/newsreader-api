@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+  <div>
+    <span>Simple API by <a href="https://scraperwiki.com">ScraperWiki</a></span>
+  </div>
   <h2>NewsReader Simple API: Endpoints available at this location</h2>
   {%for sentence in help['description']%}
     <p>{{sentence}}</p>
