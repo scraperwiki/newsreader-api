@@ -14,11 +14,11 @@ class types_of_actors(SparqlQuery):
     def __init__(self, *args, **kwargs):
         super(types_of_actors, self).__init__(*args, **kwargs)
         self.query_title = 'Types of actors'
-        self.dsecription = ('The types of actors, i.e. dbo:SoccerPlayer found' 
+        self.description = ('The types of actors, e.g. dbo:RacingDriver found' 
             ' in any event. The unfiltered list is precomputable.')
         self.url = 'types_of_actors'
         self.world_cup_example = 'types_of_actors?filter=player'
-        self.cars_example = 'types_of_actors?filter=player'
+        self.cars_example = 'types_of_actors?filter=driver'
         self.query_template = ("""
 SELECT ?type (COUNT(DISTINCT ?a) AS ?count)
 WHERE {{
