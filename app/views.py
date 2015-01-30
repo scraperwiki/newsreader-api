@@ -220,7 +220,11 @@ def produce_json_response(query, page_number, count):
     output['payload'] = query.clean_json
     output['count'] = count
     output['page number'] = page_number
-    output['next page'] = root_url + url_for_other_page(pagination.page + 1)
+
+    if pagination.has_next:
+        output['next page'] = (root_url +
+                               url_for_other_page(pagination.page + 1))
+
     response = make_response(json.dumps(output, sort_keys=True))
     response.headers[str('Content-type')] = str(
         'application/json; charset=utf-8')
