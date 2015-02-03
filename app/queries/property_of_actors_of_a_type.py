@@ -21,11 +21,8 @@ class property_of_actors_of_a_type(SparqlQuery):
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
   ?event sem:hasActor ?filterfield .
-  ?g dct:source <http://dbpedia.org/> .
   ?filterfield a {uri_0} ; {uri_1} ?value .
-  GRAPH ?g {{
     {uri_filter_block}
-  }}
 }}
 ORDER BY DESC(?value)
 OFFSET {offset}
@@ -37,11 +34,8 @@ SELECT (COUNT(*) as ?count){{
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{
   ?event sem:hasActor ?filterfield .
-  ?g dct:source <http://dbpedia.org/> .
   ?filterfield a {uri_0} ; {uri_1} ?value .
-  GRAPH ?g {{
     {uri_filter_block}
-  }}
 }}
 }}
                                """)
@@ -53,4 +47,12 @@ WHERE {{
         self.optional_parameters = ["output", "offset", "limit", "field"]
         self.number_of_uris_required = 2
 
+        self._make_uri_filter_block()
         self.query = self._build_query()
+
+        def _make_uri_filter_block(self):
+            if self.filter != 'none':
+                #self.filter_block = 'FILTER (contains(LCASE(str(?filterfield)), "{filter}")) .'.format(filter=self.filter)
+                self.uri_filter_block = """?g dct:source <http://dbpedia.org/> . GRAPH ?g {{ ?filterfield rdfs:label ?_label . ?_label bif:contains "{filter}" . }}""".format(filter=self.filter)
+            else:
+                self.uri_filter_block = ''
