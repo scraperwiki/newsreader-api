@@ -27,6 +27,7 @@ from app import make_documentation
 logging.basicConfig()
 
 PER_PAGE = 20
+DEFAULT_ENDPOINT = 'cars'
 
 
 class ViewerException(Exception):
@@ -105,9 +106,9 @@ def get_endpoint_url(api_endpoint):
 # TODO: consider getting rid of this first line. Get query exceptions
 # if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
 @app.route('/<query_to_use>',
-           defaults={'page': 1, 'api_endpoint': 'cars'})
+           defaults={'page': 1, 'api_endpoint': DEFAULT_ENDPOINT})
 @app.route('/<query_to_use>/page/<int:page>',
-           defaults={'api_endpoint': 'cars'})
+           defaults={'api_endpoint': DEFAULT_ENDPOINT})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use, api_endpoint):
