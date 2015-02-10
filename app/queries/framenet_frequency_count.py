@@ -50,7 +50,7 @@ GROUP BY ?frame
         self.headers = ['frame', 'count']
 
         self.required_parameters = []
-        self.optional_parameters = ["output", "offset", "limit", "filter"]
+        self.optional_parameters = ["output", "filter"]
         self.number_of_uris_required = 0
 
         self.query = self._build_query()

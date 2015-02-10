@@ -51,7 +51,7 @@ SELECT (COUNT(DISTINCT ?event) AS ?count)
 
         self.jinja_template = 'table.html'
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit"]
+        self.optional_parameters = ["output"]
         self.number_of_uris_required = 1
 
         self.query = self._build_query()

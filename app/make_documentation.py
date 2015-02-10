@@ -25,11 +25,11 @@ class DocsCreator(object):
                                          ""],
                          "parameters": ["callback = function with which to wrap response to make JSONP",
                                         "output = {json|html|csv}",
-                                        "limit = a number of results to return",
-                                        "offset = an offset into the returned results",
                                         "filter = a character string on which to filter, it can take combinations such as bribery+OR+bribe",
                                         "uris.[n] = a URI to a thing, e.g. dbpedia:David_Beckham",
-                                        "datefilter = YYYY, YYYY-MM or YYYY-MM-DD, filter to a year, month or day"],
+                                        "datefilter = YYYY, YYYY-MM or YYYY-MM-DD, filter to a year, month or day",
+                                        "REMOVED offset = an offset into the returned results",
+                                        "REMOVED limit = a number of results to return"],
                          "prefixes": prefixes,
                          "queries": []}
 

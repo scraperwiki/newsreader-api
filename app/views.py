@@ -157,10 +157,14 @@ def assemble_query(query_to_use, query_args, page):
 
 
 def add_offset_and_limit(query_args, page):
-    if 'offset' not in query_args.keys():
-        query_args['offset'] = PER_PAGE * (page - 1)
-    if 'limit' not in query_args.keys():
-        query_args['limit'] = PER_PAGE
+    if 'offset' in query_args.keys():
+        logging.warning("Ignoring user supplied offset")
+    if 'limit' in query_args.keys():
+        logging.warning("Ignoring user supplied limit")
+    #if 'offset' not in query_args.keys():
+    query_args['offset'] = PER_PAGE * (page - 1)
+    #if 'limit' not in query_args.keys():
+    query_args['limit'] = PER_PAGE
     if 'callback' in query_args.keys():
         query_args['output'] = 'jsonp'
     if 'callback' not in query_args.keys():
