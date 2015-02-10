@@ -106,6 +106,8 @@ def get_endpoint_url(api_endpoint):
 # if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
 @app.route('/<query_to_use>',
            defaults={'page': 1, 'api_endpoint': 'cars'})
+@app.route('/<query_to_use>/page/<int:page>',
+           defaults={'api_endpoint': 'cars'})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
 def run_query(page, query_to_use, api_endpoint):
