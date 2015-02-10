@@ -70,7 +70,7 @@ WHERE {{
         self.headers = ['event', 'datetime', 'event_label', 'event_size']
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit", "datefilter", "filter"]
+        self.optional_parameters = ["output", "datefilter", "filter"]
         self.number_of_uris_required = 1
 
         self.query = self._build_query()

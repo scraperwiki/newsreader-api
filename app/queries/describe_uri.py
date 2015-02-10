@@ -26,7 +26,7 @@ DESCRIBE {uri_0}
         self.jinja_template = 'default.html'
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit"]
+        self.optional_parameters = ["output"]
         self.headers = ['**output is a graph**']
         self.number_of_uris_required = 1
 

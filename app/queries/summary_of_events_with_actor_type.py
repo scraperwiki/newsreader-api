@@ -63,7 +63,7 @@ UNION
         self.headers = ['event', 'event_size', 'datetime', 'actor']
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit", "datefilter"]
+        self.optional_parameters = ["output", "datefilter"]
         self.number_of_uris_required = 1
 
         self.query = self._build_query()

@@ -69,7 +69,7 @@ GROUP BY ?event ?datetime ?event_label
         self.headers = ['event', 'event_size', 'datetime', 'event_label']
 
         self.required_parameters = ["uris"]
-        self.optional_parameters = ["output", "offset", "limit", "datefilter"]
+        self.optional_parameters = ["output", "datefilter"]
         self.number_of_uris_required = 2
 
         self.query = self._build_query()
