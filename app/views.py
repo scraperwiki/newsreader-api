@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from __future__ import unicode_literals
+from __future__ import unicode_literals, division
 
 import json
 
@@ -14,6 +14,7 @@ import jsonurl
 import cStringIO as StringIO
 import unicodecsv as csv
 import logging
+import math
 import os
 import urllib
 from app import make_documentation
@@ -133,14 +134,32 @@ def run_query(page, query_to_use, api_endpoint):
         current_query = assemble_query(query_to_use, query_args, page)
         current_query.submit_query()
         count = current_query.get_total_result_count()
-    except ViewerException as e:
-        print "**ViewerException"
-        print e
-        return produce_error_response(e, query_args)
-    except queries.QueryException as e:
-        return produce_error_response(e, query_args)
 
-    return produce_response(current_query, page, query_args['offset'], count)
+        if count > 0 and final_page_exceeded(count, page):
+            raise ResultPageLimitExceededException(
+                "Exceeded final result page.")
+
+
+    except (ViewerException, queries.QueryException,
+            ResultPageLimitExceededException) as e:
+        return produce_error_response(e, query_args)
+    else:
+        return produce_response(current_query, page, query_args['offset'],
+                                count)
+
+
+class ResultPageLimitExceededException(Exception):
+    pass
+
+
+def final_page_exceeded(count, page_number):
+    """ Return True if we have gone past the final page of results.
+
+    Needed because SPARQL will return the final page of results, even if the
+    offset goes beyond the count.
+    """
+    return page_number > int(math.ceil(count/PER_PAGE))
+
 
 def parse_get_mention_metadata(query_string):
     parsed_query = {"output":"html", "uris":[query_string[7:]]}
