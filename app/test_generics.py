@@ -23,12 +23,12 @@ class SimpleAPIGenericTests(unittest.TestCase):
         assert '<h2>NewsReader Simple API: Endpoints available at this location</h2>' in rv.data
         
     def test_visit_a_non_existent_page(self):
-        rv = self.app.get('/cars/properties_of_a_type/page/14?uris.0=dbo%3AStadium')
+        rv = self.app.get('/properties_of_a_type/page/14?uris.0=dbo%3AStadium')
         print rv.data
         assert 'Result empty, possibly as a result of paging beyond results' in rv.data.decode('UTF-8')
 
     def test_visit_a_page_beyond_the_offset_limit(self):
-        rv = self.app.get('cars/event_details_filtered_by_actor/page/501?uris.0=dbpedia%3AMartin_Winterkorn')
+        rv = self.app.get('/event_details_filtered_by_actor/page/501?uris.0=dbpedia%3AMartin_Winterkorn')
         print rv.data
         assert 'OFFSET exceeds 10000, add filter or datefilter to narrow results' in rv.data.decode('UTF-8')
 
