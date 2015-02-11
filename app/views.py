@@ -134,7 +134,7 @@ def run_query(page, query_to_use, api_endpoint):
         current_query = assemble_query(query_to_use, query_args, page)
         count = current_query.get_total_result_count()
 
-        if final_page_exceeded(count, page):
+        if count > 0 and final_page_exceeded(count, page):
             raise ResultPageLimitExceededException(
                 "Exceeded final result page.")
 
