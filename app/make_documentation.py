@@ -6,13 +6,14 @@ from queries import PREFIX_LIBRARY
 
 class DocsCreator(object):
     """ Creates documentation for a particular Newsreader SPARQL endpoint. """
-    def __init__(self, root_url, endpoint_path=''):
+    def __init__(self, root_url, user_api_key, endpoint_path):
         self.query_ignore_list = ['__all__', '__builtins__', '__doc__',
                                   '__file__', '__name__', '__package__',
                                   '__path__', 'queries', 'SparqlQuery',
                                   'QueryException', 'PREFIX_LIBRARY']
         self.root_url = root_url
         self.endpoint_path = endpoint_path
+        self.user_api_key = user_api_key if user_api_key else '<YOUR_API_KEY>'
 
     # TODO: modify somewhere to include endpoint path
     def make_docs(self):
@@ -28,6 +29,7 @@ class DocsCreator(object):
                                         "filter = a character string on which to filter, it can take combinations such as bribery+OR+bribe",
                                         "uris.[n] = a URI to a thing, e.g. dbpedia:David_Beckham",
                                         "datefilter = YYYY, YYYY-MM or YYYY-MM-DD, filter to a year, month or day",
+                                        "api_key = a UUID api key, e.g. 1c867db8-a364-4f1e-a33c-e5e55775a76e",
                                         "REMOVED offset = an offset into the returned results",
                                         "REMOVED limit = a number of results to return"],
                          "prefixes": prefixes,
@@ -52,7 +54,9 @@ class DocsCreator(object):
                 "required_parameters": query_object.required_parameters,
                 "optional_parameters": query_object.optional_parameters,
                 "output_columns": query_object.headers,
-                "example": self.root_url + self.endpoint_path + '/' + self._get_example_from_query(query_object),
+                "example": ''.join([self.root_url, self.endpoint_path, '/',
+                                    self._get_example_from_query(query_object),
+                                    '&api_key=', self.user_api_key]),
                 "sparql": query_object.query})
         return function_list
 

@@ -4,11 +4,12 @@ from __future__ import unicode_literals, division
 
 import json
 
-from flask import (render_template, request, url_for, make_response,
-                    send_from_directory)
+from flask import (abort, render_template, request, url_for, make_response,
+                   send_from_directory)
 from app import app
 from pagination import Pagination
 from collections import OrderedDict
+import functools
 import queries
 import jsonurl
 import cStringIO as StringIO
@@ -35,6 +36,20 @@ class ViewerException(Exception):
     pass
 
 
+def require_api_key(view_function):
+    # https://coderwall.com/p/4qickw
+    """ Wrap a function to make it check API key submitted in query string. """
+    @functools.wraps(view_function)
+    def api_key_checking_function(*args, **kwargs):
+        """ Check if API key matches the app's API key. """
+        user_api_key = request.args.get('api_key', None)
+        if user_api_key == os.environ['NEWSREADER_SIMPLE_API_KEY']:
+            return view_function(*args, **kwargs)
+        else:
+            abort(401)
+    return api_key_checking_function
+
+
 def index(function_list):
     """ Provide documentation when accessing the root page """
     output = parse_query_string(request.query_string)
@@ -57,14 +72,20 @@ def index(function_list):
 def cars_index():
     root_url = get_root_url()
     endpoint_path = '/cars'
-    function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
+    user_api_key = request.args.get('api_key')
+    function_list = make_documentation.CarsDocsCreator(root_url, user_api_key,
+                                                       endpoint_path).make_docs()
     return index(function_list)
+
 
 @app.route('/world_cup')
 def worldcup_index():
     root_url = get_root_url()
     endpoint_path = '/world_cup'
-    function_list = make_documentation.WorldCupDocsCreator(root_url, endpoint_path).make_docs()
+    user_api_key = request.args.get('api_key')
+    function_list = make_documentation.WorldCupDocsCreator(root_url,
+                                                           user_api_key,
+                                                           endpoint_path).make_docs()
     return index(function_list)
 
 
@@ -112,6 +133,7 @@ def get_endpoint_url(api_endpoint):
            defaults={'api_endpoint': DEFAULT_ENDPOINT})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
+@require_api_key
 def run_query(page, query_to_use, api_endpoint):
     """ Return response of selected query using query string values. """
     knowledgestore_url = get_endpoint_url(api_endpoint)
