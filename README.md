@@ -14,6 +14,8 @@ API provides detailed information on the available queries. An example index pag
 
 The Simple API has been used at Hack Days run as part of the NewsReader Project, a bundle of links providing additional information can be found [here](http://tab.bz/ydtco/).
 
+The Simple API uses an API key for authentication please contact dataservices@scraperwiki.com for an API key.
+
 ## Local install
 * `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
 * Work on a virtualenv (optional)
@@ -25,11 +27,13 @@ documentation.
 
 You'll need the username and password for the endpoint and have to store
 these in the environment variables: NEWSREADER_USERNAME and
-NEWSREADER_PASSWORD. (The deployed version has these setup already.)
+NEWSREADER_PASSWORD. (The deployed version has these setup already.). You also 
+need to define an NEWSREADER_SIMPLE_API_KEY for local development.
 This can be done by adding lines like:
 
 * `export NEWSREADER_USERNAME=[username]`
 * `export NEWSREADER_PASSWORD=[password]`
+* `export NEWSREADER_SIMPLE_API_KEY=[api_key]`
 
 To your `.profile` file (in Linux).
 
