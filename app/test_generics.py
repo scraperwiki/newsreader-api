@@ -17,9 +17,9 @@ from requests import ConnectionError
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod
     def setUp(cls):
+        api_key = os.environ['NEWSREADER_SIMPLE_API_KEY'].split(',')[0]
         cls.app = app.test_client()
-        cls.api_key_query_string = ('&api_key=' +
-                                    os.environ['NEWSREADER_SIMPLE_API_KEY'])
+        cls.api_key_query_string = ('&api_key=' + api_key)
 
     def test_root(self):
         rv = self.app.get('/')
