@@ -70,3 +70,13 @@ class SimpleAPIGenericTests(unittest.TestCase):
     def test_handles_accents_in_urls(self):
         rv = self.app.get('/actors_of_a_type?uris.0=dbo:Person&filter=J%C3%BCrgen' + self.api_key_query_string)
         assert 'error' not in rv.data.decode('UTF-8')
+
+
+class AuthenticationFailureTestCase(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        cls.app = app.test_client()
+
+    def test_does_not_allow_unauthorized_api_key(self):
+        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + 'api_key=INVALID')
+        assert 'Unauthorized' in rv.data.decode('UTF-8')
