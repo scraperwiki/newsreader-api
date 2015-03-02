@@ -3,13 +3,17 @@
 
 from __future__ import unicode_literals
 
+import os
+
 from app import app
 from app import make_documentation
 
 def test_generator():
     root_url = ""
     endpoint_path = '/cars'
-    function_list = make_documentation.CarsDocsCreator(root_url, endpoint_path).make_docs()
+    api_key = os.environ['NEWSREADER_SIMPLE_API_KEY']
+    function_list = make_documentation.CarsDocsCreator(root_url, api_key,
+                                                       endpoint_path).make_docs()
     for query in function_list['queries']:
         yield check_query, query['example']
 
