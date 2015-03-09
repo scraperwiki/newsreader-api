@@ -6,7 +6,7 @@ from queries import SparqlQuery
 
 class event_precis(SparqlQuery):
 
-    """ 
+    """
     """
 
     def __init__(self, *args, **kwargs):
@@ -19,141 +19,60 @@ class event_precis(SparqlQuery):
         self.query_template = ("""
 SELECT DISTINCT ?subject ?predicate ?object ?graph
 WHERE {{
- VALUES ?event {{ {uri_0} }}
- {{
-       GRAPH ?graph {{ ?event rdf:type ?object . }}
-       BIND (?event as ?subject)
-       BIND (rdf:type as ?predicate)
-       FILTER (STRSTARTS(STR(?object), "http://www.newsreader-project.eu/domain-ontology"))
-
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event ?predicate ?object . }}
-        BIND (?event as ?subject)
-        FILTER (STRSTARTS(STR(?predicate), "http://www.newsreader-project.eu/domain-ontology"))
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasActor ?object . }}
-        BIND (?event as ?subject)
-        BIND (sem:hasActor as ?predicate)
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasPlace ?object . }}
-        BIND (?event as ?subject)
-        BIND (sem:hasPlace as ?predicate)
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasTime ?t . }}
-        ?t  owltime:inDateTime ?d .
-        BIND (?event as ?subject)
-        BIND (nwr:cleanedTime as ?predicate)
-        BIND (?d as ?object)
- }}
- UNION
- {{
-       ?event eso:hasPreSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
-       ?event eso:hasPostSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
-       ?event eso:hasDuringSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
+  {{
+    {uri_0} eso:hasPreSituation|eso:hasPostSituation|eso:hasDuringSituation ?graph .
+    GRAPH ?graph {{ ?subject ?predicate  ?object }}
+  }} UNION {{
+    BIND ({uri_0} as ?subject)
     {{
-    SELECT ?event (COUNT(DISTINCT ?m) AS ?object)
-    WHERE {{
-      ?event gaf:denotedBy ?mention . 
-      BIND (STRBEFORE(STR(?mention), "#") as ?m)
+      GRAPH ?graph {{ {uri_0} ?predicate ?object }}
+      FILTER (?predicate = sem:hasActor ||
+              ?predicate = sem:hasPlace ||
+              ?predicate = rdf:type && EXISTS { ?object rdfs:isDefinedBy eso: } ||
+              EXISTS {{ ?predicate rdfs:isDefinedBy eso: }} )
+    }} UNION {{
+      GRAPH ?graph {{ {uri_0} sem:hasTime ?t }}
+      ?t owltime:inDateTime ?object .
+      BIND (nwr:cleanedTime as ?predicate)
+    }} UNION {{
+      SELECT ("number of documents" AS ?predicate) ("graph" AS ?graph)
+             (COUNT(DISTINCT STRBEFORE(STR(?m), "#")) AS ?object)
+      WHERE {{ {uri_0} gaf:denotedBy ?m }}
     }}
-    GROUP BY ?event
   }}
-  BIND (?event AS ?subject)
-  BIND ("number of documents" AS ?predicate)
-  BIND ("graph" AS ?graph)
- }}
-}}""")
+}}
+                               """)
 
         self.count_template = ("""
 SELECT (COUNT(*) as ?count)
 WHERE{{
 SELECT DISTINCT ?subject ?predicate ?object ?graph
 WHERE {{
- VALUES ?event {{ {uri_0} }}
- {{
-       GRAPH ?graph {{ ?event rdf:type ?object . }}
-       BIND (?event as ?subject)
-       BIND (rdf:type as ?predicate)
-       FILTER (STRSTARTS(STR(?object), "http://www.newsreader-project.eu/domain-ontology"))
-
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event ?predicate ?object . }}
-        BIND (?event as ?subject)
-        FILTER (STRSTARTS(STR(?predicate), "http://www.newsreader-project.eu/domain-ontology"))
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasActor ?object . }}
-        BIND (?event as ?subject)
-        BIND (sem:hasActor as ?predicate)
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasPlace ?object . }}
-        BIND (?event as ?subject)
-        BIND (sem:hasPlace as ?predicate)
- }}
- UNION
- {{
-        GRAPH ?graph {{ ?event sem:hasTime ?t . }}
-        ?t  owltime:inDateTime ?d .
-        BIND (?event as ?subject)
-        BIND (nwr:cleanedTime as ?predicate)
-        BIND (?d as ?object)
- }}
- UNION
- {{
-       ?event eso:hasPreSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
-       ?event eso:hasPostSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
-       ?event eso:hasDuringSituation ?graph
-       GRAPH ?graph {{ ?subject ?predicate ?object . }}
- }}
- UNION
- {{
+  {{
+    {uri_0} eso:hasPreSituation|eso:hasPostSituation|eso:hasDuringSituation ?graph .
+    GRAPH ?graph {{ ?subject ?predicate  ?object }}
+  }} UNION {{
+    BIND ({uri_0} as ?subject)
     {{
-    SELECT ?event (COUNT(DISTINCT ?m) AS ?object)
-    WHERE {{
-      ?event gaf:denotedBy ?mention . 
-      BIND (STRBEFORE(STR(?mention), "#") as ?m)
+      GRAPH ?graph {{ {uri_0} ?predicate ?object }}
+      FILTER (?predicate = sem:hasActor ||
+              ?predicate = sem:hasPlace ||
+              ?predicate = rdf:type && EXISTS { ?object rdfs:isDefinedBy eso: } ||
+              EXISTS {{ ?predicate rdfs:isDefinedBy eso: }} )
+    }} UNION {{
+      GRAPH ?graph {{ {uri_0} sem:hasTime ?t }}
+      ?t owltime:inDateTime ?object .
+      BIND (nwr:cleanedTime as ?predicate)
+    }} UNION {{
+      SELECT ("number of documents" AS ?predicate) ("graph" AS ?graph)
+             (COUNT(DISTINCT STRBEFORE(STR(?m), "#")) AS ?object)
+      WHERE {{ {uri_0} gaf:denotedBy ?m }}
     }}
-    GROUP BY ?event
   }}
-  BIND (?event AS ?subject)
-  BIND ("number of documents" AS ?predicate)
-  BIND ("graph" AS ?graph)
- }}
 }}
-}}""")
+}}
+                               """)
+
         self.jinja_template = 'table.html'
         self.headers = ['subject', 'predicate', 'object', 'graph']
 

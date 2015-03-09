@@ -19,43 +19,37 @@ class summary_of_events_with_actor_type(SparqlQuery):
         self.world_cup_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:GolfPlayer'
         self.cars_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:Company'
         self.query_template = ("""
-SELECT 
-?event (COUNT (?event) AS ?event_size) ?datetime ?actor
+SELECT ?event (COUNT (*) AS ?event_size) ?datetime ?actor
 WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor ?actor .}}
-UNION
-{{ ?event sem:hasPlace ?actor .}}
-?actor a {uri_0} .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
+  {{
+    SELECT DISTINCT ?event ?datetime ?actor
+    WHERE {{
+      ?event sem:hasTime ?t .
+      ?event sem:hasActor|sem:hasPlace ?actor .
+      ?actor a {uri_0} .
+      ?t owltime:inDateTime ?d .
+      {date_filter_block}
+      ?d rdfs:label ?datetime .
+    }}
+    ORDER BY ?datetime
+    OFFSET {offset}
+    LIMIT {limit}
+  }}
+  ?event ?p ?o .
 }}
 GROUP BY ?event ?datetime ?actor
 ORDER BY ?datetime
-OFFSET {offset}
-LIMIT {limit}
                                """)
 
-
         self.count_template = ("""
-SELECT 
-(COUNT (DISTINCT ?event) AS ?count)
+SELECT (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
-?event ?p ?o .
-{{ ?event sem:hasActor ?actor .}}
-UNION
-{{ ?event sem:hasPlace ?actor .}}
-?actor a {uri_0} .
-?event sem:hasTime ?t .
-?t owltime:inDateTime ?d .
-{date_filter_block}
-?t rdfs:label ?datetimetmp .
-  FILTER (regex(?datetimetmp,"\\\d{{4}}-\\\d{{2}}"))
-  BIND (SUBSTR(?datetimetmp,1,10) as ?datetime)
+  ?event sem:hasTime ?t .
+  ?event sem:hasActor|sem:hasPlace ?actor .
+  ?actor a {uri_0} .
+  ?t owltime:inDateTime ?d .
+  {date_filter_block}
+  ?d rdfs:label ?datetime .
 }}
                                """)
 

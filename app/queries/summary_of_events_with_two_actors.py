@@ -29,9 +29,7 @@ WHERE {{
              rdfs:label ?event_label .
       ?t owltime:inDateTime ?d .
       {date_filter_block}
-      ?t rdfs:label ?datetimetmp .
-      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+      ?d rdfs:label ?datetime .
     }}
     ORDER BY ?datetime
     OFFSET {offset}
@@ -44,25 +42,15 @@ ORDER BY ?datetime
                                """)
 
         self.count_template = ("""
-SELECT (COUNT(?event) AS ?count)
+SELECT (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
-  {{
-    SELECT DISTINCT ?event ?datetime ?event_label
-    WHERE {{
-      ?event sem:hasActor {uri_0} , {uri_1} ;
-             sem:hasTime ?t ;
-             rdfs:label ?event_label .
-      ?t owltime:inDateTime ?d .
-      {date_filter_block}
-      ?t rdfs:label ?datetimetmp .
-      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
-    }}
-    ORDER BY ?datetime
-  }}
-  ?event ?p ?o
+  ?event sem:hasActor {uri_0} , {uri_1} ;
+         sem:hasTime ?t ;
+         rdfs:label ?event_label .
+  ?t owltime:inDateTime ?d .
+  {date_filter_block}
+  ?d rdfs:label ?datetime .
 }}
-GROUP BY ?event ?datetime ?event_label
                                """)
 
         self.jinja_template = 'table.html'
