@@ -28,7 +28,7 @@ WHERE {{
       GRAPH ?graph {{ {uri_0} ?predicate ?object }}
       FILTER (?predicate = sem:hasActor ||
               ?predicate = sem:hasPlace ||
-              ?predicate = rdf:type && EXISTS { ?object rdfs:isDefinedBy eso: } ||
+              ?predicate = rdf:type && EXISTS {{ ?object rdfs:isDefinedBy eso: }} ||
               EXISTS {{ ?predicate rdfs:isDefinedBy eso: }} )
     }} UNION {{
       GRAPH ?graph {{ {uri_0} sem:hasTime ?t }}
