@@ -26,12 +26,10 @@ WHERE {{
       ?event rdfs:label ?filterfield .
       ?event rdf:type {uri_0} .
       {uri_filter_block}
-      ?event sem:hasTime ?t . 
+      ?event sem:hasTime ?t .
       ?t owltime:inDateTime ?d .
       {date_filter_block}
-      ?t rdfs:label ?datetimetmp .
-      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
+      ?d rdfs:label ?datetime .
     }}
     ORDER BY ?datetime
     OFFSET {offset}
@@ -46,23 +44,14 @@ ORDER BY ?datetime
         self.count_template = ("""
 SELECT (COUNT(DISTINCT ?event) AS ?count)
 WHERE {{
-  {{
-    SELECT DISTINCT ?event ?datetime ?filterfield
-    WHERE {{
-      ?event a sem:Event .
-      ?event rdfs:label ?filterfield .
-      ?event rdf:type {uri_0} .
-      {uri_filter_block}
-      ?event sem:hasTime ?t . 
-      ?t owltime:inDateTime ?d .
-      {date_filter_block}
-      ?t rdfs:label ?datetimetmp .
-      FILTER (regex(?datetimetmp,"\\\\d{{4}}-\\\\d{{2}}"))
-      BIND (SUBSTR(?datetimetmp,1,10) AS ?datetime)
-    }}
-    ORDER BY ?datetime
-  }}
-  ?event ?p ?o .
+  ?event a sem:Event .
+  ?event rdfs:label ?filterfield .
+  ?event rdf:type {uri_0} .
+  {uri_filter_block}
+  ?event sem:hasTime ?t .
+  ?t owltime:inDateTime ?d .
+  {date_filter_block}
+  ?d rdfs:label ?datetime .
 }}
                                """)
 
