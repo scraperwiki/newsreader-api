@@ -16,6 +16,21 @@ assert "pypy" in sys.executable, "DO NOT PROCEED."
 # CoreOS version 633.1.0
 COREOS_AMI = "ami-21422356"
 
+def ref(x):
+    return {'Ref:': x}
+
+
+def join(*args, **kwargs):
+    """
+    Return an intrinsic joining each argument together with an empty seperator.
+    join("foo", bar) is shorthand for:
+    {"Fn::Join": ["", list(("foo", bar))]}
+    """
+    sep = kwargs.pop("sep", "")
+    assert not kwargs, "unknown params specified: {}".format(kwargs.keys())
+    return {"Fn::Join": [sep, list(args)]}
+
+
 main = {
     "AWSTemplateFormatVersion": "2010-09-09",
 
@@ -29,17 +44,17 @@ main = {
             "Default": "m1.small",
         },
 
-        "NEWSREADER_USERNAME": {
+        "NewsreaderUsername": {
             "Description": "Newsreader SPARQL username",
             "Type": "String",
         },
 
-        "NEWSREADER_PASSWORD": {
+        "NewsreaderPassword": {
             "Description": "Newsreader SPARQL password",
             "Type": "String",
         },
 
-        "NEWSREADER_SIMPLE_API_KEY": {
+        "NewsreaderSimpleApiKey": {
             "Description": "Newsreader Simple API keys",
             "Type": "String",
         },
@@ -70,158 +85,64 @@ main = {
             }
         },
 
-        "WebServer": {
+        "NewsreaderInstance": {
             "Type": "AWS::EC2::Instance",
-            "Metadata": {
-                "AWS::CloudFormation::Init": {
-                    "configSets": {
-                        "wordpress_install": ["install_cfn", "install_wordpress", "configure_wordpress"]
-                    },
-                    "install_cfn": {
-                        "files": {
-                            "/etc/cfn/cfn-hup.conf": {
-                                "content": {"Fn::Join": ["", [
-                                    "[main]\n",
-                                    "stack=", {"Ref": "AWS::StackId"}, "\n",
-                                    "region=", {"Ref": "AWS::Region"}, "\n"
-                                ]]},
-                                "mode": "000400",
-                                "owner": "root",
-                                "group": "root"
-                            },
-                            "/etc/cfn/hooks.d/cfn-auto-reloader.conf": {
-                                "content": {"Fn::Join": ["", [
-                                    "[cfn-auto-reloader-hook]\n",
-                                    "triggers=post.update\n",
-                                    "path=Resources.WebServer.Metadata.AWS::CloudFormation::Init\n",
-                                    "action=/opt/aws/bin/cfn-init -v ",
-                                    "         --stack ", {"Ref":
-                                                          "AWS::StackName"},
-                                    "         --resource WebServer ",
-                                    "         --configsets wordpress_install ",
-                                    "         --region ", {"Ref":
-                                                           "AWS::Region"}, "\n"
-                                ]]},
-                                "mode": "000400",
-                                "owner": "root",
-                                "group": "root"
-                            }
-                        },
-                        "services": {
-                            "sysvinit": {
-                                "cfn-hup": {"enabled": "true", "ensureRunning": "true",
-                                            "files": ["/etc/cfn/cfn-hup.conf", "/etc/cfn/hooks.d/cfn-auto-reloader.conf"]}
-                            }
-                        }
-                    },
-
-                    "install_wordpress": {
-                        "packages": {
-                            "yum": {
-                                "php": [],
-                                "php-mysql": [],
-                                "mysql": [],
-                                "mysql-server": [],
-                                "mysql-devel": [],
-                                "mysql-libs": [],
-                                "httpd": []
-                            }
-                        },
-                        "sources": {
-                            "/var/www/html": "http://wordpress.org/latest.tar.gz"
-                        },
-                        "files": {
-                            "/tmp/setup.mysql": {
-                                "content": {"Fn::Join": ["", [
-                                    "CREATE DATABASE ", {
-                                        "Ref": "DBName"}, ";\n",
-                                    "CREATE USER '", {"Ref": "DBUser"}, "'@'localhost' IDENTIFIED BY '", {
-                                        "Ref": "DBPassword"}, "';\n",
-                                    "GRANT ALL ON ", {
-                                        "Ref": "DBName"}, ".* TO '", {"Ref": "DBUser"}, "'@'localhost';\n",
-                                    "FLUSH PRIVILEGES;\n"
-                                ]]},
-                                "mode": "000400",
-                                "owner": "root",
-                                "group": "root"
-                            },
-
-                            "/tmp/create-wp-config": {
-                                "content": {"Fn::Join": ["", [
-                                    "#!/bin/bash -xe\n",
-                                    "cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php\n",
-                                    "sed -i \"s/'database_name_here'/'", {
-                                        "Ref": "DBName"}, "'/g\" wp-config.php\n",
-                                    "sed -i \"s/'username_here'/'", {
-                                        "Ref": "DBUser"}, "'/g\" wp-config.php\n",
-                                    "sed -i \"s/'password_here'/'", {
-                                        "Ref": "DBPassword"}, "'/g\" wp-config.php\n"
-                                ]]},
-                                "mode": "000500",
-                                "owner": "root",
-                                "group": "root"
-                            }
-                        },
-                        "services": {
-                            "sysvinit": {
-                                "httpd": {"enabled": "true", "ensureRunning": "true"},
-                                "mysqld": {"enabled": "true", "ensureRunning": "true"}
-                            }
-                        }
-                    },
-
-                    "configure_wordpress": {
-                        "commands": {
-                            "01_set_mysql_root_password": {
-                                "command": {"Fn::Join": ["", ["mysqladmin -u root password '", {"Ref": "DBRootPassword"}, "'"]]},
-                                "test": {"Fn::Join": ["", ["$(mysql ", {"Ref": "DBName"}, " -u root --password='", {"Ref": "DBRootPassword"}, "' >/dev/null 2>&1 </dev/null); (( $? != 0 ))"]]}
-                            },
-                            "02_create_database": {
-                                "command": {"Fn::Join": ["", ["mysql -u root --password='", {"Ref": "DBRootPassword"}, "' < /tmp/setup.mysql"]]},
-                                "test": {"Fn::Join": ["", ["$(mysql ", {"Ref": "DBName"}, " -u root --password='", {"Ref": "DBRootPassword"}, "' >/dev/null 2>&1 </dev/null); (( $? != 0 ))"]]}
-                            },
-                            "03_configure_wordpress": {
-                                "command": "/tmp/create-wp-config",
-                                "cwd": "/var/www/html/wordpress"
-                            }
-                        }
-                    }
-                }
-            },
             "Properties": {
-                "ImageId": {"Fn::FindInMap": ["AWSRegionArch2AMI", {"Ref": "AWS::Region"},
-                                              {"Fn::FindInMap": ["AWSInstanceType2Arch", {"Ref": "InstanceType"}, "Arch"]}]},
+                "ImageId": COREOS_AMI,
                 "InstanceType": {"Ref": "InstanceType"},
-                "SecurityGroups": [{"Ref": "WebServerSecurityGroup"}],
-                "KeyName": {"Ref": "KeyName"},
+                "SecurityGroups": [{"Ref": "NewsreaderSecurityGroup"}],
                 "UserData": {"Fn::Base64": {"Fn::Join": ["", [
-                    "#!/bin/bash -xe\n",
-                    "yum update -y aws-cfn-bootstrap\n",
-
-                    "/opt/aws/bin/cfn-init -v ",
-                    "         --stack ", {"Ref": "AWS::StackName"},
-                    "         --resource WebServer ",
-                    "         --configsets wordpress_install ",
-                    "         --region ", {"Ref": "AWS::Region"}, "\n",
-
-                    "/opt/aws/bin/cfn-signal -e $? ",
-                    "         --stack ", {"Ref": "AWS::StackName"},
-                    "         --resource WebServer ",
-                    "         --region ", {"Ref": "AWS::Region"}, "\n"
+                    "#cloud-config\n",
+                    "users:\n",
+                    "  - name: pwaller\n",
+                    "    groups: [sudo, docker, systemd-journal]\n",
+                    "    coreos-ssh-import-github: pwaller\n",
+                    "  - name: drj\n",
+                    "    groups: [sudo, docker, systemd-journal]\n",
+                    "    coreos-ssh-import-github: drj11\n",
+                    "  - name: frabcus\n",
+                    "    groups: [sudo, docker, systemd-journal]\n",
+                    "    coreos-ssh-import-github: frabcus\n",
+                    "  - name: dragon\n",
+                    "    groups: [sudo, docker, systemd-journal]\n",
+                    "    coreos-ssh-import-github: scraperdragon\n",
+                    "  - name: sm\n",
+                    "    groups: [sudo, docker, systemd-journal]\n",
+                    "    coreos-ssh-import-github: StevenMaude\n",
                 ]]}}
             },
-            "CreationPolicy": {
-                "ResourceSignal": {
-                    "Timeout": "PT15M"
-                }
-            }
-        }
+        },
+
+        "NewsreaderDNS": {
+            "Type": "AWS::Route53::RecordSet",
+            "Properties": {
+                "HostedZoneName": join(ref("HostedZoneName"), "."),
+                "Comment": "DNS name for newsreader.scraperwiki.com",
+
+                # e.g, newsreader-20150413-pw-dev-eu-west-1.scraperwiki.com
+                "Name": join(
+                    join(
+                        ref("AWS::StackName"),
+                        ref("AWS::Region"),
+                        sep="-",
+                    ),
+                    ref("HostedZoneName"),
+                    "",  # Must end with a ".", so join empty.
+                    sep="."
+                ),
+                "Type": "A",
+                "TTL": "60",
+                "ResourceRecords": [
+                    {'Fn::GetAtt': ['NewsreaderInstance', 'PublicIp']},
+                ],
+            },
+        },
     },
 
     "Outputs": {
-        "WebsiteURL": {
-            "Value": {"Fn::Join": ["", ["http://", {"Fn::GetAtt": ["WebServer", "PublicDnsName"]}, "/wordpress"]]},
-            "Description": "WordPress Website"
+        "NewsreaderDNS": {
+            "Value": ref("NewsreaderDNS"),
+            "Description": "DNS name of Newsreader instance"
         }
     }
 }
