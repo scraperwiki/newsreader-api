@@ -11,5 +11,5 @@ COPY ./requirements.txt /app/
 RUN pip install -r /app/requirements.txt
 COPY ./app /app/
 
-ENTRYPOINT ["gunicorn"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000"]
 CMD ["app:app"]
