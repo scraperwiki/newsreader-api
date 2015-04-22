@@ -109,7 +109,7 @@ main = {
                 "ImageId": COREOS_AMI,
                 "SubnetId": ref('SubnetId'),
                 "InstanceType": {"Ref": "InstanceType"},
-                "SecurityGroups": [{"Ref": "NewsreaderSecurityGroup"}],
+                "SecurityGroupIds": [{"Ref": "NewsreaderSecurityGroup"}],
                 "UserData": {"Fn::Base64": {"Fn::Join": ["", [
                     "#cloud-config\n",
                     "users:\n",
