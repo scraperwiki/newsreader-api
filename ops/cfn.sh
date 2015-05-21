@@ -4,6 +4,7 @@ set -eu
 
 usage() {
   echo "usage: $0 create|update|delete <stack name>" 1>&2
+  echo "For example: ./cfn.sh create 20150521-sm"
   exit 1
 }
 
