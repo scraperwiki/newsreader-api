@@ -43,7 +43,7 @@ def require_api_key(view_function):
     def api_key_checking_function(*args, **kwargs):
         """ Check if API key matches the app's API key. """
         user_api_key = request.args.get('api_key', None)
-        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(','):
+        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(';'):
             return view_function(*args, **kwargs)
         else:
             abort(401)
