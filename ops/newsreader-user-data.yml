@@ -14,10 +14,10 @@ coreos:
 
         [Service]
         EnvironmentFile=/etc/newsreader/env
+        Environment=PATH=/opt/bin:$PATH
         
-        WorkingDirectory=/opt/bin
+        WorkingDirectory=/var/lib/hanoverd
 
-       
         User=hanoverd
         ExecStart=/opt/bin/hanoverd \
             --env NEWSREADER_USERNAME \
@@ -140,3 +140,4 @@ users:
     system: true
   - name: hanoverd
     groups: [docker]
+    homedir: /var/lib/hanoverd
