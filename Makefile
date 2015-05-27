@@ -7,9 +7,9 @@ run:    build
 	    --read-only \
 	    --rm \
 	    --volume /tmp \
-	    newsreader_api_flask_app
+	    newsreader_api
 
 build:
-	@docker build -t newsreader_api_flask_app .
+	@docker build -t newsreader_api .
 
 .PHONY: run build
