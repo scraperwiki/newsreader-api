@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import json
 import os
+import re
 import sys
 
 stdout = sys.stdout
@@ -13,8 +14,8 @@ sys.stdout = sys.stderr
 # A convenient docker container is provided if you just run 'make'.
 assert "pypy" in sys.executable, "DO NOT PROCEED."
 
-# CoreOS version 633.1.0
-COREOS_AMI = "ami-21422356"
+# CoreOS version 647.0.0
+COREOS_AMI = "ami-4b1c763c"
 
 
 def ref(x):
@@ -37,6 +38,48 @@ def make_tags(**kwargs):
     For each kwarg, produce a {"Key": key, "Value": value}.
     """
     return [{"Key": key, "Value": value} for key, value in kwargs.items()]
+
+
+def inject_refs(template, **params):
+    """
+    Template in refs using Fn::Join (join)
+
+    inject_refs("foo {{bar}} baz", bar=ref("hello")
+      -> join("foo ", ref("hello"), " baz")
+    """
+
+    def substitute(part):
+        match = re.match("^{{(.*)}}$", part)
+        if not match:
+            return part
+        (param_name,) = match.groups()
+        return params[param_name]
+
+    parts = re.split("({{.*?}})", template)
+    parts = [substitute(part) for part in parts]
+
+    if len(parts) == 1:
+        # Nothing to join
+        (part,) = parts
+        return part
+
+    return join(*parts)
+
+
+def load_user_data(filename, **kwargs):
+    """
+    Load `filename`, template in `kwargs` dynamically (kwarg values may be
+    cloud formation json values).
+    """
+
+    with open(filename) as fd:
+        content = fd.read()
+
+    lines = content.split("\n")
+    # Template in parts matching {{foo}} with kwargs
+    lines = [inject_refs(line, **kwargs) for line in lines]
+
+    return {"Fn::Base64": join(sep="\n", *lines)}
 
 
 main = {
@@ -81,10 +124,59 @@ main = {
             "Default": "scraperwiki.com",
             "Description": "Top level domain to use.",
             "Type": "String",
-        }
+        },
     },
 
     "Resources": {
+
+        "NewsreaderRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {"Service": ["ec2.amazonaws.com"]},
+                            "Action": ["sts:AssumeRole"],
+                        },
+                    ],
+                },
+                "Path": "/newsreader/",
+            },
+        },
+
+        "NewsreaderInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/newsreader/",
+                "Roles": [ref("NewsreaderRole")],
+            }
+        },
+
+        "AccessConfigurationBucket": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "can-access-ssl-certificates",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:GetObject",
+                            ],
+                            "Resource": [
+                                # Private SSL key and certificate
+                                "arn:aws:s3:::scraperwiki-keys/ssl/*",
+                            ],
+                        },
+                    ],
+                },
+                "Roles": [ref("NewsreaderRole")],
+            },
+        },
+
         "NewsreaderSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -98,8 +190,8 @@ main = {
                      "ToPort": "80", "CidrIp": "0.0.0.0/0"},
                     {"IpProtocol": "tcp", "FromPort": "443",
                      "ToPort": "443", "CidrIp": "0.0.0.0/0"},
-                ]
-            }
+                ],
+            },
         },
 
         "NewsreaderInstance": {
@@ -109,26 +201,14 @@ main = {
                 "ImageId": COREOS_AMI,
                 "SubnetId": ref('SubnetId'),
                 "InstanceType": {"Ref": "InstanceType"},
+                "IamInstanceProfile": ref("NewsreaderInstanceProfile"),
                 "SecurityGroupIds": [{"Ref": "NewsreaderSecurityGroup"}],
-                "UserData": {"Fn::Base64": {"Fn::Join": ["", [
-                    "#cloud-config\n",
-                    "users:\n",
-                    "  - name: pwaller\n",
-                    "    groups: [sudo, docker, systemd-journal]\n",
-                    "    coreos-ssh-import-github: pwaller\n",
-                    "  - name: drj\n",
-                    "    groups: [sudo, docker, systemd-journal]\n",
-                    "    coreos-ssh-import-github: drj11\n",
-                    "  - name: frabcus\n",
-                    "    groups: [sudo, docker, systemd-journal]\n",
-                    "    coreos-ssh-import-github: frabcus\n",
-                    "  - name: dragon\n",
-                    "    groups: [sudo, docker, systemd-journal]\n",
-                    "    coreos-ssh-import-github: scraperdragon\n",
-                    "  - name: sm\n",
-                    "    groups: [sudo, docker, systemd-journal]\n",
-                    "    coreos-ssh-import-github: StevenMaude\n",
-                ]]}}
+                "UserData": load_user_data(
+                    'newsreader-user-data.yml',
+                    newsreader_username=ref('NewsreaderUsername'),
+                    newsreader_password=ref('NewsreaderPassword'),
+                    newsreader_simple_api_key=ref('NewsreaderSimpleApiKey'),
+                ),
             },
         },
 
