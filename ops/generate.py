@@ -32,6 +32,13 @@ def join(*args, **kwargs):
     return {"Fn::Join": [sep, list(args)]}
 
 
+def make_tags(**kwargs):
+    """
+    For each kwarg, produce a {"Key": key, "Value": value}.
+    """
+    return [{"Key": key, "Value": value} for key, value in kwargs.items()]
+
+
 main = {
     "AWSTemplateFormatVersion": "2010-09-09",
 
@@ -42,7 +49,7 @@ main = {
         "InstanceType": {
             "Description": "WebServer EC2 instance type",
             "Type": "String",
-            "Default": "m1.small",
+            "Default": "t2.micro",
         },
 
         "NewsreaderUsername": {
@@ -70,18 +77,27 @@ main = {
             "Type": "AWS::EC2::Subnet::Id",
         },
 
+        "HostedZoneName": {
+            "Default": "scraperwiki.com",
+            "Description": "Top level domain to use.",
+            "Type": "String",
+        }
     },
 
     "Resources": {
-        "WebServerSecurityGroup": {
+        "NewsreaderSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupDescription": "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+                "VpcId": ref('VpcId'),
+                "Tags": make_tags(Name='Newsreader', Project='newsreader'),
+                "GroupDescription": "Enable SSH, HTTP and HTTPS from everywhere",
                 "SecurityGroupIngress": [
+                    {"IpProtocol": "tcp", "FromPort": "22",
+                     "ToPort": "22", "CidrIp": "0.0.0.0/0"},
                     {"IpProtocol": "tcp", "FromPort": "80",
                      "ToPort": "80", "CidrIp": "0.0.0.0/0"},
-                    {"IpProtocol": "tcp", "FromPort": "22",
-                     "ToPort": "22", "CidrIp": {"Ref": "SSHLocation"}}
+                    {"IpProtocol": "tcp", "FromPort": "443",
+                     "ToPort": "443", "CidrIp": "0.0.0.0/0"},
                 ]
             }
         },
@@ -89,7 +105,9 @@ main = {
         "NewsreaderInstance": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
+                "Tags": make_tags(Name='Newsreader', Project='newsreader'),
                 "ImageId": COREOS_AMI,
+                "SubnetId": ref('SubnetId'),
                 "InstanceType": {"Ref": "InstanceType"},
                 "SecurityGroups": [{"Ref": "NewsreaderSecurityGroup"}],
                 "UserData": {"Fn::Base64": {"Fn::Join": ["", [
