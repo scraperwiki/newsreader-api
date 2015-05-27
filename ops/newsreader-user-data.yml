@@ -14,7 +14,7 @@ coreos:
 
         [Service]
         EnvironmentFile=/etc/newsreader/env
-        Environment=PATH=/opt/bin:$PATH
+        Environment=PATH=/opt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         
         WorkingDirectory=/var/lib/hanoverd
 
