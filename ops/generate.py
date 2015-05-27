@@ -16,8 +16,9 @@ assert "pypy" in sys.executable, "DO NOT PROCEED."
 # CoreOS version 633.1.0
 COREOS_AMI = "ami-21422356"
 
+
 def ref(x):
-    return {'Ref:': x}
+    return {'Ref': x}
 
 
 def join(*args, **kwargs):
