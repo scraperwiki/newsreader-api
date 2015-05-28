@@ -22,7 +22,7 @@ The Simple API uses an API key for authentication please contact dataservices@sc
 
 You'll need the username and password for the endpoint and have to store
 these in the environment variables: NEWSREADER_USERNAME and
-NEWSREADER_PASSWORD. (The deployed version has these setup already.). You also 
+NEWSREADER_PASSWORD. (The deployed version has these setup already.). You also
 need to define an NEWSREADER_SIMPLE_API_KEY for local development.
 This can be done by adding lines like:
 
@@ -99,7 +99,7 @@ The main action should be in adding the queries. { and } in the original need to
 
 `from .types_of_actors import types_of_actors`
 
-to `__init.py__` and add an entry to `function_list` in `index` in the`queries.py` file 
+to `__init.py__` and add an entry to `function_list` in `index` in the`queries.py` file.
 
 ## Adding a new KnowledgeStore
 
