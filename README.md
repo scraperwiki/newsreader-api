@@ -53,7 +53,7 @@ App accessible via http://0.0.0.0:8000
 ### Deploying via Amazon CloudFormation
 
 1. `cd ops`
-2. `./cfn.sh create <stack name>
+2. `./cfn.sh create <stack name>`
 
 The [`awscli`](https://aws.amazon.com/cli/) is required.
 
