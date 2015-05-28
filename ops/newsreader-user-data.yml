@@ -1,0 +1,149 @@
+#cloud-config
+coreos:
+
+  units:
+
+    - name: newsreader.service
+      command: start
+      content: |
+        [Unit]
+        Description=Newsreader Simple API
+
+        After=download-utilities.service
+        Requires=download-utilities.service
+
+        [Service]
+        EnvironmentFile=/etc/newsreader/env
+        Environment=PATH=/opt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        
+        WorkingDirectory=/var/lib/hanoverd
+
+        User=hanoverd
+        ExecStart=/opt/bin/hanoverd \
+            --env NEWSREADER_USERNAME \
+            --env NEWSREADER_PASSWORD \
+            --env NEWSREADER_SIMPLE_API_KEY \
+            --publish 8080:8000 \
+            --hookbot $HOOKBOT_MONITOR_URL \
+            -- \
+            --log-file - \
+            --access-logfile - \
+            --forwarded-allow-ips "*" \
+            app:app
+
+    - name: download-utilities.service
+      command: start
+      content: |
+        [Unit]
+        Description=Downloads various utilities
+        
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        
+        ExecStart=/bin/mkdir -p /opt/bin
+
+        ExecStart=/usr/bin/curl --location --output /opt/bin/hanoverd \
+            https://github.com/scraperwiki/hanoverd/releases/download/v0.6/hanoverd_linux_amd64
+        ExecStart=/usr/bin/chmod a+x /opt/bin/hanoverd
+        
+        ExecStart=/bin/cp /sbin/iptables /opt/bin
+        ExecStart=/usr/bin/chmod 500 /opt/bin/iptables
+        ExecStart=/usr/bin/chown hanoverd /opt/bin/iptables
+        ExecStart=/usr/sbin/setcap 'cap_net_admin,cap_net_raw=+ep' /opt/bin/iptables
+        ExecStart=/usr/sbin/modprobe ip_tables
+
+        ExecStart=/usr/bin/curl --location --output /opt/bin/s4cat \
+            https://github.com/scraperwiki/s4cat/releases/download/v0.2/s4cat
+        ExecStart=/usr/bin/chmod a+x /opt/bin/s4cat
+
+        ExecStart=/usr/bin/curl --location --output /opt/bin/associate-eip \
+            https://github.com/pwaller/associate-eip/releases/download/v0.1/associate-eip
+        ExecStart=/usr/bin/chmod a+x /opt/bin/associate-eip
+
+        ExecStart=/usr/bin/curl --location --output /opt/bin/https-redirect \
+            https://github.com/pwaller/https-redirect/releases/download/v0.1/https-redirect
+        ExecStart=/usr/bin/chmod a+x /opt/bin/https-redirect
+        ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/https-redirect
+
+        ExecStart=/usr/bin/curl --location --output /opt/bin/tiny-ssl-reverse-proxy \
+            https://github.com/scraperwiki/tiny-ssl-reverse-proxy/releases/download/v0.8/tiny-ssl-reverse-proxy_linux_amd64
+        ExecStart=/usr/bin/chmod a+x /opt/bin/tiny-ssl-reverse-proxy
+        ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/tiny-ssl-reverse-proxy
+
+    - name: download-keys.service
+      command: start
+      content: |
+        [Unit]
+        Description=Downloads keys and certificates
+        After=download-utilities.service
+        Requires=download-utilities.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/opt/bin/s4cat -output=/etc/ssl/private/cert.pem \
+            scraperwiki-keys ssl/star_scraperwiki_com.crt
+        ExecStart=/opt/bin/s4cat -output=/etc/ssl/private/key.pem \
+            scraperwiki-keys ssl/star_scraperwiki_com.key
+        ExecStart=/usr/bin/chown -R tiny-ssl:tiny-ssl /etc/ssl/private
+
+    - name: tiny-ssl.service
+      command: start
+      content: |
+        [Unit]
+        Description=Tiny SSL Reverse Proxy
+        After=download-keys.service
+        After=download-utilities.service
+        Requires=download-keys.service
+        Requires=download-utilities.service
+
+        [Service]
+        User=tiny-ssl
+        ExecStart=/opt/bin/tiny-ssl-reverse-proxy \
+            -where http://localhost:8080/
+
+    - name: https-redirect.service
+      command: start
+      content: |
+        [Unit]
+        Description=Redirect http to https
+        After=download-utilities.service
+        Requires=download-utilities.service
+
+        [Service]
+        User=nobody
+        ExecStart=/opt/bin/https-redirect
+
+write_files:
+  - path: /etc/newsreader/env
+    permissions: 0600
+    owner: root
+    content: |
+      NEWSREADER_USERNAME={{newsreader_username}}
+      NEWSREADER_PASSWORD={{newsreader_password}}
+      NEWSREADER_SIMPLE_API_KEY={{newsreader_simple_api_key}}
+      HOOKBOT_MONITOR_URL={{hookbot_monitor_url}}
+
+users:
+  - name: pwaller
+    groups: [sudo, docker, systemd-journal]
+    coreos-ssh-import-github: pwaller
+  - name: drj
+    groups: [sudo, docker, systemd-journal]
+    coreos-ssh-import-github: drj11
+  - name: frabcus
+    groups: [sudo, docker, systemd-journal]
+    coreos-ssh-import-github: frabcus
+  - name: dragon
+    groups: [sudo, docker, systemd-journal]
+    coreos-ssh-import-github: scraperdragon
+  - name: sm
+    groups: [sudo, docker, systemd-journal]
+    coreos-ssh-import-github: StevenMaude
+
+  - name: tiny-ssl
+    system: true
+  - name: hanoverd
+    groups: [docker]
+    homedir: /var/lib/hanoverd

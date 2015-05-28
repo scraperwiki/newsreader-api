@@ -43,7 +43,7 @@ def require_api_key(view_function):
     def api_key_checking_function(*args, **kwargs):
         """ Check if API key matches the app's API key. """
         user_api_key = request.args.get('api_key', None)
-        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(','):
+        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(';'):
             return view_function(*args, **kwargs)
         else:
             abort(401)
@@ -66,8 +66,12 @@ def index(function_list):
         return render_template('index.html', help=function_list)
 
 
-# TODO: wrap these into a single function which takes DocsCreator() object
 @app.route('/')
+def root():
+    return cars_index()
+
+
+# TODO: wrap these into a single function which takes DocsCreator() object
 @app.route('/cars')
 def cars_index():
     root_url = get_root_url()
@@ -329,10 +333,7 @@ def url_for_other_page(page):
 
 
 def get_root_url():
-    if app.config['DEBUG']:
-        root_url = "http://127.0.0.1:5000"
-    else:
-        root_url = "https://newsreader.scraperwiki.com"
-    return root_url
+    return url_for('root', _external=True).rstrip('/')
+
 
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
