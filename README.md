@@ -18,7 +18,7 @@ The Simple API uses an API key for authentication please contact dataservices@sc
 
 ## Local install
 
-* `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
+* `git clone git@github.com:scraperwiki/newsreader-api`
 
 You'll need the username and password for the endpoint and have to store
 these in the environment variables: NEWSREADER_USERNAME and
