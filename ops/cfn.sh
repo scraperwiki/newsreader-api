@@ -30,6 +30,7 @@ PARAMETERS=(
   ParameterKey=NewsreaderSimpleApiKey,ParameterValue="$NEWSREADER_SIMPLE_API_KEY"
   ParameterKey=VpcId,ParameterValue="$NEWSREADER_VPC"
   ParameterKey=SubnetId,ParameterValue="$NEWSREADER_SUBNET"
+  ParameterKey=HookbotMonitorUrl,ParameterValue="$HOOKBOT_MONITOR_URL"
 )
 
 

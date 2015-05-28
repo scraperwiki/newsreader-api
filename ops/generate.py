@@ -110,6 +110,11 @@ main = {
             "Type": "String",
         },
 
+        "HookbotMonitorUrl": {
+            "Description": "Hookbot Monitor URL",
+            "Type": "String",
+        },
+
         "VpcId": {
             "Description": "",
             "Type": "AWS::EC2::VPC::Id",
@@ -208,6 +213,7 @@ main = {
                     newsreader_username=ref('NewsreaderUsername'),
                     newsreader_password=ref('NewsreaderPassword'),
                     newsreader_simple_api_key=ref('NewsreaderSimpleApiKey'),
+                    hookbot_monitor_url=ref('HookbotMonitorUrl'),
                 ),
             },
         },
