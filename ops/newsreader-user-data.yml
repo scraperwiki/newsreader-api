@@ -26,7 +26,8 @@ coreos:
             --publish 8080:8000 \
             --hookbot wss://35ec1c73658488c323cf3e5a5ab477b75870aee2@hookbot.scraperwiki.com/sub/github.com/repo/scraperwiki/newsreader-api/branch/master \
             -- \
-            --proxy-allow-from "*" \
+            --log-file - \
+            --access-logfile - \
             --forwarded-allow-ips "*" \
             app:app
 
