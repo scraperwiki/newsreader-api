@@ -17,13 +17,8 @@ The Simple API has been used at Hack Days run as part of the NewsReader Project,
 The Simple API uses an API key for authentication please contact dataservices@scraperwiki.com for an API key.
 
 ## Local install
-* `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
-* Work on a virtualenv (optional)
-* `pip install -r requirements.txt`
-* `python local_run.py`
 
-App accessible via http://127.0.0.1:5000, which also shows up-to-date
-documentation.
+* `git clone git@bitbucket.org:scraperwikids/newsreader_api_flask_app.git`
 
 You'll need the username and password for the endpoint and have to store
 these in the environment variables: NEWSREADER_USERNAME and
@@ -37,7 +32,44 @@ This can be done by adding lines like:
 
 To your `.profile` file (in Linux).
 
-`newsreader.fcgi` is a FastCGI server file for deployment.
+Multiple API keys for users can be specified in
+NEWSREADER_SIMPLE_API_KEY. These must be **semicolon** separated.
+
+### Running via Flask
+
+* Work on a virtualenv (optional)
+1. `pip install -r requirements.txt`
+2. `python local_run.py`
+
+App accessible via http://127.0.0.1:5000, which also shows up-to-date
+documentation.
+
+### Running via Docker
+
+1. Do `make run`
+
+App accessible via http://0.0.0.0:8000
+
+### Deploying via Amazon CloudFormation
+
+1. `cd ops`
+2. `./cfn.sh create <stack name>
+
+The [`awscli`](https://aws.amazon.com/cli/) is required.
+
+In addition, you'll need AWS specific environment variables that you
+can set by:
+
+```sh
+aws-env() { export AWS_DEFAULT_REGION=eu-west-1 AWS_REGION=eu-west-1 AWS_ACCESS_KEY_ID=$1 AWS_SECRET_ACCESS_KEY=$2; clear; }; aws-env <ID> <SECRET>
+```
+
+(The `<ID>` and `<SECRET>` are created by making a new Access Key on AWS
+for a user. This option is found under "Manage Access Keys" on a user's
+Security Credentials page for an AWS user.)
+
+Finally, you'll need to set `NEWSREADER_VPC` and `NEWSREADER_SUBNET` to
+the VPC and subnet configuration you've set up on AWS for Newsreader.
 
 ## Running tests
 
@@ -60,6 +92,7 @@ This will run each of the example queries and test for the presence of the word 
 `> nosetests -v app/test_integration.py`
 
 ## Adding a new query
+
 In the queries subdirectory specify a new subclass of `SparqlQuery` in a file of its own.
 The main action should be in adding the queries. { and } in the original need to be escaped to
 {{ and }}. Once the query has been created add a line like:
