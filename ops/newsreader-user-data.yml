@@ -67,7 +67,7 @@ coreos:
         ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/https-redirect
 
         ExecStart=/usr/bin/curl --location --output /opt/bin/tiny-ssl-reverse-proxy \
-            https://github.com/scraperwiki/tiny-ssl-reverse-proxy/releases/download/v0.7/tiny-ssl-reverse-proxy_linux_amd64
+            https://github.com/scraperwiki/tiny-ssl-reverse-proxy/releases/download/v0.8/tiny-ssl-reverse-proxy_linux_amd64
         ExecStart=/usr/bin/chmod a+x /opt/bin/tiny-ssl-reverse-proxy
         ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/tiny-ssl-reverse-proxy
 
