@@ -98,16 +98,19 @@ main = {
         "NewsreaderUsername": {
             "Description": "Newsreader SPARQL username",
             "Type": "String",
+            "NoEcho": "true",
         },
 
         "NewsreaderPassword": {
             "Description": "Newsreader SPARQL password",
             "Type": "String",
+            "NoEcho": "true",
         },
 
         "NewsreaderSimpleApiKey": {
             "Description": "Newsreader Simple API keys",
             "Type": "String",
+            "NoEcho": "true",
         },
 
         "HookbotMonitorUrl": {
