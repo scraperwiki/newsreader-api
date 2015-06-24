@@ -25,6 +25,7 @@ class get_document(CRUDQuery):
         self.url = 'get_document'
         self.world_cup_example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.cars_example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
+        self.dutchhouse_example = 'get_document?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.endpoint_stub_url = endpoint_url

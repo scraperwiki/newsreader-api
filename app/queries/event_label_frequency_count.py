@@ -17,6 +17,7 @@ class event_label_frequency_count(SparqlQuery):
         self.url = 'event_label_frequency_count'
         self.world_cup_example = 'event_label_frequency_count?filter=bribe+OR+bribery'
         self.cars_example = 'event_label_frequency_count?filter=takeover+OR+buyout'
+        self.dutchhouse_example = 'event_label_frequency_count?filter=takeover+OR+buyout'
         self.query_template = ("""
 SELECT
 (?filterfield AS ?event_label) (COUNT(DISTINCT ?event) AS ?count)

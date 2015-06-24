@@ -18,6 +18,7 @@ class event_details_filtered_by_actor(SparqlQuery):
         self.url = 'event_details_filtered_by_actor'
         self.world_cup_example = 'event_details_filtered_by_actor?uris.0=dbpedia:David_Beckham'
         self.cars_example = 'event_details_filtered_by_actor?uris.0=dbpedia:Martin_Winterkorn'
+        self.dutchhouse_example = 'event_details_filtered_by_actor?uris.0=dbpedia:Martin_Winterkorn'
         self.headers = ['event', 'predicate', 'object', "object_type"]
         self.query_template = ("""
 SELECT ?event ?predicate ?object (SAMPLE(?type) AS ?object_type)
