@@ -44,7 +44,7 @@ coreos:
         ExecStart=/bin/mkdir -p /opt/bin
 
         ExecStart=/usr/bin/curl --location --output /opt/bin/hanoverd \
-            https://github.com/scraperwiki/hanoverd/releases/download/v0.7/hanoverd_linux_amd64
+            https://github.com/scraperwiki/hanoverd/releases/download/v0.7.3/hanoverd_linux_amd64
         ExecStart=/usr/bin/chmod a+x /opt/bin/hanoverd
         
         ExecStart=/bin/cp /sbin/iptables /opt/bin
