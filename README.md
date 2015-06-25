@@ -52,10 +52,9 @@ App accessible via http://0.0.0.0:8000
 
 ### Deploying via Amazon CloudFormation
 
-1. `cd ops`
-2. `./cfn.sh create <stack name>`
+The [`awscli`](https://aws.amazon.com/cli/) is required:
 
-The [`awscli`](https://aws.amazon.com/cli/) is required.
+`pip install awscli`
 
 In addition, you'll need AWS specific environment variables that you
 can set by:
@@ -68,8 +67,31 @@ aws-env() { export AWS_DEFAULT_REGION=eu-west-1 AWS_REGION=eu-west-1 AWS_ACCESS_
 for a user. This option is found under "Manage Access Keys" on a user's
 Security Credentials page for an AWS user.)
 
-Finally, you'll need to set `NEWSREADER_VPC` and `NEWSREADER_SUBNET` to
-the VPC and subnet configuration you've set up on AWS for Newsreader.
+You'll need to set `NEWSREADER_VPC` and `NEWSREADER_SUBNET` environment
+variables to match the VPC and subnet configuration you've set up on AWS
+for Newsreader.
+
+You'll also need the `HOOKBOT_MONITOR_URL` environment variable.
+(**TODO: add details of how to generate this.**)
+
+Once all that's done, you're set to actually deploy:
+
+1. `cd ops`
+2. `make build` (the first time or if you've deleted the PyPy Docker
+   image)
+3. `./cfn.sh create <stack name>`
+
+`<stack name>` is for example `20150604-sm`; this shows up on the
+CloudFormation Management Console as `newsreader-20150604-sm`.
+
+If changing an existing stack, you can substitute `create` in 3 for
+`update`.
+
+#### Deploying master via CloudFormation
+
+Provided hookbot is setup correctly, a push to master should
+automatically cause the Docker container to pull the latest version from
+GitHub, and switch to the new container if all is well.
 
 ## Running tests
 
