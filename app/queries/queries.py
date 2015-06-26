@@ -25,6 +25,8 @@ PREFIX_LIBRARY = {
                     "help":"types of things - i.e. dbo:SoccerPlayer"},
             "dbpedia": {"stub":"http://dbpedia.org/resource/",
                     "help":"instances of things - i.e. dbpedia:David_Beckham"},
+            "dbpedianl": {"stub":"http://nl.dbpedia.org/resource/",
+                    "help":"instances of Dutch things - i.e. dbpedianl:Rijkman_Groenink"},
             "dct": {"stub":"http://purl.org/dc/terms/",
                     "help":"Dublin Core metadata terms for media - i.e. author, title"},
             "eso": {"stub":"http://www.newsreader-project.eu/domain-ontology#",

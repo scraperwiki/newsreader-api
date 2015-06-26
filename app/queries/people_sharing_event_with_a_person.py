@@ -17,6 +17,7 @@ class people_sharing_event_with_a_person(SparqlQuery):
         self.url = 'people_sharing_event_with_a_person'
         self.world_cup_example = 'people_sharing_event_with_a_person?uris.0=dbpedia:David_Beckham'
         self.cars_example = 'people_sharing_event_with_a_person?uris.0=dbpedia:Alan_Mulally'
+        self.dutchhouse_example = 'people_sharing_event_with_a_person?uris.0=dbpedianl:Rijkman_Groenink'
         self.query_template = ("""
 SELECT ({uri_0} AS ?actor) ?actor2
        (COUNT(DISTINCT ?evt) as ?numEvent) ?comment

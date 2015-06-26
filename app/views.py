@@ -43,7 +43,7 @@ def require_api_key(view_function):
     def api_key_checking_function(*args, **kwargs):
         """ Check if API key matches the app's API key. """
         user_api_key = request.args.get('api_key', None)
-        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(';'):
+        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(','):
             return view_function(*args, **kwargs)
         else:
             abort(401)
@@ -66,12 +66,8 @@ def index(function_list):
         return render_template('index.html', help=function_list)
 
 
-@app.route('/')
-def root():
-    return cars_index()
-
-
 # TODO: wrap these into a single function which takes DocsCreator() object
+@app.route('/')
 @app.route('/cars')
 def cars_index():
     root_url = get_root_url()
@@ -92,6 +88,14 @@ def worldcup_index():
                                                            endpoint_path).make_docs()
     return index(function_list)
 
+@app.route('/dutchhouse')
+def dutchhouse_index():
+    root_url = get_root_url()
+    endpoint_path = '/dutchhouse'
+    user_api_key = request.args.get('api_key')
+    function_list = make_documentation.DutchHouseDocsCreator(root_url, user_api_key,
+                                                       endpoint_path).make_docs()
+    return index(function_list)
 
 def parse_query_string(query_string):
     """ Return dict containing query string values.
@@ -127,6 +131,9 @@ def get_endpoint_url(api_endpoint):
         # TODO: check if this URL is  correct (though a dead link now anyway).
         knowledgestore_url = ('https://knowledgestore.fbk.eu'
                               '/nwr/worldcup-hackathon/{action}')
+    elif api_endpoint == 'dutchhouse':
+        knowledgestore_url = ('https://knowledgestore2.fbk.eu'
+                              '/nwr/dutchhouse-v2/{action}')
     return knowledgestore_url
 
 # TODO: consider getting rid of this first line. Get query exceptions
@@ -333,7 +340,10 @@ def url_for_other_page(page):
 
 
 def get_root_url():
-    return url_for('root', _external=True).rstrip('/')
-
+    if app.config['DEBUG']:
+        root_url = "http://127.0.0.1:5000"
+    else:
+        root_url = "https://newsreader.scraperwiki.com"
+    return root_url
 
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page

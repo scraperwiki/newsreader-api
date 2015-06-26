@@ -88,3 +88,9 @@ class CarsDocsCreator(DocsCreator):
     @staticmethod
     def _get_example_from_query(query_object):
         return query_object.cars_example
+
+class DutchHouseDocsCreator(DocsCreator):
+    # TODO: Set self.query_ignore_list if it needs to be different.
+    @staticmethod
+    def _get_example_from_query(query_object):
+        return query_object.dutchhouse_example

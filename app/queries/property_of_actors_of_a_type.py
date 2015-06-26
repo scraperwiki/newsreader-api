@@ -17,6 +17,7 @@ class property_of_actors_of_a_type(SparqlQuery):
         self.url = 'property_of_actors_of_a_type'
         self.world_cup_example = 'property_of_actors_of_a_type/page/1?uris.1=dbo:height&filter=david&uris.0=dbo:SoccerPlayer'
         self.cars_example = 'property_of_actors_of_a_type?uris.1=dbo:foundedBy&filter=motor&uris.0=dbo:Company'
+        self.dutchhouse_example = 'property_of_actors_of_a_type?uris.1=dbo:foundedBy&filter=motor&uris.0=dbo:Company'
         self.query_template = ("""
 SELECT DISTINCT (?filterfield AS ?actor) ?value
 WHERE {{

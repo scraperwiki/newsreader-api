@@ -18,6 +18,7 @@ class summary_of_events_with_two_actors(SparqlQuery):
         self.url = 'summary_of_events_with_two_actors'
         self.world_cup_example = 'summary_of_events_with_two_actors?uris.0=dbpedia:David_Beckham&uris.1=dbpedia:Sepp_Blatter'
         self.cars_example = 'summary_of_events_with_two_actors?uris.0=dbpedia:Alan_Mulally&uris.1=dbpedia:William_Clay_Ford,_Jr.'
+        self.dutchhouse_example = 'summary_of_events_with_two_actors?uris.0=dbpedianl:Rijkman_Groenink&uris.1=dbpedianl:Mark_Rietman'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{

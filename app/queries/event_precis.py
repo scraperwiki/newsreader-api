@@ -16,6 +16,7 @@ class event_precis(SparqlQuery):
         self.url = 'event_precis'
         self.world_cup_example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
         self.cars_example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
+        self.dutchhouse_example = 'event_precis?uris.0=http://www.newsreader-project.eu/data/2013/10/312013/10/312013/10/31/11779884.xml%23ev7'
         self.query_template = ("""
 SELECT DISTINCT ?subject ?predicate ?object ?graph
 WHERE {{

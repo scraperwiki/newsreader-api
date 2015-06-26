@@ -16,6 +16,7 @@ class summary_of_events_with_framenet(SparqlQuery):
         self.url = 'summary_of_events_with_framenet'
         self.world_cup_example = 'summary_of_events_with_framenet?uris.0=framenet:Omen'
         self.cars_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving&datefilter=2005-01'
+        self.dutchhouse_example = 'summary_of_events_with_framenet?uris.0=framenet:Arriving&datefilter=2005-01'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime (?filterfield as ?event_label)
 WHERE {{
