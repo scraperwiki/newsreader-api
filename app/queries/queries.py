@@ -226,7 +226,7 @@ class SparqlQuery(object):
                                  uri_0=self.uris[0],
                                  uri_1=self.uris[1])
 
-    def submit_query(self, username=os.environ['NEWSREADER_USERNAME'], password=os.environ['NEWSREADER_PASSWORD']):
+    def submit_query(self, username, password):
         """ Submit query to endpoint; return result. """
         payload = {'query': self.query}
         logging.debug("\n\n**New query**")
@@ -269,10 +269,10 @@ class SparqlQuery(object):
                 raise QueryException("Response code not OK: {0}"
                                      .format(response.status_code))
 
-    def get_total_result_count(self):
+    def get_total_result_count(self, username, password):
         """ Returns result count for query. """
         count_query = CountQuery(self._build_count_query(), self.endpoint_stub_url)
-        count = count_query.get_count()
+        count = count_query.get_count(username, password)
         self.count_time = count_query.query_time
         return count
 
@@ -312,10 +312,10 @@ class CountQuery(SparqlQuery):
         return self.query_template
 
     # TODO: Should get_count() be the more general parse_query_results()?
-    def get_count(self):
+    def get_count(self, username, password):
         """ Parses and returns result from a count query. """
         try:
-            self.submit_query()
+            self.submit_query(username, password)
         except Exception as e:
             raise QueryException("Count query failed with exception: {0}"
                                  .format(type(e).__name__))
