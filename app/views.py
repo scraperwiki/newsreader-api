@@ -36,18 +36,16 @@ class ViewerException(Exception):
     pass
 
 
-def require_api_key(view_function):
-    # https://coderwall.com/p/4qickw
-    """ Wrap a function to make it check API key submitted in query string. """
-    @functools.wraps(view_function)
-    def api_key_checking_function(*args, **kwargs):
-        """ Check if API key matches the app's API key. """
-        user_api_key = request.args.get('api_key', None)
-        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(','):
-            return view_function(*args, **kwargs)
-        else:
-            abort(401)
-    return api_key_checking_function
+def validate_api_key(api_key, endpoint):
+    public_api_keys = os.environ['NEWSREADER_PUBLIC_API_KEY'].split(',')
+    private_api_keys = os.environ['NEWSREADER_PRIVATE_API_KEY'].split(',')
+
+    validated = False
+    if endpoint == 'dutchhouse' and api_key in private_api_keys:
+        validated = True
+    elif endpoint in ['cars', 'worldcup'] and api_key in public_api_keys:
+        validated = True
+    return validated
 
 
 def index(function_list):
@@ -150,9 +148,11 @@ def get_endpoint_credentials(api_endpoint):
            defaults={'api_endpoint': DEFAULT_ENDPOINT})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
-@require_api_key
 def run_query(page, query_to_use, api_endpoint):
     """ Return response of selected query using query string values. """
+    if not validate_api_key(request.args.get('api_key', None), api_endpoint):
+        abort(401)
+
     ks_credentials = get_endpoint_credentials(api_endpoint)
     if ks_credentials.url is None:
         return render_template('error.html',
