@@ -119,8 +119,14 @@ main = {
             "NoEcho": "true",
         },
 
-        "NewsreaderSimpleApiKey": {
-            "Description": "Newsreader Simple API keys",
+        "NewsreaderPublicApiKey": {
+            "Description": "Newsreader Public API keys",
+            "Type": "String",
+            "NoEcho": "true",
+        },
+
+        "NewsreaderPrivateApiKey": {
+            "Description": "Newsreader Private API keys",
             "Type": "String",
             "NoEcho": "true",
         },
@@ -229,7 +235,8 @@ main = {
                     newsreader_public_password=ref('NewsreaderPublicPassword'),
                     newsreader_private_username=ref('NewsreaderPrivateUsername'),
                     newsreader_private_password=ref('NewsreaderPrivatePassword'),
-                    newsreader_simple_api_key=ref('NewsreaderSimpleApiKey'),
+                    newsreader_public_api_key=ref('NewsreaderPublicApiKey'),
+                    newsreader_private_api_key=ref('NewsreaderPrivateApiKey'),
                     hookbot_monitor_url=ref('HookbotMonitorUrl'),
                 ),
             },
