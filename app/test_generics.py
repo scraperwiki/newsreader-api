@@ -78,7 +78,7 @@ class AuthenticationFailureTestCase(unittest.TestCase):
         cls.app = app.test_client()
 
     def test_does_not_allow_unauthorized_api_key(self):
-        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + 'api_key=INVALID')
+        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key=INVALID')
         assert_equal(401, rv.status_code)
 
 
