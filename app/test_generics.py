@@ -16,7 +16,7 @@ from requests import ConnectionError
 
 class SimpleAPIGenericTests(unittest.TestCase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         api_key = os.environ['NEWSREADER_PUBLIC_API_KEY'].split(',')[0]
         cls.app = app.test_client()
         cls.api_key_query_string = ('&api_key=' + api_key)
@@ -74,7 +74,7 @@ class SimpleAPIGenericTests(unittest.TestCase):
 
 class AuthenticationFailureTestCase(unittest.TestCase):
     @classmethod
-    def setUp(cls):
+    def setUpClass(cls):
         cls.app = app.test_client()
 
     def test_does_not_allow_unauthorized_api_key(self):
