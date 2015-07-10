@@ -80,3 +80,34 @@ class AuthenticationFailureTestCase(unittest.TestCase):
     def test_does_not_allow_unauthorized_api_key(self):
         rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + 'api_key=INVALID')
         assert_equal(401, rv.status_code)
+
+
+class ApiKeysTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.public_api_key = os.environ['NEWSREADER_PUBLIC_API_KEY'].split(',')[0]
+        cls.private_api_key = os.environ['NEWSREADER_PRIVATE_API_KEY'].split(',')[0]
+        # If this isn't true, we're not properly testing the cases here.
+        assert cls.public_api_key != cls.private_api_key
+
+        cls.app = app.test_client()
+
+    def test_public_api_key_allows_access_to_public_api(self):
+        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+                          + self.public_api_key)
+        assert_equal(200, rv.status_code)
+
+    def test_private_api_key_does_not_allow_access_to_public_api(self):
+        rv = self.app.get('/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+                          + self.private_api_key)
+        assert_equal(401, rv.status_code)
+
+    def test_private_api_key_allows_access_to_private_api(self):
+        rv = self.app.get('/dutchhouse/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+                          + self.private_api_key)
+        assert_equal(200, rv.status_code)
+
+    def test_public_api_key_does_not_allow_access_to_private_api(self):
+        rv = self.app.get('/dutchhouse/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+                          + self.public_api_key)
+        assert_equal(401, rv.status_code)
