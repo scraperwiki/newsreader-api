@@ -363,12 +363,8 @@ class CRUDQuery(SparqlQuery):
         """ Parses and returns result from a count query. """
         return 0
 
-    def submit_query(self):
+    def submit_query(self, username, password):
         """ Submit query to endpoint; return result. """
-
-        username = os.environ['NEWSREADER_USERNAME']
-        password = os.environ['NEWSREADER_PASSWORD']
-
         endpoint_url = self.endpoint_stub_url.format(action=self.action)
         print "\n\n**New CRUD query**"
         query_url = endpoint_url + "?id=" + self.query
