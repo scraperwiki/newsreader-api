@@ -95,20 +95,38 @@ main = {
             "Default": "t2.micro",
         },
 
-        "NewsreaderUsername": {
-            "Description": "Newsreader SPARQL username",
+        "NewsreaderPublicUsername": {
+            "Description": "Newsreader public SPARQL username",
             "Type": "String",
             "NoEcho": "true",
         },
 
-        "NewsreaderPassword": {
-            "Description": "Newsreader SPARQL password",
+        "NewsreaderPublicPassword": {
+            "Description": "Newsreader public SPARQL password",
             "Type": "String",
             "NoEcho": "true",
         },
 
-        "NewsreaderSimpleApiKey": {
-            "Description": "Newsreader Simple API keys",
+        "NewsreaderPrivateUsername": {
+            "Description": "Newsreader private SPARQL username",
+            "Type": "String",
+            "NoEcho": "true",
+        },
+
+        "NewsreaderPrivatePassword": {
+            "Description": "Newsreader private SPARQL password",
+            "Type": "String",
+            "NoEcho": "true",
+        },
+
+        "NewsreaderPublicApiKey": {
+            "Description": "Newsreader Public API keys",
+            "Type": "String",
+            "NoEcho": "true",
+        },
+
+        "NewsreaderPrivateApiKey": {
+            "Description": "Newsreader Private API keys",
             "Type": "String",
             "NoEcho": "true",
         },
@@ -213,9 +231,12 @@ main = {
                 "SecurityGroupIds": [{"Ref": "NewsreaderSecurityGroup"}],
                 "UserData": load_user_data(
                     'newsreader-user-data.yml',
-                    newsreader_username=ref('NewsreaderUsername'),
-                    newsreader_password=ref('NewsreaderPassword'),
-                    newsreader_simple_api_key=ref('NewsreaderSimpleApiKey'),
+                    newsreader_public_username=ref('NewsreaderPublicUsername'),
+                    newsreader_public_password=ref('NewsreaderPublicPassword'),
+                    newsreader_private_username=ref('NewsreaderPrivateUsername'),
+                    newsreader_private_password=ref('NewsreaderPrivatePassword'),
+                    newsreader_public_api_key=ref('NewsreaderPublicApiKey'),
+                    newsreader_private_api_key=ref('NewsreaderPrivateApiKey'),
                     hookbot_monitor_url=ref('HookbotMonitorUrl'),
                 ),
             },

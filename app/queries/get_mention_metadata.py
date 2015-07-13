@@ -38,7 +38,7 @@ class get_mention_metadata(CRUDQuery):
 
         self.query = self._build_query()
 
-    def get_total_result_count(self):
+    def get_total_result_count(self, *args, **kwargs):
         """ Returns result count for query, exception for this describe query """
         return 0
 

@@ -20,9 +20,12 @@ coreos:
 
         User=hanoverd
         ExecStart=/opt/bin/hanoverd \
-            --env NEWSREADER_USERNAME \
-            --env NEWSREADER_PASSWORD \
-            --env NEWSREADER_SIMPLE_API_KEY \
+            --env NEWSREADER_PUBLIC_USERNAME \
+            --env NEWSREADER_PUBLIC_PASSWORD \
+            --env NEWSREADER_PRIVATE_USERNAME \
+            --env NEWSREADER_PRIVATE_PASSWORD \
+            --env NEWSREADER_PUBLIC_API_KEY \
+            --env NEWSREADER_PRIVATE_API_KEY \
             --publish 8080:8000 \
             --hookbot $HOOKBOT_MONITOR_URL \
             -- \
@@ -120,9 +123,12 @@ write_files:
     permissions: 0600
     owner: root
     content: |
-      NEWSREADER_USERNAME={{newsreader_username}}
-      NEWSREADER_PASSWORD={{newsreader_password}}
-      NEWSREADER_SIMPLE_API_KEY={{newsreader_simple_api_key}}
+      NEWSREADER_PUBLIC_USERNAME={{newsreader_public_username}}
+      NEWSREADER_PUBLIC_PASSWORD={{newsreader_public_password}}
+      NEWSREADER_PRIVATE_USERNAME={{newsreader_private_username}}
+      NEWSREADER_PRIVATE_PASSWORD={{newsreader_private_password}}
+      NEWSREADER_PUBLIC_API_KEY={{newsreader_public_api_key}}
+      NEWSREADER_PRIVATE_API_KEY={{newsreader_private_api_key}}
       HOOKBOT_MONITOR_URL={{hookbot_monitor_url}}
 
 users:
