@@ -27,8 +27,8 @@ aws cloudformation validate-template --template-body file://generated/newsreader
 PARAMETERS=(
   ParameterKey=NewsreaderPublicUsername,ParameterValue="$NEWSREADER_PUBLIC_USERNAME"
   ParameterKey=NewsreaderPublicPassword,ParameterValue="$NEWSREADER_PUBLIC_PASSWORD"
-  ParameterKey=NewsreaderPublicUsername,ParameterValue="$NEWSREADER_PRIVATE_USERNAME"
-  ParameterKey=NewsreaderPublicPassword,ParameterValue="$NEWSREADER_PRIVATE_PASSWORD"
+  ParameterKey=NewsreaderPrivateUsername,ParameterValue="$NEWSREADER_PRIVATE_USERNAME"
+  ParameterKey=NewsreaderPrivatePassword,ParameterValue="$NEWSREADER_PRIVATE_PASSWORD"
   ParameterKey=NewsreaderPublicApiKey,ParameterValue="$NEWSREADER_PUBLIC_API_KEY"
   ParameterKey=NewsreaderPrivateApiKey,ParameterValue="$NEWSREADER_PRIVATE_API_KEY"
   ParameterKey=VpcId,ParameterValue="$NEWSREADER_VPC"
