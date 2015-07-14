@@ -8,7 +8,7 @@ from flask import (abort, render_template, request, url_for, make_response,
                    send_from_directory)
 from app import app
 from pagination import Pagination
-from collections import OrderedDict
+from collections import namedtuple, OrderedDict
 import functools
 import queries
 import jsonurl
@@ -36,18 +36,16 @@ class ViewerException(Exception):
     pass
 
 
-def require_api_key(view_function):
-    # https://coderwall.com/p/4qickw
-    """ Wrap a function to make it check API key submitted in query string. """
-    @functools.wraps(view_function)
-    def api_key_checking_function(*args, **kwargs):
-        """ Check if API key matches the app's API key. """
-        user_api_key = request.args.get('api_key', None)
-        if user_api_key in os.environ['NEWSREADER_SIMPLE_API_KEY'].split(','):
-            return view_function(*args, **kwargs)
-        else:
-            abort(401)
-    return api_key_checking_function
+def validate_api_key(api_key, endpoint):
+    public_api_keys = os.environ['NEWSREADER_PUBLIC_API_KEY'].split(',')
+    private_api_keys = os.environ['NEWSREADER_PRIVATE_API_KEY'].split(',')
+
+    validated = False
+    if endpoint == 'dutchhouse' and api_key in private_api_keys:
+        validated = True
+    elif endpoint in ['cars', 'worldcup'] and api_key in public_api_keys:
+        validated = True
+    return validated
 
 
 def index(function_list):
@@ -122,19 +120,26 @@ def parse_query_string(query_string):
         raise ViewerException("Query URL is malformed: {}".format(e.message))
 
 
-def get_endpoint_url(api_endpoint):
+def get_endpoint_credentials(api_endpoint):
     """ Take name of API endpoint as string; return KS SPARQL URL. """
-    if api_endpoint == 'cars':
-        knowledgestore_url = ('https://knowledgestore2.fbk.eu'
-                              '/nwr/cars-hackathon/{action}')
-    elif api_endpoint == 'world_cup':
+    Credentials = namedtuple("Credentials", "url username password")
+    # Cars as default endpoint
+    url = ('https://knowledgestore2.fbk.eu/nwr/cars-hackathon/{action}')
+    username = os.environ.get('NEWSREADER_PUBLIC_USERNAME')
+    password = os.environ.get('NEWSREADER_PUBLIC_PASSWORD')
+
+    if api_endpoint == 'world_cup':
         # TODO: check if this URL is  correct (though a dead link now anyway).
-        knowledgestore_url = ('https://knowledgestore.fbk.eu'
-                              '/nwr/worldcup-hackathon/{action}')
+        url = ('https://knowledgestore.fbk.eu'
+               '/nwr/worldcup-hackathon/{action}')
     elif api_endpoint == 'dutchhouse':
-        knowledgestore_url = ('https://knowledgestore2.fbk.eu'
-                              '/nwr/dutchhouse-v2/{action}')
-    return knowledgestore_url
+        url = ('https://knowledgestore2.fbk.eu'
+               '/nwr/dutchhouse-v2/{action}')
+        username = os.environ.get('NEWSREADER_PRIVATE_USERNAME')
+        password = os.environ.get('NEWSREADER_PRIVATE_PASSWORD')
+
+    return Credentials(url, username, password)
+
 
 # TODO: consider getting rid of this first line. Get query exceptions
 # if you visit e.g. /foo which are a bit meaningless, it's more like a 404.
@@ -144,11 +149,13 @@ def get_endpoint_url(api_endpoint):
            defaults={'api_endpoint': DEFAULT_ENDPOINT})
 @app.route('/<api_endpoint>/<query_to_use>', defaults={'page': 1})
 @app.route('/<api_endpoint>/<query_to_use>/page/<int:page>')
-@require_api_key
 def run_query(page, query_to_use, api_endpoint):
     """ Return response of selected query using query string values. """
-    knowledgestore_url = get_endpoint_url(api_endpoint)
-    if knowledgestore_url is None:
+    if not validate_api_key(request.args.get('api_key', None), api_endpoint):
+        abort(401)
+
+    ks_credentials = get_endpoint_credentials(api_endpoint)
+    if ks_credentials.url is None:
         return render_template('error.html',
                                error_message='Endpoint not known.',
                                root_url=get_root_url())
@@ -163,10 +170,12 @@ def run_query(page, query_to_use, api_endpoint):
             query_args = parse_get_mention_metadata(request.query_string)
             print query_args
 
-        query_args['endpoint_url'] = knowledgestore_url
+        query_args['endpoint_url'] = ks_credentials.url
         current_query = assemble_query(query_to_use, query_args, page)
-        current_query.submit_query()
-        count = current_query.get_total_result_count()
+        current_query.submit_query(ks_credentials.username,
+                                   ks_credentials.password)
+        count = current_query.get_total_result_count(ks_credentials.username,
+                                                     ks_credentials.password)
 
         if count > 0 and final_page_exceeded(count, page):
             raise ResultPageLimitExceededException(

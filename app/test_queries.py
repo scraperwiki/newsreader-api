@@ -48,4 +48,4 @@ class SparqlQuerySubmitQueryTestCase(unittest.TestCase):
             with assert_raises(queries.QueryException) as qe:
                 mock_method.side_effect = ConnectionError
                 self.query = queries.SparqlQuery()
-                self.query.submit_query()
+                self.query.submit_query('mock_username', 'mock_password')

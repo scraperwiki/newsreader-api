@@ -25,9 +25,12 @@ make -o build
 aws cloudformation validate-template --template-body file://generated/newsreader.json > /dev/null
 
 PARAMETERS=(
-  ParameterKey=NewsreaderUsername,ParameterValue="$NEWSREADER_USERNAME"
-  ParameterKey=NewsreaderPassword,ParameterValue="$NEWSREADER_PASSWORD"
-  ParameterKey=NewsreaderSimpleApiKey,ParameterValue="$NEWSREADER_SIMPLE_API_KEY"
+  ParameterKey=NewsreaderPublicUsername,ParameterValue="$NEWSREADER_PUBLIC_USERNAME"
+  ParameterKey=NewsreaderPublicPassword,ParameterValue="$NEWSREADER_PUBLIC_PASSWORD"
+  ParameterKey=NewsreaderPrivateUsername,ParameterValue="$NEWSREADER_PRIVATE_USERNAME"
+  ParameterKey=NewsreaderPrivatePassword,ParameterValue="$NEWSREADER_PRIVATE_PASSWORD"
+  ParameterKey=NewsreaderPublicApiKey,ParameterValue="$NEWSREADER_PUBLIC_API_KEY"
+  ParameterKey=NewsreaderPrivateApiKey,ParameterValue="$NEWSREADER_PRIVATE_API_KEY"
   ParameterKey=VpcId,ParameterValue="$NEWSREADER_VPC"
   ParameterKey=SubnetId,ParameterValue="$NEWSREADER_SUBNET"
   ParameterKey=HookbotMonitorUrl,ParameterValue="$HOOKBOT_MONITOR_URL"

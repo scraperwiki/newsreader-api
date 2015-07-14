@@ -11,7 +11,7 @@ from app import make_documentation
 def test_generator():
     root_url = ""
     endpoint_path = '/cars'
-    api_key = os.environ['NEWSREADER_SIMPLE_API_KEY'].split(',')[0]
+    api_key = os.environ['NEWSREADER_PUBLIC_API_KEY'].split(',')[0]
     function_list = make_documentation.CarsDocsCreator(root_url, api_key,
                                                        endpoint_path).make_docs()
     for query in function_list['queries']:

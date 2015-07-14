@@ -14,26 +14,31 @@ API provides detailed information on the available queries. An example index pag
 
 The Simple API has been used at Hack Days run as part of the NewsReader Project, a bundle of links providing additional information can be found [here](http://tab.bz/ydtco/).
 
-The Simple API uses an API key for authentication please contact dataservices@scraperwiki.com for an API key.
+The Simple API uses an API key for authentication; please contact dataservices@scraperwiki.com for an API key.
 
 ## Local install
 
 * `git clone git@github.com:scraperwiki/newsreader-api`
 
-You'll need the username and password for the endpoint and have to store
-these in the environment variables: NEWSREADER_USERNAME and
-NEWSREADER_PASSWORD. (The deployed version has these setup already.). You also
-need to define an NEWSREADER_SIMPLE_API_KEY for local development.
-This can be done by adding lines like:
+You'll need the username and password for the endpoint and you must store
+these in the environment variables: `NEWSREADER_PUBLIC_USERNAME` and
+`NEWSREADER_PUBLIC_PASSWORD`. (The deployed version has these setup already.).
+You also need to define an `NEWSREADER_PUBLIC_API_KEY` for local development.
 
-* `export NEWSREADER_USERNAME=[username]`
-* `export NEWSREADER_PASSWORD=[password]`
-* `export NEWSREADER_SIMPLE_API_KEY=[api_key]`
+The public and private endpoints have been separated, so you also need
+a set of environment variables for the private endpoint:
 
-To your `.profile` file (in Linux).
+* `export NEWSREADER_PUBLIC_USERNAME=[public_username]`
+* `export NEWSREADER_PUBLIC_PASSWORD=[public_password]`
+* `export NEWSREADER_PUBLIC_API_KEY=[public_api_key]`
+* `export NEWSREADER_PRIVATE_USERNAME=[private_username]`
+* `export NEWSREADER_PRIVATE_PASSWORD=[private_password]`
+* `export NEWSREADER_PRIVATE_API_KEY=[private_api_key]`
 
 Multiple API keys for users can be specified in
-NEWSREADER_SIMPLE_API_KEY. These must be **semicolon** separated.
+`NEWSREADER_PUBLIC_API_KEY` and `NEWSREADER_PRIVATE_API_KEY`.
+Confusingly, these should be **semicolon** separated if deploying via
+`cfn.sh` but comma separated for local usage. (TODO: check and fix.)
 
 ### Running via Flask
 
