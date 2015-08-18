@@ -1,0 +1,485 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09", 
+  "Description": "CloudFormation for newsreader.scraperwiki.com", 
+  "Parameters": {
+    "InstanceType": {
+      "Description": "WebServer EC2 instance type", 
+      "Type": "String", 
+      "Default": "t2.micro"
+    }, 
+    "NewsreaderPublicUsername": {
+      "Description": "Newsreader public SPARQL username", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "NewsreaderPublicPassword": {
+      "Description": "Newsreader public SPARQL password", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "NewsreaderPrivateUsername": {
+      "Description": "Newsreader private SPARQL username", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "NewsreaderPrivatePassword": {
+      "Description": "Newsreader private SPARQL password", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "NewsreaderPublicApiKey": {
+      "Description": "Newsreader Public API keys", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "NewsreaderPrivateApiKey": {
+      "Description": "Newsreader Private API keys", 
+      "Type": "String", 
+      "NoEcho": "true"
+    }, 
+    "HookbotMonitorUrl": {
+      "Description": "Hookbot Monitor URL", 
+      "Type": "String"
+    }, 
+    "VpcId": {
+      "Description": "", 
+      "Type": "AWS::EC2::VPC::Id"
+    }, 
+    "SubnetId": {
+      "Description": "", 
+      "Type": "AWS::EC2::Subnet::Id"
+    }, 
+    "HostedZoneName": {
+      "Default": "scraperwiki.com", 
+      "Description": "Top level domain to use.", 
+      "Type": "String"
+    }
+  }, 
+  "Resources": {
+    "NewsreaderRole": {
+      "Type": "AWS::IAM::Role", 
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17", 
+          "Statement": [
+            {
+              "Effect": "Allow", 
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              }, 
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        }, 
+        "Path": "/newsreader/"
+      }
+    }, 
+    "NewsreaderInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile", 
+      "Properties": {
+        "Path": "/newsreader/", 
+        "Roles": [
+          {
+            "Ref": "NewsreaderRole"
+          }
+        ]
+      }
+    }, 
+    "AccessConfigurationBucket": {
+      "Type": "AWS::IAM::Policy", 
+      "Properties": {
+        "PolicyName": "can-access-ssl-certificates", 
+        "PolicyDocument": {
+          "Version": "2012-10-17", 
+          "Statement": [
+            {
+              "Effect": "Allow", 
+              "Action": [
+                "s3:GetObject"
+              ], 
+              "Resource": [
+                "arn:aws:s3:::scraperwiki-keys/ssl/*"
+              ]
+            }
+          ]
+        }, 
+        "Roles": [
+          {
+            "Ref": "NewsreaderRole"
+          }
+        ]
+      }
+    }, 
+    "NewsreaderSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup", 
+      "Properties": {
+        "VpcId": {
+          "Ref": "VpcId"
+        }, 
+        "Tags": [
+          {
+            "Key": "Name", 
+            "Value": "Newsreader"
+          }, 
+          {
+            "Key": "Project", 
+            "Value": "newsreader"
+          }
+        ], 
+        "GroupDescription": "Enable SSH, HTTP and HTTPS from everywhere", 
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp", 
+            "FromPort": "22", 
+            "ToPort": "22", 
+            "CidrIp": "0.0.0.0/0"
+          }, 
+          {
+            "IpProtocol": "tcp", 
+            "FromPort": "80", 
+            "ToPort": "80", 
+            "CidrIp": "0.0.0.0/0"
+          }, 
+          {
+            "IpProtocol": "tcp", 
+            "FromPort": "443", 
+            "ToPort": "443", 
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    }, 
+    "NewsreaderInstance": {
+      "Type": "AWS::EC2::Instance", 
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name", 
+            "Value": "Newsreader"
+          }, 
+          {
+            "Key": "Project", 
+            "Value": "newsreader"
+          }
+        ], 
+        "ImageId": "ami-0e104179", 
+        "SubnetId": {
+          "Ref": "SubnetId"
+        }, 
+        "InstanceType": {
+          "Ref": "InstanceType"
+        }, 
+        "IamInstanceProfile": {
+          "Ref": "NewsreaderInstanceProfile"
+        }, 
+        "SecurityGroupIds": [
+          {
+            "Ref": "NewsreaderSecurityGroup"
+          }
+        ], 
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n", 
+              [
+                "#cloud-config", 
+                "coreos:", 
+                "", 
+                "  units:", 
+                "", 
+                "    - name: newsreader.service", 
+                "      command: start", 
+                "      content: |", 
+                "        [Unit]", 
+                "        Description=Newsreader Simple API", 
+                "", 
+                "        After=download-utilities.service", 
+                "        Requires=download-utilities.service", 
+                "", 
+                "        [Service]", 
+                "        EnvironmentFile=/etc/newsreader/env", 
+                "        Environment=PATH=/opt/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 
+                "        ", 
+                "        WorkingDirectory=/var/lib/hanoverd", 
+                "", 
+                "        User=hanoverd", 
+                "        ExecStart=/opt/bin/hanoverd \\", 
+                "            --env NEWSREADER_PUBLIC_USERNAME \\", 
+                "            --env NEWSREADER_PUBLIC_PASSWORD \\", 
+                "            --env NEWSREADER_PRIVATE_USERNAME \\", 
+                "            --env NEWSREADER_PRIVATE_PASSWORD \\", 
+                "            --env NEWSREADER_PUBLIC_API_KEY \\", 
+                "            --env NEWSREADER_PRIVATE_API_KEY \\", 
+                "            --publish 8080:8000 \\", 
+                "            --hookbot $HOOKBOT_MONITOR_URL \\", 
+                "            -- \\", 
+                "            --log-file - \\", 
+                "            --access-logfile - \\", 
+                "            --forwarded-allow-ips \"*\" \\", 
+                "            app:app", 
+                "", 
+                "    - name: download-utilities.service", 
+                "      command: start", 
+                "      content: |", 
+                "        [Unit]", 
+                "        Description=Downloads various utilities", 
+                "        ", 
+                "        [Service]", 
+                "        Type=oneshot", 
+                "        RemainAfterExit=yes", 
+                "        ", 
+                "        ExecStart=/bin/mkdir -p /opt/bin", 
+                "", 
+                "        ExecStart=/usr/bin/curl --location --output /opt/bin/hanoverd \\", 
+                "            https://github.com/scraperwiki/hanoverd/releases/download/v0.7.6/hanoverd_linux_amd64", 
+                "        ExecStart=/usr/bin/chmod a+x /opt/bin/hanoverd", 
+                "        ", 
+                "        ExecStart=/bin/cp /sbin/iptables /opt/bin", 
+                "        ExecStart=/usr/bin/chmod 500 /opt/bin/iptables", 
+                "        ExecStart=/usr/bin/chown hanoverd /opt/bin/iptables", 
+                "        ExecStart=/usr/sbin/setcap 'cap_net_admin,cap_net_raw=+ep' /opt/bin/iptables", 
+                "        ExecStart=/usr/sbin/modprobe ip_tables", 
+                "", 
+                "        ExecStart=/usr/bin/curl --location --output /opt/bin/s4cat \\", 
+                "            https://github.com/scraperwiki/s4cat/releases/download/v0.2/s4cat", 
+                "        ExecStart=/usr/bin/chmod a+x /opt/bin/s4cat", 
+                "", 
+                "        ExecStart=/usr/bin/curl --location --output /opt/bin/associate-eip \\", 
+                "            https://github.com/pwaller/associate-eip/releases/download/v0.1/associate-eip", 
+                "        ExecStart=/usr/bin/chmod a+x /opt/bin/associate-eip", 
+                "", 
+                "        ExecStart=/usr/bin/curl --location --output /opt/bin/https-redirect \\", 
+                "            https://github.com/pwaller/https-redirect/releases/download/v0.1/https-redirect", 
+                "        ExecStart=/usr/bin/chmod a+x /opt/bin/https-redirect", 
+                "        ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/https-redirect", 
+                "", 
+                "        ExecStart=/usr/bin/curl --location --output /opt/bin/tiny-ssl-reverse-proxy \\", 
+                "            https://github.com/scraperwiki/tiny-ssl-reverse-proxy/releases/download/v0.8/tiny-ssl-reverse-proxy_linux_amd64", 
+                "        ExecStart=/usr/bin/chmod a+x /opt/bin/tiny-ssl-reverse-proxy", 
+                "        ExecStart=/usr/sbin/setcap 'cap_net_bind_service=+ep' /opt/bin/tiny-ssl-reverse-proxy", 
+                "", 
+                "    - name: download-keys.service", 
+                "      command: start", 
+                "      content: |", 
+                "        [Unit]", 
+                "        Description=Downloads keys and certificates", 
+                "        After=download-utilities.service", 
+                "        Requires=download-utilities.service", 
+                "", 
+                "        [Service]", 
+                "        Type=oneshot", 
+                "        RemainAfterExit=yes", 
+                "        ExecStart=/opt/bin/s4cat -output=/etc/ssl/private/cert.pem \\", 
+                "            scraperwiki-keys ssl/star_scraperwiki_com.crt", 
+                "        ExecStart=/opt/bin/s4cat -output=/etc/ssl/private/key.pem \\", 
+                "            scraperwiki-keys ssl/star_scraperwiki_com.key", 
+                "        ExecStart=/usr/bin/chown -R tiny-ssl:tiny-ssl /etc/ssl/private", 
+                "", 
+                "    - name: tiny-ssl.service", 
+                "      command: start", 
+                "      content: |", 
+                "        [Unit]", 
+                "        Description=Tiny SSL Reverse Proxy", 
+                "        After=download-keys.service", 
+                "        After=download-utilities.service", 
+                "        Requires=download-keys.service", 
+                "        Requires=download-utilities.service", 
+                "", 
+                "        [Service]", 
+                "        User=tiny-ssl", 
+                "        ExecStart=/opt/bin/tiny-ssl-reverse-proxy \\", 
+                "            -where http://localhost:8080/", 
+                "", 
+                "    - name: https-redirect.service", 
+                "      command: start", 
+                "      content: |", 
+                "        [Unit]", 
+                "        Description=Redirect http to https", 
+                "        After=download-utilities.service", 
+                "        Requires=download-utilities.service", 
+                "", 
+                "        [Service]", 
+                "        User=nobody", 
+                "        ExecStart=/opt/bin/https-redirect", 
+                "", 
+                "write_files:", 
+                "  - path: /etc/newsreader/env", 
+                "    permissions: 0600", 
+                "    owner: root", 
+                "    content: |", 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PUBLIC_USERNAME=", 
+                      {
+                        "Ref": "NewsreaderPublicUsername"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PUBLIC_PASSWORD=", 
+                      {
+                        "Ref": "NewsreaderPublicPassword"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PRIVATE_USERNAME=", 
+                      {
+                        "Ref": "NewsreaderPrivateUsername"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PRIVATE_PASSWORD=", 
+                      {
+                        "Ref": "NewsreaderPrivatePassword"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PUBLIC_API_KEY=", 
+                      {
+                        "Ref": "NewsreaderPublicApiKey"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      NEWSREADER_PRIVATE_API_KEY=", 
+                      {
+                        "Ref": "NewsreaderPrivateApiKey"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                {
+                  "Fn::Join": [
+                    "", 
+                    [
+                      "      HOOKBOT_MONITOR_URL=", 
+                      {
+                        "Ref": "HookbotMonitorUrl"
+                      }, 
+                      ""
+                    ]
+                  ]
+                }, 
+                "", 
+                "users:", 
+                "  - name: pwaller", 
+                "    groups: [sudo, docker, systemd-journal]", 
+                "    coreos-ssh-import-github: pwaller", 
+                "  - name: frabcus", 
+                "    groups: [sudo, docker, systemd-journal]", 
+                "    coreos-ssh-import-github: frabcus", 
+                "  - name: dragon", 
+                "    groups: [sudo, docker, systemd-journal]", 
+                "    coreos-ssh-import-github: scraperdragon", 
+                "  - name: sm", 
+                "    groups: [sudo, docker, systemd-journal]", 
+                "    coreos-ssh-import-github: StevenMaude", 
+                "", 
+                "  - name: tiny-ssl", 
+                "    system: true", 
+                "  - name: hanoverd", 
+                "    groups: [docker]", 
+                "    homedir: /var/lib/hanoverd", 
+                ""
+              ]
+            ]
+          }
+        }
+      }
+    }, 
+    "NewsreaderDNS": {
+      "Type": "AWS::Route53::RecordSet", 
+      "Properties": {
+        "HostedZoneName": {
+          "Fn::Join": [
+            "", 
+            [
+              {
+                "Ref": "HostedZoneName"
+              }, 
+              "."
+            ]
+          ]
+        }, 
+        "Comment": "DNS name for newsreader.scraperwiki.com", 
+        "Name": {
+          "Fn::Join": [
+            ".", 
+            [
+              {
+                "Fn::Join": [
+                  "-", 
+                  [
+                    {
+                      "Ref": "AWS::StackName"
+                    }, 
+                    {
+                      "Ref": "AWS::Region"
+                    }
+                  ]
+                ]
+              }, 
+              {
+                "Ref": "HostedZoneName"
+              }, 
+              ""
+            ]
+          ]
+        }, 
+        "Type": "A", 
+        "TTL": "60", 
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "NewsreaderInstance", 
+              "PublicIp"
+            ]
+          }
+        ]
+      }
+    }
+  }, 
+  "Outputs": {
+    "NewsreaderDNS": {
+      "Value": {
+        "Ref": "NewsreaderDNS"
+      }, 
+      "Description": "DNS name of Newsreader instance"
+    }
+  }
+}
