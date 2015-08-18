@@ -166,7 +166,7 @@
             "Value": "newsreader"
           }
         ], 
-        "ImageId": "ami-4b1c763c", 
+        "ImageId": "ami-0e104179", 
         "SubnetId": {
           "Ref": "SubnetId"
         }, 
