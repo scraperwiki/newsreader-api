@@ -135,9 +135,6 @@ users:
   - name: pwaller
     groups: [sudo, docker, systemd-journal]
     coreos-ssh-import-github: pwaller
-  - name: drj
-    groups: [sudo, docker, systemd-journal]
-    coreos-ssh-import-github: drj11
   - name: frabcus
     groups: [sudo, docker, systemd-journal]
     coreos-ssh-import-github: frabcus
