@@ -94,3 +94,12 @@ class DutchHouseDocsCreator(DocsCreator):
     @staticmethod
     def _get_example_from_query(query_object):
         return query_object.dutchhouse_example
+
+class WikiNewsDocsCreator(DocsCreator):
+    # TODO: Set self.query_ignore_list if it needs to be different.
+    @staticmethod
+    def _get_example_from_query(query_object):
+        try:
+            return query_object.wikinews_example
+        except AttributeError:
+            return query_object.world_cup_example

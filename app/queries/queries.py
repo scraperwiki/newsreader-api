@@ -11,7 +11,7 @@ from collections import namedtuple
 import requests
 import requests_cache
 
-requests_cache.install_cache('/tmp/requests_cache', expire_after=172800)
+requests_cache.install_cache('tmp/requests_cache', expire_after=172800)
 
 logging.basicConfig(level=logging.DEBUG)
 
