@@ -91,7 +91,7 @@ def wikinews_index():
     root_url = get_root_url()
     endpoint_path = '/wikinews'
     user_api_key = request.args.get('api_key')
-    function_list = make_documentation.CarsDocsCreator(root_url, user_api_key,
+    function_list = make_documentation.WikiNewsDocsCreator(root_url, user_api_key,
                                                        endpoint_path).make_docs()
     return index(function_list)
 

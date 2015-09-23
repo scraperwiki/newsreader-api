@@ -101,5 +101,5 @@ class WikiNewsDocsCreator(DocsCreator):
     def _get_example_from_query(query_object):
         try:
             return query_object.wikinews_example
-        except AttributeError:
-            return query_object.world_cup_example
+        except:
+            return query_object.cars_example
