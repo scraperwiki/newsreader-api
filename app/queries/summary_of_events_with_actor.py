@@ -19,6 +19,7 @@ class summary_of_events_with_actor(SparqlQuery):
         self.world_cup_example = 'summary_of_events_with_actor?uris.0=dbpedia:Thierry_Henry'
         self.cars_example = 'summary_of_events_with_actor?uris.0=dbpedia:Alan_Mulally'
         self.dutchhouse_example = 'summary_of_events_with_actor?uris.0=dbpedianl:Rijkman_Groenink'
+        self.wikinews_example = 'summary_of_events_with_actor?uris.0=dbpedia:Barack_Obama'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime ?event_label
 WHERE {{
