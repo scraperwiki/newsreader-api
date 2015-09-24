@@ -18,6 +18,7 @@ class situation_graph(SparqlQuery):
         self.world_cup_example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
         self.cars_example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/cars/2003/06/02/48RT-R260-009F-R155.xml%23ev18'
         self.dutchhouse_example = 'situation_graph?uris.0=http://www.newsreader-project.eu/data/20100522/7YH5-PWH1-2S3X-Y306.xml%23ev3'
+        self.wikinews_example = 'situation_graph?uris.0=http://en.wikinews.org/wiki/Fifteen_medals_awarded_on_London_Paralympics_fourth_night_of_track_and_field%23ev50_6'
         self.query_template = ("""
 SELECT ?timeline ?subject ?predicate ?object
 WHERE {{
