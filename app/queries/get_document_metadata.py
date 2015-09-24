@@ -19,6 +19,7 @@ class get_document_metadata(CRUDQuery):
         self.world_cup_example = 'get_document_metadata?uris.0=http://news.bbc.co.uk/sport2/hi/football/gossip_and_transfers/5137822.stm'
         self.cars_example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/cars/2003/01/04/47KW-0H00-01JV-737G.xml'
         self.dutchhouse_example = 'get_document_metadata?uris.0=http://www.newsreader-project.eu/data/2013/10/312013/10/312013/10/31/11779884.xml'
+        self.wikinews_example = 'get_document_metadata?uris.0=http://en.wikinews.org/wiki/Obama,_Romney_spar_in_first_2012_U.S._presidential_debate'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
         self.output = 'json'
