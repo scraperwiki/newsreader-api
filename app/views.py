@@ -217,8 +217,12 @@ def final_page_exceeded(count, page_number):
 
 
 def parse_get_mention_metadata(query_string):
-    parsed_query = {"output":"html", "uris":[query_string[7:]]}
-    print parsed_query
+    # Remove preamble
+    query_tmp = query_string.replace("uris.0=","")
+    # Remove api_key
+    index = query_tmp.find("api_key")
+    query_tmp = query_tmp[:index-1]
+    parsed_query = {"output":"html", "uris":[query_tmp]}
     return parsed_query
 
 def assemble_query(query_to_use, query_args, page):
