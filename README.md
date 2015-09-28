@@ -141,4 +141,4 @@ except AttributeError:
     return query_object.world_cup_example
 ```
 copy-paste the existing `cars_index()` in `views.py` and replace cars with `new_topic` throughout it, including replacing `CarsDocsCreator` with `NewTopicDocsCreator`;
-add the endpoint path name to our server routes, e.g. /new_topic and the URL of the SPARQL endpoint to `get_endpoint_url()` as it already exists for cars and world_cup, in a conditional.
+add the endpoint path name to our server routes, e.g. /new_topic and the URL of the SPARQL endpoint to `get_endpoint_credentials()` as it already exists for cars and world_cup, in a conditional. Also update `validate_api_key()`

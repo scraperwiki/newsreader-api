@@ -20,6 +20,7 @@ class types_of_actors(SparqlQuery):
         self.world_cup_example = 'types_of_actors?filter=player'
         self.cars_example = 'types_of_actors?filter=driver'
         self.dutchhouse_example = 'types_of_actors'
+        self.wikinews_example = 'types_of_actors?filter=player'
         self.query_template = ("""
 SELECT ?type (COUNT(DISTINCT ?a) AS ?count)
 WHERE {{

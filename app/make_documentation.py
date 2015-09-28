@@ -50,6 +50,15 @@ class DocsCreator(object):
                                       uris=["{uri_0}", "{uri_1}"],
                                       filter='{string}',
                                       datefilter='{datefilter}', output='html')
+            example_query_fragment = self._get_example_from_query(query_object)
+            if "=" in example_query_fragment:
+                example_query = ''.join([self.root_url, self.endpoint_path, '/',
+                                    self._get_example_from_query(query_object),
+                                    '&api_key=', self.user_api_key])
+            else:
+                example_query = ''.join([self.root_url, self.endpoint_path, '/',
+                                    self._get_example_from_query(query_object),
+                                    '?api_key=', self.user_api_key])
 
             function_list['queries'].append({
                 "title": query_object.query_title,
@@ -58,9 +67,7 @@ class DocsCreator(object):
                 "required_parameters": query_object.required_parameters,
                 "optional_parameters": query_object.optional_parameters,
                 "output_columns": query_object.headers,
-                "example": ''.join([self.root_url, self.endpoint_path, '/',
-                                    self._get_example_from_query(query_object),
-                                    '&api_key=', self.user_api_key]),
+                "example": example_query,
                 "sparql": query_object.query})
         return function_list
 
@@ -94,3 +101,12 @@ class DutchHouseDocsCreator(DocsCreator):
     @staticmethod
     def _get_example_from_query(query_object):
         return query_object.dutchhouse_example
+
+class WikiNewsDocsCreator(DocsCreator):
+    # TODO: Set self.query_ignore_list if it needs to be different.
+    @staticmethod
+    def _get_example_from_query(query_object):
+        try:
+            return query_object.wikinews_example
+        except:
+            return query_object.cars_example

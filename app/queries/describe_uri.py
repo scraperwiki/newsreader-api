@@ -17,6 +17,7 @@ class describe_uri(SparqlQuery):
         self.world_cup_example = 'describe_uri?uris.0=dbpedia:Thierry_Henry&output=json'
         self.cars_example = 'describe_uri?uris.0=dbpedia:Martin_Winterkorn&output=json'
         self.dutchhouse_example = 'describe_uri?uris.0=dbpedianl:ING_(bank)&output=json'
+        self.wikinews_example = 'describe_uri?uris.0=dbpedia:Barack_Obama&output=json'
         self.query_template = ("""
 DESCRIBE {uri_0}
                                """)
