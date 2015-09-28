@@ -2,7 +2,7 @@
 
 * [For Simple API users](#markdown-header-simple-api-users)
 * [Local install](#markdown-header-local-install)
-* [Deployment] (#markdwon-header-deployment-warning)
+* [Deployment] (#markdwon-header-deployment---warning)
 * [Running tests](#markdown-header-running-tests)
 * [Adding a new query](#markdown-header-adding-a-new-query)
 * [Adding a new KnowledgeStore](#markdown-header-adding-a-new-knowledgestore)
