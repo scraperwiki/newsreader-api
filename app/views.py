@@ -43,7 +43,7 @@ def validate_api_key(api_key, endpoint):
     validated = False
     if endpoint == 'dutchhouse' and api_key in private_api_keys:
         validated = True
-    elif endpoint in ['cars', 'worldcup'] and api_key in public_api_keys:
+    elif endpoint in ['cars', 'worldcup', 'wikinews'] and api_key in public_api_keys:
         validated = True
     return validated
 
@@ -84,6 +84,15 @@ def worldcup_index():
     function_list = make_documentation.WorldCupDocsCreator(root_url,
                                                            user_api_key,
                                                            endpoint_path).make_docs()
+    return index(function_list)
+
+@app.route('/wikinews')
+def wikinews_index():
+    root_url = get_root_url()
+    endpoint_path = '/wikinews'
+    user_api_key = request.args.get('api_key')
+    function_list = make_documentation.WikiNewsDocsCreator(root_url, user_api_key,
+                                                       endpoint_path).make_docs()
     return index(function_list)
 
 @app.route('/dutchhouse')
@@ -137,7 +146,11 @@ def get_endpoint_credentials(api_endpoint):
                '/nwr/dutchhouse-v2/{action}')
         username = os.environ.get('NEWSREADER_PRIVATE_USERNAME')
         password = os.environ.get('NEWSREADER_PRIVATE_PASSWORD')
-
+    elif api_endpoint == 'wikinews':
+        url = ('https://knowledgestore2.fbk.eu'
+               '/nwr/wikinews/{action}')
+        username = ''
+        password = ''
     return Credentials(url, username, password)
 
 
@@ -204,8 +217,12 @@ def final_page_exceeded(count, page_number):
 
 
 def parse_get_mention_metadata(query_string):
-    parsed_query = {"output":"html", "uris":[query_string[7:]]}
-    print parsed_query
+    # Remove preamble
+    query_tmp = query_string.replace("uris.0=","")
+    # Remove api_key
+    index = query_tmp.find("api_key")
+    query_tmp = query_tmp[:index-1]
+    parsed_query = {"output":"html", "uris":[query_tmp]}
     return parsed_query
 
 def assemble_query(query_to_use, query_args, page):

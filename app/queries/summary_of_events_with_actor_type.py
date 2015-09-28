@@ -19,7 +19,7 @@ class summary_of_events_with_actor_type(SparqlQuery):
         self.world_cup_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:GolfPlayer'
         self.cars_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:Company'
         self.dutchhouse_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:Company'
-
+        self.wikinews_example = 'summary_of_events_with_actor_type?datefilter=2010-01&uris.0=dbo:Company'
         self.query_template = ("""
 SELECT ?event (COUNT (*) AS ?event_size) ?datetime ?actor
 WHERE {{
