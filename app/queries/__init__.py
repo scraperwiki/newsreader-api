@@ -31,7 +31,8 @@ from .event_label_frequency_count import event_label_frequency_count
 
 from .summary_of_events_with_framenet import summary_of_events_with_framenet
 from .summary_of_events_with_eso import summary_of_events_with_eso
-#from .framenet_frequency_count import framenet_frequency_count
+from .framenet_frequency_count import framenet_frequency_count
+from .eso_frequency_count import eso_frequency_count
 
 from .get_document_metadata import get_document_metadata
 from .get_mention_metadata import get_mention_metadata

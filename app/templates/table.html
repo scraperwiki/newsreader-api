@@ -53,8 +53,8 @@
               <td><a href="{{ result[header] }}">{{ result[header].replace('http://purl.org/dc/terms/', 'dct:') }}</td>
                 {% elif result[header] != None and result[header].startswith('http://www.newsreader-project.eu/domain-ontology') %}
               <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.newsreader-project.eu/domain-ontology#', 'eso:') }}</td>
-                {% elif result[header] != None and result[header].startswith('http://www.newsreader-project.eu/framenet') %}
-              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.newsreader-project.eu/framenet', 'framenet:') }}</td>
+                {% elif result[header] != None and result[header].startswith('http://www.newsreader-project.eu/ontologies/framenet/') %}
+              <td><a href="{{ result[header] }}">{{ result[header].replace('http://www.newsreader-project.eu/ontologies/framenet/', 'framenet:') }}</td>
                 {% elif result[header] != None and result[header].startswith('http://groundedannotationframework.org/gaf#') %}
               <td><a href="{{ result[header] }}">{{ result[header].replace('http://groundedannotationframework.org/gaf#', 'gaf:') }}</td>
                 {% elif result[header] != None and result[header].startswith('http://www.w3.org/1999/02/22-rdf-syntax-ns#') %}

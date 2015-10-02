@@ -20,13 +20,14 @@ class framenet_frequency_count(SparqlQuery):
         self.world_cup_example = 'framenet_frequency_count'
         self.cars_example = 'framenet_frequency_count'
         self.dutchhouse_example = 'framenet_frequency_count'
+        self.wikinews_example = 'framenet_frequency_count'
         self.query_template = ("""
 SELECT
 ?frame (count (?frame) AS ?count)
 WHERE {{
 ?event a sem:Event . 
 ?event a ?filterfield . 
-FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
+FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/ontologies/framenet/")) .
 BIND (?filterfield AS ?frame) .
 }}
 GROUP BY ?frame
@@ -41,7 +42,7 @@ SELECT
 WHERE {{
 ?event a sem:Event . 
 ?event a ?filterfield . 
-FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/framenet/")) .
+FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/ontologies/framenet/")) .
 BIND (?filterfield AS ?frame) .
 }}
 GROUP BY ?frame
