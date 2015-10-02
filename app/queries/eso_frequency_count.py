@@ -38,14 +38,13 @@ OFFSET {offset}
 
         self.count_template = ("""
 SELECT
-(COUNT (?eso) AS ?count)
+(COUNT (DISTINCT ?eso) AS ?count)
 WHERE {{
 ?event a sem:Event . 
 ?event a ?filterfield . 
 FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/domain-ontology")) .
 BIND (?filterfield AS ?eso) .
 }}
-GROUP BY ?eso
                                """)
 
         self.jinja_template = 'table.html'

@@ -38,14 +38,13 @@ OFFSET {offset}
 
         self.count_template = ("""
 SELECT
-(COUNT (?frame) AS ?count)
+(COUNT (DISTINCT ?frame) AS ?count)
 WHERE {{
 ?event a sem:Event . 
 ?event a ?filterfield . 
 FILTER(STRSTARTS(STR(?filterfield), "http://www.newsreader-project.eu/ontologies/framenet/")) .
 BIND (?filterfield AS ?frame) .
 }}
-GROUP BY ?frame
                                """)
 
         self.jinja_template = 'table.html'
