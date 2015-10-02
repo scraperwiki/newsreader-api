@@ -21,7 +21,7 @@ class DocsCreator(object):
         function_list = {"description": ["",
                                          "Queries are of the form:",
                                          self.root_url + self.endpoint_path + "/query_name/{page/[n]/}?param1=[string]&param2=[string]&api_key=<YOUR_API_KEY>",
-                                         "Where page is an option component with default /page/1",
+                                         "Where page is an option component with default /page/1. Note that /page/1 automatically redirects so is not seen in the URL in the browser.",
                                          "",
                                          "Vist this page with a URL of the form: " + self.root_url + self.endpoint_path + "?api_key=<YOUR_API_KEY>",
                                          "to put the API key into the example URLs",

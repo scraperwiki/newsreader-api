@@ -2,6 +2,7 @@
 
 * [For Simple API users](#markdown-header-simple-api-users)
 * [Local install](#markdown-header-local-install)
+* [Deployment] (#deployment---warning)
 * [Running tests](#markdown-header-running-tests)
 * [Adding a new query](#markdown-header-adding-a-new-query)
 * [Adding a new KnowledgeStore](#markdown-header-adding-a-new-knowledgestore)
@@ -54,6 +55,13 @@ documentation.
 1. Do `make run`
 
 App accessible via http://0.0.0.0:8000
+
+## Deployment - WARNING!
+
+The Simple API should automatically deploy to https://newsreader-dev.scraperwiki.com/ when 
+code is merged onto the `dev` branch and it should automatically deploy to https://newsreader.scraperwiki.com/ when
+code is merged onto the `master` branch. Deployment should only take a few minutes after merge, if it takes longer than
+this then there is likely a problem. 
 
 ### Deploying via Amazon CloudFormation
 
