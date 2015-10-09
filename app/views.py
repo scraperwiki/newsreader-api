@@ -1,23 +1,23 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from __future__ import unicode_literals, division
+
 
 import json
 
 from flask import (abort, render_template, request, url_for, make_response,
                    send_from_directory)
 from app import app
-from pagination import Pagination
+from .pagination import Pagination
 from collections import namedtuple, OrderedDict
 import functools
-import queries
+from . import queries
 import jsonurl
-import cStringIO as StringIO
+import io as StringIO
 import unicodecsv as csv
 import logging
 import math
 import os
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from app import make_documentation
 
 # TODO:
@@ -51,7 +51,7 @@ def validate_api_key(api_key, endpoint):
 def index(function_list):
     """ Provide documentation when accessing the root page """
     output = parse_query_string(request.query_string)
-    if "output" not in output.keys():
+    if "output" not in list(output.keys()):
         output['output'] = 'html'
     if output['output'] == 'json':
         response = make_response(json.dumps(
@@ -108,15 +108,15 @@ def parse_query_string(query_string):
     """ Return dict containing query string values.
 
     uris can be entered as ?uris.0=http:...&uris.1=http:... """
-    query_string = urllib.unquote(query_string).decode('utf-8')
+    query_string = urllib.parse.unquote(query_string).decode('utf-8')
 
     try:
         parsed_query = jsonurl.parse_query(query_string)
-        if "output" not in parsed_query.keys():
+        if "output" not in list(parsed_query.keys()):
             parsed_query['output'] = 'html'
         # Hack to escape words in Unicode strings for Virtuoso.
         # Can't just escape the whole string as e.g. "bribe OR bribery" fails.
-        if "filter" in parsed_query.keys():
+        if "filter" in list(parsed_query.keys()):
             filter_words = []
             for each in parsed_query['filter'].split():
                 try:
@@ -179,9 +179,9 @@ def run_query(page, query_to_use, api_endpoint):
         if query_to_use!="get_mention_metadata":
             query_args = parse_query_string(request.query_string)
         else:
-            print "**we are doing a special parse for get_mention_metadata**"
+            print("**we are doing a special parse for get_mention_metadata**")
             query_args = parse_get_mention_metadata(request.query_string)
-            print query_args
+            print(query_args)
 
         query_args['endpoint_url'] = ks_credentials.url
         current_query = assemble_query(query_to_use, query_args, page)
@@ -238,17 +238,17 @@ def assemble_query(query_to_use, query_args, page):
 
 
 def add_offset_and_limit(query_args, page):
-    if 'offset' in query_args.keys():
+    if 'offset' in list(query_args.keys()):
         logging.warning("Ignoring user supplied offset")
-    if 'limit' in query_args.keys():
+    if 'limit' in list(query_args.keys()):
         logging.warning("Ignoring user supplied limit")
     #if 'offset' not in query_args.keys():
     query_args['offset'] = PER_PAGE * (page - 1)
     #if 'limit' not in query_args.keys():
     query_args['limit'] = PER_PAGE
-    if 'callback' in query_args.keys():
+    if 'callback' in list(query_args.keys()):
         query_args['output'] = 'jsonp'
-    if 'callback' not in query_args.keys():
+    if 'callback' not in list(query_args.keys()):
         query_args['callback'] = None
 
     return query_args
@@ -274,8 +274,8 @@ def produce_error_response(e, query_args):
         else:
             response = json.dumps({"error": e.message})
     except Exception as err:
-        print "**Failed to make a proper error response"
-        print type(err)
+        print("**Failed to make a proper error response")
+        print((type(err)))
         response = ''
     return response
 
@@ -318,8 +318,8 @@ def produce_json_response(query, page_number, count):
 
 def produce_csv_response(query, page_number, count):
     output = StringIO.StringIO()
-    fieldnames = OrderedDict(zip(query.headers,
-                                 [None]*len(query.headers)))
+    fieldnames = OrderedDict(list(zip(query.headers,
+                                 [None]*len(query.headers))))
     dw = csv.DictWriter(output, fieldnames=fieldnames)
     dw.writeheader()
     for row in query.clean_json:
@@ -360,7 +360,7 @@ def produce_jsonp_response(query, page_number, count):
 
 
 def url_for_other_page(page):
-    args = dict(request.view_args.items() + request.args.to_dict().items())
+    args = dict(list(request.view_args.items()) + list(request.args.to_dict().items()))
     args['page'] = page
     return url_for(request.endpoint, **args)
 

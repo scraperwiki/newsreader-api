@@ -4,7 +4,7 @@
 # TODO: Is this needed?
 __all__ = ["properties_of_a_type"]
 
-import queries
+from . import queries
 
 from .properties_of_a_type import properties_of_a_type
 from .types_of_actors import types_of_actors

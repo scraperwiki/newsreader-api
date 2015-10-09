@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from __future__ import unicode_literals
+
 
 import json
 import logging
@@ -11,7 +11,7 @@ from collections import namedtuple
 import requests
 import requests_cache
 
-requests_cache.install_cache('/tmp/requests_cache', expire_after=172800)
+requests_cache.install_cache('tmp/requests_cache', expire_after=172800)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -50,12 +50,12 @@ class QueryException(Exception):
 def convert_raw_json_to_clean(SPARQL_json):
     clean_json = []
     # This handles the describe_uri query
-    if "results" not in SPARQL_json.keys():
+    if "results" not in list(SPARQL_json.keys()):
         return SPARQL_json
 
     for entry in SPARQL_json['results']['bindings']:
         line = {}
-        for key in entry.keys():
+        for key in list(entry.keys()):
             line[key] = entry[key]['value']
         clean_json.append(line)
     return clean_json
@@ -82,8 +82,8 @@ class SparqlQuery(object):
         self.limit = limit
         self.query_time = None
         self.count_time = None
-        self.filter = unicode(filter).lower()
-        self.datefilter = unicode(datefilter)
+        self.filter = str(filter).lower()
+        self.datefilter = str(datefilter)
         self.date_filter_block = None
         self.filter_block = None
         self.uri_filter_block = None
@@ -114,7 +114,7 @@ class SparqlQuery(object):
 
     def _make_prefix_block(self):
         prefixes = []
-        for k, v in self.prefix_dict.iteritems():
+        for k, v in self.prefix_dict.items():
             prefixes.append("PREFIX {k}: <{v}>".format(k=k, v=v['stub']))
         self.prefix_block = "\n".join(prefixes)
 
@@ -242,21 +242,21 @@ class SparqlQuery(object):
                                     auth=(username, password),
                                     params=payload)
         except Exception as e:
-            print "Query raised an exception"
-            print type(e)
+            print("Query raised an exception")
+            print(type(e))
             t1 = time.time()
             total = t1-t0
             self.query_time = '{0:.2f}'.format(total)
-            print "Time to return from query: {0:.2f} seconds".format(total)
+            print("Time to return from query: {0:.2f} seconds".format(total))
             raise QueryException("Query raised an exception: {0}"
                                  .format(type(e).__name__))
         else:
             t1 = time.time()
             total = t1-t0
             self.query_time = '{0:.2f}'.format(total)
-            print "Time to return from query: {0:.2f} seconds".format(total)
-            print "Response code: {0}".format(response.status_code)
-            print "From cache: {0}".format(response.from_cache)
+            print("Time to return from query: {0:.2f} seconds".format(total))
+            print("Response code: {0}".format(response.status_code))
+            print("From cache: {0}".format(response.from_cache))
 
             if response and (response.status_code == requests.codes.ok):
                 self.json_result = json.loads(response.content)
@@ -366,17 +366,17 @@ class CRUDQuery(SparqlQuery):
     def submit_query(self, username, password):
         """ Submit query to endpoint; return result. """
         endpoint_url = self.endpoint_stub_url.format(action=self.action)
-        print "\n\n**New CRUD query**"
+        print("\n\n**New CRUD query**")
         query_url = endpoint_url + "?id=" + self.query
-        print query_url
+        print(query_url)
 
         t0 = time.time()
         try:
             response = requests.get(query_url, auth=(username, password))
 
         except Exception as e:
-            print "Query raised an exception"
-            print type(e)
+            print("Query raised an exception")
+            print(type(e))
             t1 = time.time()
             total = t1-t0
             raise QueryException("Query raised an exception: {0}"
@@ -384,9 +384,9 @@ class CRUDQuery(SparqlQuery):
         else:
             t1 = time.time()
             total = t1-t0
-            print "Time to return from query: {0:.2f} seconds".format(total)
-            print "Response code: {0}".format(response.status_code)
-            print "From cache: {0}".format(response.from_cache)
+            print("Time to return from query: {0:.2f} seconds".format(total))
+            print("Response code: {0}".format(response.status_code))
+            print("From cache: {0}".format(response.from_cache))
 
             #print response.content
 
