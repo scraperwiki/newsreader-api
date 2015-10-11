@@ -1,6 +1,6 @@
 run:    build
 	@docker run \
-	    -p 127.0.0.1:8000:8000 \
+	    -p 8000:8000 \
 	    -e NEWSREADER_PUBLIC_USERNAME \
 	    -e NEWSREADER_PUBLIC_PASSWORD \
 	    -e NEWSREADER_PRIVATE_USERNAME \
@@ -9,7 +9,7 @@ run:    build
 	    -e NEWSREADER_PRIVATE_API_KEY \
 	    --read-only \
 	    --rm \
-	    --volume /tmp \
+	    --volume //tmp \
 	    newsreader_api
 
 build:
