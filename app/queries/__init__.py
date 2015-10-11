@@ -15,6 +15,7 @@ from .queries import PREFIX_LIBRARY
 
 from .actors_of_a_type import actors_of_a_type
 from .property_of_actors_of_a_type import property_of_actors_of_a_type
+from .property_of_an_actor import property_of_an_actor
 
 from .event_details_filtered_by_actor import event_details_filtered_by_actor
 from .describe_uri import describe_uri

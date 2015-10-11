@@ -134,7 +134,7 @@ The main action should be in adding the queries. { and } in the original need to
 
 `from .types_of_actors import types_of_actors`
 
-to `__init.py__` and add an entry to `function_list` in `index` in the`queries.py` file.
+to `__init.py__`.
 
 ## Adding a new KnowledgeStore
 
