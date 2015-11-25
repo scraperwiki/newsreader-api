@@ -133,7 +133,7 @@ def get_endpoint_credentials(api_endpoint):
     """ Take name of API endpoint as string; return KS SPARQL URL. """
     Credentials = namedtuple("Credentials", "url username password")
     # Cars as default endpoint
-    url = ('https://knowledgestore2.fbk.eu/nwr/cars-hackathon/{action}')
+    url = ('http://www.airpedia.org/alessio/ks/{action}')
     username = os.environ.get('NEWSREADER_PUBLIC_USERNAME')
     password = os.environ.get('NEWSREADER_PUBLIC_PASSWORD')
 
