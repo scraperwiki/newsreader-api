@@ -41,7 +41,7 @@ def validate_api_key(api_key, endpoint):
     private_api_keys = os.environ['NEWSREADER_PRIVATE_API_KEY'].split(',')
 
     validated = False
-    if endpoint == 'dutchhouse' and api_key in private_api_keys:
+    if endpoint == 'ft' and api_key in private_api_keys:
         validated = True
     elif endpoint in ['cars', 'worldcup', 'wikinews'] and api_key in public_api_keys:
         validated = True
@@ -95,12 +95,12 @@ def wikinews_index():
                                                        endpoint_path).make_docs()
     return index(function_list)
 
-@app.route('/dutchhouse')
-def dutchhouse_index():
+@app.route('/ft')
+def ft_index():
     root_url = get_root_url()
-    endpoint_path = '/dutchhouse'
+    endpoint_path = '/ft'
     user_api_key = request.args.get('api_key')
-    function_list = make_documentation.DutchHouseDocsCreator(root_url, user_api_key,
+    function_list = make_documentation.FTDocsCreator(root_url, user_api_key,
                                                        endpoint_path).make_docs()
     return index(function_list)
 
@@ -141,7 +141,7 @@ def get_endpoint_credentials(api_endpoint):
         # TODO: check if this URL is  correct (though a dead link now anyway).
         url = ('https://knowledgestore.fbk.eu'
                '/nwr/worldcup-hackathon/{action}')
-    elif api_endpoint == 'dutchhouse':
+    elif api_endpoint == 'ft':
         url = ('https://knowledgestore2.fbk.eu'
                '/nwr/dutchhouse-v2/{action}')
         username = os.environ.get('NEWSREADER_PRIVATE_USERNAME')

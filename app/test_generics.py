@@ -103,11 +103,11 @@ class ApiKeysTestCase(unittest.TestCase):
         assert_equal(401, rv.status_code)
 
     def test_private_api_key_allows_access_to_private_api(self):
-        rv = self.app.get('/dutchhouse/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+        rv = self.app.get('/ft/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
                           + self.private_api_key)
         assert_equal(200, rv.status_code)
 
     def test_public_api_key_does_not_allow_access_to_private_api(self):
-        rv = self.app.get('/dutchhouse/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
+        rv = self.app.get('/ft/describe_uri?uris.0=dbpedia:Guangzhou_Evergrande_F.C.&output=json' + '&api_key='
                           + self.public_api_key)
         assert_equal(401, rv.status_code)
