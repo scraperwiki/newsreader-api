@@ -19,7 +19,7 @@ class framenet_frequency_count(SparqlQuery):
         self.url = 'framenet_frequency_count'
         self.world_cup_example = 'framenet_frequency_count'
         self.cars_example = 'framenet_frequency_count'
-        self.dutchhouse_example = 'framenet_frequency_count'
+        self.ft_example = 'framenet_frequency_count'
         self.wikinews_example = 'framenet_frequency_count'
         self.query_template = ("""
 SELECT

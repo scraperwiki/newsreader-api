@@ -19,7 +19,7 @@ class eso_frequency_count(SparqlQuery):
         self.url = 'eso_frequency_count'
         self.world_cup_example = 'eso_frequency_count'
         self.cars_example = 'eso_frequency_count'
-        self.dutchhouse_example = 'eso_frequency_count'
+        self.ft_example = 'eso_frequency_count'
         self.wikinews_example = 'eso_frequency_count'
         self.query_template = ("""
 SELECT

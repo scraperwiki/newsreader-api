@@ -19,7 +19,7 @@ class properties_of_a_type(SparqlQuery):
         self.url = 'properties_of_a_type'
         self.world_cup_example = 'properties_of_a_type?uris.0=dbo:Stadium'
         self.cars_example = 'properties_of_a_type?uris.0=dbo:Company'
-        self.dutchhouse_example = 'properties_of_a_type?uris.0=dbo:Company'
+        self.ft_example = 'properties_of_a_type?uris.0=dbo:Company'
         self.query_template = ("""
 SELECT ?property (COUNT(DISTINCT ?pl) AS ?type_count) (COUNT(DISTINCT ?o) AS ?value_count)
 WHERE {{
