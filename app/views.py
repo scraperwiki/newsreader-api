@@ -143,7 +143,7 @@ def get_endpoint_credentials(api_endpoint):
                '/nwr/worldcup-hackathon/{action}')
     elif api_endpoint == 'ft':
         url = ('https://knowledgestore2.fbk.eu'
-               '/nwr/ft/ui/{action}')
+               '/nwr/ft/{action}')
         username = os.environ.get('NEWSREADER_PRIVATE_USERNAME')
         password = os.environ.get('NEWSREADER_PRIVATE_PASSWORD')
     elif api_endpoint == 'wikinews':
