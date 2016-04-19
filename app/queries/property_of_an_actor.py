@@ -16,7 +16,7 @@ class property_of_an_actor(SparqlQuery):
         self.url = 'property_of_an_actor'
         self.world_cup_example = 'property_of_an_actor/page/1?uris.0=dbpedia:Barack_Obama&uris.1=dbo:birthPlace'
         self.cars_example = 'property_of_an_actor/page/1?uris.0=dbpedia:Barack_Obama&uris.1=dbo:birthPlace'
-        self.dutchhouse_example = 'property_of_an_actor/page/1?uris.0=dbpedia:Barack_Obama&uris.1=dbo:birthPlace'
+        self.ft_example = 'property_of_an_actor/page/1?uris.0=dbpedia:Barack_Obama&uris.1=dbo:birthPlace'
         self.wikinews_example = 'property_of_an_actor/page/1?uris.0=dbpedia:Barack_Obama&uris.1=dbo:birthPlace'
         self.query_template = ("""
 SELECT ({uri_0} AS ?actor) ?value

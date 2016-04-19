@@ -16,7 +16,7 @@ class summary_of_events_with_eso(SparqlQuery):
         self.url = 'summary_of_events_with_eso'
         self.world_cup_example = 'summary_of_events_with_eso?uris.0=eso:Renting'
         self.cars_example = 'summary_of_events_with_eso?uris.0=eso:Renting'
-        self.dutchhouse_example = 'summary_of_events_with_eso?uris.0=eso:QuantityChange&datefilter=2010'
+        self.ft_example = 'summary_of_events_with_eso?uris.0=eso:QuantityChange&datefilter=2010'
         self.query_template = ("""
 SELECT ?event (COUNT(*) AS ?event_size) ?datetime (?filterfield as ?event_label)
 WHERE {{

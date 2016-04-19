@@ -16,7 +16,7 @@ class actors_of_a_type(SparqlQuery):
         self.url = 'actors_of_a_type'
         self.world_cup_example = 'actors_of_a_type/page/2?uris.0=dbo:Person&filter=david'
         self.cars_example = 'actors_of_a_type/page/2?uris.0=dbo:Company&filter=motor'
-        self.dutchhouse_example = 'actors_of_a_type/page/2?uris.0=dbo:Company&filter=bank'
+        self.ft_example = 'actors_of_a_type/page/2?uris.0=dbo:Company&filter=bank'
         self.wikinews_example = 'actors_of_a_type/page/2?uris.0=dbo:Company'
         self.query_template = ("""
 SELECT (?filterfield AS ?actor) (COUNT(DISTINCT ?event) AS ?count) ?comment

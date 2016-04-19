@@ -21,7 +21,7 @@ class get_mention_metadata(CRUDQuery):
 
         self.world_cup_example = 'get_mention_metadata?uris.0=http%3A%2F%2Fnews.bbc.co.uk%2Fsport2%2Fhi%2Ffootball%2Fgossip_and_transfers%2F5137822.stm%23char%3D1162%2C1167%26word%3Dw220%26term%3Dt220'
         self.cars_example = 'get_mention_metadata?uris.0=http%3A%2F%2Fwww.newsreader-project.eu%2Fdata%2Fcars%2F2003%2F01%2F04%2F47KW-0H00-01JV-737G.xml%23char%3D108%2C116'
-        self.dutchhouse_example = 'get_mention_metadata?uris.0=http%3A%2F%2Fwww.newsreader-project.eu%2Fdata%2F20120419%2F55FD-FNS1-F151-W2VK.xml%23char%3D1722%2C1730'
+        self.ft_example = 'get_mention_metadata?uris.0=http%3A%2F%2Fwww.newsreader-project.eu%2Fdata%2F20120419%2F55FD-FNS1-F151-W2VK.xml%23char%3D1722%2C1730'
         self.wikinews_example = 'get_mention_metadata?uris.0=http://en.wikinews.org/wiki/Obama,_Romney_spar_in_first_2012_U.S._presidential_debate%23char=1058,1067'
         self.query_template = ("""{uri_0}""")
         self.count_template = ("""""")
