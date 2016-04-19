@@ -14,8 +14,8 @@ sys.stdout = sys.stderr
 # A convenient docker container is provided if you just run 'make'.
 assert "pypy" in sys.executable, "DO NOT PROCEED."
 
-# CoreOS version 723.3.0
-COREOS_AMI = "ami-0e104179"
+# CoreOS version 899.15.0
+COREOS_AMI = "ami-3b941448"
 
 
 def ref(x):
